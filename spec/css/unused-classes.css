@@ -1,0 +1,11 @@
+.foo {
+  visibility: visible;
+}
+
+.bar {
+  visibility: visible;
+}
+
+.alpha, .bravo, .charlie {
+  visibility: visible;
+}

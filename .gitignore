@@ -1,0 +1,7 @@
+.DS_Store
+.jshintrc
+.sass-cache
+.grunt
+
+node_modules
+spec-runner.html
