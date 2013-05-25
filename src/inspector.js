@@ -1,55 +1,41 @@
 var HTMLInspector = (function() {
 
   var rules = {}
+    , events = {}
     , reports = []
-    , callback
 
-  function initializeRules(useRules) {
-    HTMLInspector.resetEvents()
+  /**
+   * Set (or reset) all data back to its original value
+   * and initialize the specified rules
+   */
+  function init(useRules) {
     useRules = (useRules == "all") ? Object.keys(rules) : useRules
     useRules.forEach(function(rule) {
       rules[rule] && rules[rule].init.call(HTMLInspector)
     })
   }
 
-  function beforeInspect() {
-    HTMLInspector.trigger("beforeInspect", HTMLInspector)
-  }
-
-  function afterInspect() {
-    HTMLInspector.trigger("afterInspect", HTMLInspector)
+  /**
+   * Destroy all variables to allow for additional inspections
+   */
+  function teardown() {
+    events = {}
+    reports = []
   }
 
   function traverseDOM(root) {
+    HTMLInspector.trigger("beforeInspect", HTMLInspector)
     $(root).find("*").each(function() {
       var el = this
-      element(el)
-      el.id && id(el.id, el)
+      HTMLInspector.trigger("element", HTMLInspector, [el])
+      if (el.id) {
+        HTMLInspector.trigger("id", HTMLInspector, [id, name])
+      }
       toArray(el.classList).forEach(function(name) {
-        cls(name, el)
+        HTMLInspector.trigger("class", HTMLInspector, [name, el])
       })
     })
-  }
-
-  function element(el) {
-    HTMLInspector.trigger("element", HTMLInspector, [el])
-  }
-
-  function cls(name, el) {
-    HTMLInspector.trigger("class", HTMLInspector, [name, el])
-  }
-
-  function id(id, el) {
-    HTMLInspector.trigger("id", HTMLInspector, [id, name])
-  }
-
-  /**
-   * the default reporting if no done callback is specified
-   */
-  function warn(reports) {
-    reports.forEach(function(report) {
-      console.warn(report.message, report.context)
-    })
+    HTMLInspector.trigger("afterInspect", HTMLInspector)
   }
 
   return {
@@ -57,8 +43,25 @@ var HTMLInspector = (function() {
     config: {
       rules: "all",
       domRoot: document,
-      timeout: 1, // needed to all synchronous tasks to finish first
-      styleSheets: $('link[rel="stylesheet"], style')
+      styleSheets: $('link[rel="stylesheet"], style'),
+      complete: function(reports) {
+        reports.forEach(function(report) {
+          console.warn(report.message, report.context)
+        })
+      }
+    },
+
+    on: function(event, fn) {
+      events[event] || (events[event] = $.Callbacks())
+      events[event].add(fn)
+    },
+
+    off: function(event, fn) {
+      events[event] && events[event].remove(fn)
+    },
+
+    trigger: function(event, context, args) {
+      events[event] && events[event].fireWith(context, args )
     },
 
     addRule: function(rule) {
@@ -80,27 +83,10 @@ var HTMLInspector = (function() {
       // merge config with the defaults
       config = $.extend({}, HTMLInspector.config, config)
 
-      // reset reports and callback in case this is a second run
-      reports = []
-      callback = null
-
-      setTimeout(function() {
-
-        initializeRules(config.rules)
-        beforeInspect()
-        traverseDOM(config.domRoot)
-        afterInspect()
-
-        // default to logging the results to the console
-        // if no done callback has been set
-        var done = typeof callback == "function" ? callback : warn
-        done.call(HTMLInspector, reports)
-
-      }, HTMLInspector.config.timeout)
-    },
-
-    done: function(fn) {
-      callback = fn
+      init(config.rules)
+      traverseDOM(config.domRoot)
+      config.complete(reports)
+      teardown()
     }
 
   }

@@ -23,7 +23,6 @@ module.exports = function(grunt) {
           "src/intro.js",
           "src/utils.js",
           "src/inspector.js",
-          "src/observable.js",
           "src/stylesheets.js",
           "src/outro.js",
           "src/rules/**/*.js",

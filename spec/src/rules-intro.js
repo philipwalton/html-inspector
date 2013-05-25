@@ -2,7 +2,7 @@ describe("Rules", function() {
 
   var originalConfig = HTMLInspector.config
 
-  function addToDOMSandbox(html) {
+  function setupSandbox(html) {
     return  $("#html-inspector-sandbox").html(html)
   }
 
