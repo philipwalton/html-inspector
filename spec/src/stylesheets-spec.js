@@ -13,9 +13,9 @@ describe("stylesheets", function() {
 
   it("can filter the searched style sheets via the filter option", function() {
     HTMLInspector.styleSheets.filter = "link[href$='jasmine.css']"
+    var classes = HTMLInspector.styleSheets.getClassSelectors()
     // limiting the style sheets to only jasmine.css means
     // .alpha, .bravo, and .charlie won't be there
-    var classes = HTMLInspector.styleSheets.getClassSelectors()
     expect(classes.indexOf("alpha")).toEqual(-1)
     expect(classes.indexOf("bravo")).toEqual(-1)
     expect(classes.indexOf("charlie")).toEqual(-1)
