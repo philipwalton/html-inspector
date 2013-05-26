@@ -43,7 +43,6 @@ var HTMLInspector = (function() {
     config: {
       rules: "all",
       domRoot: document,
-      styleSheets: $('link[rel="stylesheet"], style'),
       complete: function(reports) {
         reports.forEach(function(report) {
           console.warn(report.message, report.context)

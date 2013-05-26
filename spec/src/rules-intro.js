@@ -7,11 +7,11 @@ describe("Rules", function() {
   }
 
   beforeEach(function() {
-    HTMLInspector.config.styleSheets = $("link:not([href*='jasmine'])")
+    // HTMLInspector.config.styleSheets = $("link:not([href*='jasmine'])")
     $('<div id="html-inspector-sandbox"></div>').appendTo("body")
   })
 
   afterEach(function() {
-    HTMLInspector.config = originalConfig
+    // HTMLInspector.config = originalConfig
     $("#html-inspector-sandbox").remove()
   })

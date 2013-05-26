@@ -33,6 +33,7 @@ module.exports = function(grunt) {
       spec: {
         src: [
           "spec/src/intro.js",
+          "spec/src/stylesheets-spec.js",
           "spec/src/rules-intro.js",
           "spec/src/rules/*.js",
           "spec/src/rules-outro.js",
@@ -65,7 +66,7 @@ module.exports = function(grunt) {
         tasks: ["concat:dist", "jshint:dist"]
       },
       spec: {
-        files: ["spec/**/*.js"],
+        files: ["spec/src/**/*.js"],
         tasks: ["concat:spec", "jshint:dist"]
       },
       gruntfile: {
@@ -77,7 +78,7 @@ module.exports = function(grunt) {
       options: {
         vendor: "lib/jquery.js",
         specs: "spec/html-inspector-spec.js",
-        styles: "spec/css/*.css",
+        styles: "spec/html-inspector-spec.css",
         outfile: "spec-runner.html",
         keepRunner: true
       },

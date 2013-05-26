@@ -16,6 +16,7 @@ describe("unused-classes", function() {
           + '</div>'
 
     HTMLInspector.inspect({
+      rules: ["unused-classes"],
       domRoot: setupSandbox(html),
       complete: complete
     })
@@ -36,6 +37,7 @@ describe("unused-classes", function() {
           + '</div>'
 
     HTMLInspector.inspect({
+      rules: ["unused-classes"],
       domRoot: setupSandbox(html),
       complete: complete
     })

@@ -69,7 +69,6 @@ var HTMLInspector = (function() {
     config: {
       rules: "all",
       domRoot: document,
-      styleSheets: $('link[rel="stylesheet"], style'),
       complete: function(reports) {
         reports.forEach(function(report) {
           console.warn(report.message, report.context)
@@ -145,46 +144,43 @@ var styleSheets = (function(config) {
    */
   function getClassesFromStyleSheets(styleSheets) {
     return styleSheets.reduce(function(classes, sheet) {
-      if (sheet.href) {
-        return getClassesFromRuleList(toArray(sheet.cssRules))
-      }
-      return classes
+      return classes.concat(getClassesFromRuleList(toArray(sheet.cssRules)))
     }, [])
   }
 
   function getStyleSheets() {
     return toArray(document.styleSheets).filter(function(sheet) {
-      return config.styleSheets.is(sheet.ownerNode)
+      return $(sheet.ownerNode).is(styleSheets.filter)
     })
   }
 
-  return {
-    sheetSheets: {
-      getClassSelectors: function() {
-        return unique(getClassesFromStyleSheets(getStyleSheets()))
-      },
-      getSelectors: function() {
-        return []
-      }
-    }
+  var styleSheets = {
+    getClassSelectors: function() {
+      return unique(getClassesFromStyleSheets(getStyleSheets()))
+    },
+    getSelectors: function() {
+      return []
+    },
+    filter: 'link[rel="stylesheet"], style'
   }
 
-}(HTMLInspector.config))
+  return { styleSheets: styleSheets }
+
+}())
   // expose HTMLInspector globally
   window.HTMLInspector = $.extend(HTMLInspector, styleSheets)
 
 }(this, jQuery, document))
 
 HTMLInspector.addRule({
-  id: "unsemantic-elements",
-  type: "error",
+  id: "nonsemantic-elements",
   init: function() {
     this.on('element', function(el) {
       var isUnsemantic = el.nodeName == "DIV" || el.nodeName == "SPAN"
         , isAttributed = el.attributes.length === 0
       if (isUnsemantic && isAttributed) {
         this.report(
-          "unsemantic-elements",
+          "nonsemantic-elements",
           "Do not use <div> or <span> elements without any attributes",
           el
         )
@@ -194,10 +190,9 @@ HTMLInspector.addRule({
 });
 HTMLInspector.addRule({
   id: "unused-classes",
-  type: "error",
   init: function() {
     var whitelist = /^js\-|^supports\-|^language\-|^lang\-/
-      , classes = this.sheetSheets.getClassSelectors()
+      , classes = this.styleSheets.getClassSelectors()
 
     this.on('class', function(cls, el) {
       if (!whitelist.test(cls) && classes.indexOf(cls) == -1) {

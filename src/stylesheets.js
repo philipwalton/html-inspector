@@ -24,28 +24,26 @@ var styleSheets = (function(config) {
    */
   function getClassesFromStyleSheets(styleSheets) {
     return styleSheets.reduce(function(classes, sheet) {
-      if (sheet.href) {
-        return getClassesFromRuleList(toArray(sheet.cssRules))
-      }
-      return classes
+      return classes.concat(getClassesFromRuleList(toArray(sheet.cssRules)))
     }, [])
   }
 
   function getStyleSheets() {
     return toArray(document.styleSheets).filter(function(sheet) {
-      return config.styleSheets.is(sheet.ownerNode)
+      return $(sheet.ownerNode).is(styleSheets.filter)
     })
   }
 
-  return {
-    sheetSheets: {
-      getClassSelectors: function() {
-        return unique(getClassesFromStyleSheets(getStyleSheets()))
-      },
-      getSelectors: function() {
-        return []
-      }
-    }
+  var styleSheets = {
+    getClassSelectors: function() {
+      return unique(getClassesFromStyleSheets(getStyleSheets()))
+    },
+    getSelectors: function() {
+      return []
+    },
+    filter: 'link[rel="stylesheet"], style'
   }
 
-}(HTMLInspector.config))
+  return { styleSheets: styleSheets }
+
+}())
