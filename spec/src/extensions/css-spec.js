@@ -1,19 +1,16 @@
-describe("stylesheets", function() {
+describe("css", function() {
 
-  var originalFilter = HTMLInspector.styleSheets.filter
+  var css = HTMLInspector.extensions.css
+    , originalStyleSheets = css.styleSheets
     , classes = ["alpha", "bar", "bravo", "charlie", "delta", "echo", "foo"]
 
   afterEach(function() {
-    HTMLInspector.styleSheets.filter = originalFilter
+    css.styleSheets = originalStyleSheets
   })
 
-  it("adds the styleSheets object as a property on HTMLInspector", function() {
-    expect(HTMLInspector.styleSheets).toBeDefined()
-  })
-
-  it("can filter the searched style sheets via the filter option", function() {
-    HTMLInspector.styleSheets.filter = "link[href$='jasmine.css']"
-    var classes = HTMLInspector.styleSheets.getClassSelectors()
+  it("can filter the searched style sheets via the styleSheets selector", function() {
+    css.styleSheets = "link[href$='jasmine.css']"
+    var classes = css.getClassSelectors()
     // limiting the style sheets to only jasmine.css means
     // .alpha, .bravo, and .charlie won't be there
     expect(classes.indexOf("alpha")).toEqual(-1)
@@ -22,20 +19,22 @@ describe("stylesheets", function() {
   })
 
   it("can get all the class selectors in the style sheets", function() {
-    HTMLInspector.styleSheets.filter = "link[href$='-spec.css']"
-    expect(HTMLInspector.styleSheets.getClassSelectors()).toEqual(classes)
+    css.styleSheets = "link[href$='-spec.css']"
+    expect(css.getClassSelectors()).toEqual(classes)
   })
 
   it("can include both <link> and <style> elements", function() {
     var extraClasses = classes.concat(["style", "fizz", "buzz"]).sort()
+    // first remove any style tags browser extensions might be putting in
+    $("style").remove()
     $("head").append(""
       + "<style id='style'>"
       + ".style .foo, .style .bar { visiblility: visible }"
       + ".style .fizz, .style .buzz { visiblility: visible }"
       + "</style>"
     )
-    HTMLInspector.styleSheets.filter = "link[href$='-spec.css'], style"
-    expect(HTMLInspector.styleSheets.getClassSelectors()).toEqual(extraClasses)
+    css.styleSheets = "link[href$='-spec.css'], style"
+    expect(css.getClassSelectors()).toEqual(extraClasses)
     $("#style").remove()
   })
 

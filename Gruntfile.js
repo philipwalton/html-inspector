@@ -16,24 +16,29 @@ module.exports = function(grunt) {
     concat: {
       dist: {
         options: {
+          separator: "\n\n",
           banner: "<%= banner %>",
           stripBanners: true
         },
         src: [
           "src/intro.js",
           "src/utils.js",
+          "src/listener.js",
+          "src/reporter.js",
           "src/inspector.js",
-          "src/stylesheets.js",
-          "src/outro.js",
+          "src/extensions/**/*.js",
           "src/rules/**/*.js",
-          "src/reports/**/*.js"
+          "src/outro.js",
         ],
         dest: "dist/<%= pkg.name %>.js"
       },
       spec: {
         src: [
           "spec/src/intro.js",
-          "spec/src/stylesheets-spec.js",
+          "spec/src/inspector-spec.js",
+          "spec/src/extensions-intro.js",
+          "spec/src/extensions/*.js",
+          "spec/src/extensions-outro.js",
           "spec/src/rules-intro.js",
           "spec/src/rules/*.js",
           "spec/src/rules-outro.js",

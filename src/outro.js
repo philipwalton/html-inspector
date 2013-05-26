@@ -1,4 +1,4 @@
   // expose HTMLInspector globally
-  window.HTMLInspector = $.extend(HTMLInspector, styleSheets)
+  window.HTMLInspector = HTMLInspector
 
 }(this, jQuery, document))

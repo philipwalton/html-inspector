@@ -4,10 +4,9 @@
  * Copyright (c) 2013 Philip Walton <http://philipwalton.com>
  * Released under the MIT license
  *
- * Date: 2013-05-25
+ * Date: 2013-05-26
  */
 ;(function(root, $, document) {
-
 
 function toArray(arrayLike) {
   return [].slice.call(arrayLike)
@@ -24,81 +23,108 @@ function unique(array) {
   })
   return uniq
 }
+
+function Listener() {
+  this._events = {}
+}
+
+Listener.prototype.on = function(event, fn) {
+  this._events[event] || (this._events[event] = $.Callbacks())
+  this._events[event].add(fn)
+}
+
+Listener.prototype.off = function(event, fn) {
+  this._events[event] && this._events[event].remove(fn)
+}
+
+Listener.prototype.trigger = function(event, context, args) {
+  this._events[event] && this._events[event].fireWith(context, args)
+}
+
+function Reporter() {
+  this._errors = []
+}
+
+Reporter.prototype.addError = function(rule, message, context) {
+  this._errors.push({
+    rule: rule,
+    message: message,
+    context: context
+  })
+}
+
+Reporter.prototype.getErrors = function() {
+  return this._errors
+}
+
 var HTMLInspector = (function() {
 
-  var rules = {}
-    , events = {}
-    , reports = []
+  var listener
+    , reporter
 
   /**
    * Set (or reset) all data back to its original value
    * and initialize the specified rules
    */
-  function init(useRules) {
-    useRules = (useRules == "all") ? Object.keys(rules) : useRules
+  function setup(useRules) {
+    listener = new Listener()
+    reporter = new Reporter()
+
+    useRules = (useRules == "all")
+      ? Object.keys(inspector.rules)
+      : useRules
     useRules.forEach(function(rule) {
-      rules[rule] && rules[rule].init.call(HTMLInspector)
+      if (inspector.rules[rule]) {
+        inspector.rules[rule].call(inspector, listener, reporter)
+      }
     })
   }
 
   /**
-   * Destroy all variables to allow for additional inspections
+   * Return the inspector to its original state so it can run again
    */
   function teardown() {
-    events = {}
-    reports = []
+    listener = null
+    reporter = null
   }
 
   function traverseDOM(root) {
-    HTMLInspector.trigger("beforeInspect", HTMLInspector)
+    listener.trigger("beforeInspect", inspector.config.domRoot)
     $(root).find("*").each(function() {
       var el = this
-      HTMLInspector.trigger("element", HTMLInspector, [el])
+      listener.trigger("element", el, [el.nodeName.toLowerCase(), el])
       if (el.id) {
-        HTMLInspector.trigger("id", HTMLInspector, [id, name])
+        listener.trigger("id", el, [el.id, el])
       }
       toArray(el.classList).forEach(function(name) {
-        HTMLInspector.trigger("class", HTMLInspector, [name, el])
+        listener.trigger("class", el, [name, el])
       })
     })
-    HTMLInspector.trigger("afterInspect", HTMLInspector)
+    listener.trigger("afterInspect", inspector.config.domRoot)
   }
 
-  return {
+  var inspector = {
 
     config: {
       rules: "all",
       domRoot: document,
-      complete: function(reports) {
-        reports.forEach(function(report) {
-          console.warn(report.message, report.context)
+      complete: function(errors) {
+        errors.forEach(function(error) {
+          console.warn(error.message, error.context)
         })
       }
     },
 
-    on: function(event, fn) {
-      events[event] || (events[event] = $.Callbacks())
-      events[event].add(fn)
+    rules: {},
+
+    extensions: {},
+
+    addRule: function(name, fn) {
+      inspector.rules[name] = fn
     },
 
-    off: function(event, fn) {
-      events[event] && events[event].remove(fn)
-    },
-
-    trigger: function(event, context, args) {
-      events[event] && events[event].fireWith(context, args )
-    },
-
-    addRule: function(rule) {
-      rules[rule.id] = rule
-    },
-
-    report: function(rule, message, context) {
-      reports.push({
-        rule: rule,
-        message: message,
-        context: context
-      })
+    addExtension: function(name, obj) {
+      inspector.extensions[name] = obj
     },
 
     inspect: function(config) {
@@ -106,19 +132,22 @@ var HTMLInspector = (function() {
       if (!$.isPlainObject(config)) config = { domRoot: config }
 
       // merge config with the defaults
-      config = $.extend({}, HTMLInspector.config, config)
+      config = $.extend({}, inspector.config, config)
 
-      init(config.rules)
+      setup(config.rules)
       traverseDOM(config.domRoot)
-      config.complete(reports)
+      config.complete(reporter.getErrors())
       teardown()
     }
 
   }
 
+  // mixin the observable module
+  return inspector
+
 }())
 
-var styleSheets = (function(config) {
+HTMLInspector.addExtension("css", (function(config) {
 
   var reClassSelector = /\.[a-z0-9_\-]+/ig
 
@@ -150,60 +179,60 @@ var styleSheets = (function(config) {
 
   function getStyleSheets() {
     return toArray(document.styleSheets).filter(function(sheet) {
-      return $(sheet.ownerNode).is(styleSheets.filter)
+      return $(sheet.ownerNode).is(css.styleSheets)
     })
   }
 
-  var styleSheets = {
+  var css = {
     getClassSelectors: function() {
       return unique(getClassesFromStyleSheets(getStyleSheets()))
     },
-    getSelectors: function() {
-      return []
-    },
-    filter: 'link[rel="stylesheet"], style'
+    // getSelectors: function() {
+    //   return []
+    // },
+    styleSheets: 'link[rel="stylesheet"], style'
   }
 
-  return { styleSheets: styleSheets }
+  return css
 
-}())
+}()))
+
+HTMLInspector.addRule("nonsemantic-elements", function(listener, reporter) {
+
+  listener.on('element', function(name) {
+    var isUnsemantic = name == "div" || name == "span"
+      , isAttributed = this.attributes.length === 0
+    if (isUnsemantic && isAttributed) {
+      reporter.addError(
+        "nonsemantic-elements",
+        "Do not use <div> or <span> elements without any attributes",
+        this
+      )
+    }
+  })
+
+})
+
+HTMLInspector.addRule("unused-classes", function(listener, reporter) {
+
+  var whitelist = /^js\-|^supports\-|^language\-|^lang\-/
+    , classes = this.extensions.css.getClassSelectors()
+
+  listener.on('class', function(name) {
+    if (!whitelist.test(name) && classes.indexOf(name) == -1) {
+      reporter.addError(
+        "unused-classes",
+        "The class '"
+        + name
+        + "' is used in the HTML but not found in any stylesheet",
+        this
+      )
+    }
+  })
+
+})
+
   // expose HTMLInspector globally
-  window.HTMLInspector = $.extend(HTMLInspector, styleSheets)
+  window.HTMLInspector = HTMLInspector
 
 }(this, jQuery, document))
-
-HTMLInspector.addRule({
-  id: "nonsemantic-elements",
-  init: function() {
-    this.on('element', function(el) {
-      var isUnsemantic = el.nodeName == "DIV" || el.nodeName == "SPAN"
-        , isAttributed = el.attributes.length === 0
-      if (isUnsemantic && isAttributed) {
-        this.report(
-          "nonsemantic-elements",
-          "Do not use <div> or <span> elements without any attributes",
-          el
-        )
-      }
-    });
-  }
-});
-HTMLInspector.addRule({
-  id: "unused-classes",
-  init: function() {
-    var whitelist = /^js\-|^supports\-|^language\-|^lang\-/
-      , classes = this.styleSheets.getClassSelectors()
-
-    this.on('class', function(cls, el) {
-      if (!whitelist.test(cls) && classes.indexOf(cls) == -1) {
-        this.report(
-          "unused-classes",
-          "The class '"
-          + cls
-          + "' is used in the HTML but not found in any stylesheet",
-          el
-        )
-      }
-    });
-  }
-});

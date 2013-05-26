@@ -11,3 +11,4 @@ Coming soon...
 * Plain old DIV or SPAN elements, without classes attached, should not be used in the HTML.
 * Inline elements should not contain block children
 * Section element should always contain a heading
+* Don't use inline event handlers like `onclick`

@@ -1,16 +1,15 @@
-HTMLInspector.addRule({
-  id: "nonsemantic-elements",
-  init: function() {
-    this.on('element', function(el) {
-      var isUnsemantic = el.nodeName == "DIV" || el.nodeName == "SPAN"
-        , isAttributed = el.attributes.length === 0
-      if (isUnsemantic && isAttributed) {
-        this.report(
-          "nonsemantic-elements",
-          "Do not use <div> or <span> elements without any attributes",
-          el
-        )
-      }
-    });
-  }
-});
+HTMLInspector.addRule("nonsemantic-elements", function(listener, reporter) {
+
+  listener.on('element', function(name) {
+    var isUnsemantic = name == "div" || name == "span"
+      , isAttributed = this.attributes.length === 0
+    if (isUnsemantic && isAttributed) {
+      reporter.addError(
+        "nonsemantic-elements",
+        "Do not use <div> or <span> elements without any attributes",
+        this
+      )
+    }
+  })
+
+})
