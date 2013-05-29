@@ -1,5 +1,0 @@
-describe("HTML Inspector", function() {
-
-
-
-

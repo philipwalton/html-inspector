@@ -34,15 +34,15 @@ module.exports = function(grunt) {
       },
       spec: {
         src: [
-          "spec/src/intro.js",
           "spec/src/inspector-spec.js",
+          "spec/src/listener-spec.js",
+          "spec/src/reporter-spec.js",
           "spec/src/extensions-intro.js",
           "spec/src/extensions/*.js",
           "spec/src/extensions-outro.js",
           "spec/src/rules-intro.js",
           "spec/src/rules/*.js",
           "spec/src/rules-outro.js",
-          "spec/src/outro.js"
         ],
         dest: "spec/html-inspector-spec.js"
       }

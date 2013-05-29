@@ -1,16 +1,10 @@
 var HTMLInspector = (function() {
 
-  var listener
-    , reporter
-
   /**
    * Set (or reset) all data back to its original value
    * and initialize the specified rules
    */
-  function setup(useRules) {
-    listener = new Listener()
-    reporter = new Reporter()
-
+  function setup(useRules, listener, reporter) {
     useRules = (useRules == "all")
       ? Object.keys(inspector.rules)
       : useRules
@@ -21,17 +15,11 @@ var HTMLInspector = (function() {
     })
   }
 
-  /**
-   * Return the inspector to its original state so it can run again
-   */
-  function teardown() {
-    listener = null
-    reporter = null
-  }
-
-  function traverseDOM(root) {
+  function traverseDOM(root, listener) {
+    var $root = $(root)
+      , $dom = $root.add($root.find("*"))
     listener.trigger("beforeInspect", inspector.config.domRoot)
-    $(root).find("*").each(function() {
+    $dom.each(function() {
       var el = this
       listener.trigger("element", el, [el.nodeName.toLowerCase(), el])
       if (el.id) {
@@ -44,11 +32,29 @@ var HTMLInspector = (function() {
     listener.trigger("afterInspect", inspector.config.domRoot)
   }
 
+  function processConfig(config) {
+    // allow config to be individual properties of the defaults object
+    if (config) {
+      if (typeof config == "string"
+        || config.nodeType == 1
+        || config instanceof $)
+      {
+        config = { domRoot: config }
+      } else if (Array.isArray(config)) {
+        config = { rules: config }
+      } else if (typeof config == "function") {
+        config = { complete: config }
+      }
+    }
+    // merge config with the defaults
+    return $.extend({}, inspector.config, config)
+  }
+
   var inspector = {
 
     config: {
       rules: "all",
-      domRoot: document,
+      domRoot: "html",
       complete: function(errors) {
         errors.forEach(function(error) {
           console.warn(error.message, error.context)
@@ -69,16 +75,12 @@ var HTMLInspector = (function() {
     },
 
     inspect: function(config) {
-      // config can be options or a DOM/$ element
-      if (!$.isPlainObject(config)) config = { domRoot: config }
-
-      // merge config with the defaults
-      config = $.extend({}, inspector.config, config)
-
-      setup(config.rules)
-      traverseDOM(config.domRoot)
+      var listener = new Listener()
+        , reporter = new Reporter()
+      config = processConfig(config)
+      setup(config.rules, listener, reporter)
+      traverseDOM(config.domRoot, listener)
       config.complete(reporter.getErrors())
-      teardown()
     }
 
   }
