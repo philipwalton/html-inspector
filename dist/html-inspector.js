@@ -4,12 +4,12 @@
  * Copyright (c) 2013 Philip Walton <http://philipwalton.com>
  * Released under the MIT license
  *
- * Date: 2013-05-29
+ * Date: 2013-05-30
  */
 ;(function(root, $, document) {
 
 function toArray(arrayLike) {
-  return [].slice.call(arrayLike)
+  return arrayLike ? [].slice.call(arrayLike) : []
 }
 
 /**
@@ -86,6 +86,9 @@ var HTMLInspector = (function() {
       }
       toArray(el.classList).forEach(function(name) {
         listener.trigger("class", el, [name, el])
+      })
+      toArray(el.attributes).forEach(function(attr) {
+        listener.trigger("attribute", el, [attr.name, attr.value])
       })
     })
     listener.trigger("afterInspect", inspector.config.domRoot)
@@ -216,7 +219,8 @@ HTMLInspector.addExtension("css", (function() {
     // getSelectors: function() {
     //   return []
     // },
-    styleSheets: 'link[rel="stylesheet"], style'
+    styleSheets: 'link[rel="stylesheet"], style',
+    whitelist: /^js\-|^supports\-|^language\-|^lang\-/
   }
 
   return css
@@ -264,6 +268,61 @@ HTMLInspector.addRule("bem-misused-modifiers", function(listener, reporter) {
 
 })
 
+HTMLInspector.addRule("duplicate-ids", function(listener, reporter) {
+
+  var elements = []
+
+  listener.on("id", function(name) {
+    elements.push({id: name, context: this})
+  })
+
+  listener.on("afterInspect", function() {
+
+    var duplicates = []
+      , element
+      , offenders
+
+    while (element = elements.shift()) {
+      // find other elements with the same ID
+      duplicates = elements.filter(function(el) {
+        return element.id === el.id
+      })
+      // remove elements with the same ID from the elements array
+      elements = elements.filter(function(el) {
+        return element.id !== el.id
+      })
+      // report duplicates
+      if (duplicates.length) {
+        offenders = [element.context].concat(duplicates.map(function(dup) {
+          return dup.context
+        }))
+        reporter.addError(
+          "duplicate-ids",
+          "The id '" + element.id + "' appears more than once in the HTML.",
+          offenders
+        )
+      }
+    }
+
+
+  })
+
+})
+
+HTMLInspector.addRule("inline-event-handlers", function(listener, reporter) {
+
+  listener.on('attribute', function(name, value) {
+    if (name.indexOf("on") === 0) {
+      reporter.addError(
+        "inline-event-handlers",
+        "The '" + name + "' event handler was found inline in the HTML.",
+        this
+      )
+    }
+  })
+
+})
+
 HTMLInspector.addRule("nonsemantic-elements", function(listener, reporter) {
 
   listener.on('element', function(name) {
@@ -282,8 +341,9 @@ HTMLInspector.addRule("nonsemantic-elements", function(listener, reporter) {
 
 HTMLInspector.addRule("unused-classes", function(listener, reporter) {
 
-  var whitelist = /^js\-|^supports\-|^language\-|^lang\-/
-    , classes = this.extensions.css.getClassSelectors()
+  var css = this.extensions.css
+    , whitelist = css.whitelist
+    , classes = css.getClassSelectors()
 
   listener.on('class', function(name) {
     if (!whitelist.test(name) && classes.indexOf(name) == -1) {

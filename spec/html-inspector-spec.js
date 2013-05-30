@@ -113,11 +113,11 @@ describe("HTMLInspector", function() {
           + '<section class="section">'
           + '  <h1 id="heading" class="multiple classes">Heading</h1>'
           + '  <p class="first">One</p>'
-          + '  <p>More</p>'
-          + '  <blockquote>'
-          + '    <p>Nested</p>'
+          + '  <p><a href="#">More</a></p>'
+          + '  <blockquote data-foo="bar" onclick="somefunc()">'
+          + '    <p style="display: inline;">Nested</p>'
           + '    <p class="stuff">Stuff'
-          + '      <em id="emphasis">lolz</em>'
+          + '      <em id="emphasis" data-bar="foo">lolz</em>'
           + '    </p>'
           + '  </blockquote>'
           + '</section>'
@@ -161,15 +161,16 @@ describe("HTMLInspector", function() {
         })
       })
       HTMLInspector.inspect($html)
-      expect(events.length).toBe(8)
+      expect(events.length).toBe(9)
       expect(events[0]).toBe("section")
       expect(events[1]).toBe("h1")
       expect(events[2]).toBe("p")
       expect(events[3]).toBe("p")
-      expect(events[4]).toBe("blockquote")
-      expect(events[5]).toBe("p")
+      expect(events[4]).toBe("a")
+      expect(events[5]).toBe("blockquote")
       expect(events[6]).toBe("p")
-      expect(events[7]).toBe("em")
+      expect(events[7]).toBe("p")
+      expect(events[8]).toBe("em")
     })
 
     it("traverses the DOM emitting events for each id attribute", function() {
@@ -185,7 +186,6 @@ describe("HTMLInspector", function() {
       expect(events[1]).toBe("emphasis")
     })
 
-
     it("traverses the DOM emitting events for each class attribute", function() {
       var events = []
       HTMLInspector.addRule("traverse-test", function(listener, reporter) {
@@ -200,6 +200,28 @@ describe("HTMLInspector", function() {
       expect(events[2]).toBe("classes")
       expect(events[3]).toBe("first")
       expect(events[4]).toBe("stuff")
+    })
+
+    it("traverses the DOM emitting events for each attribute", function() {
+      var events = []
+      HTMLInspector.addRule("traverse-test", function(listener, reporter) {
+        listener.on("attribute", function(name, value) {
+          events.push({name:name, value:value})
+        })
+      })
+      HTMLInspector.inspect($html)
+      expect(events.length).toBe(11)
+      expect(events[0]).toEqual({name:"class", value:"section"})
+      expect(events[1]).toEqual({name:"id", value:"heading"})
+      expect(events[2]).toEqual({name:"class", value:"multiple classes"})
+      expect(events[3]).toEqual({name:"class", value:"first"})
+      expect(events[4]).toEqual({name:"href", value:"#"})
+      expect(events[5]).toEqual({name:"data-foo", value:"bar"})
+      expect(events[6]).toEqual({name:"onclick", value:"somefunc()"})
+      expect(events[7]).toEqual({name:"style", value:"display: inline;"})
+      expect(events[8]).toEqual({name:"class", value:"stuff"})
+      expect(events[9]).toEqual({name:"id", value:"emphasis"})
+      expect(events[10]).toEqual({name:"data-bar", value:"foo"})
     })
 
     it("triggers `afterInspect` after the DOM traversal", function() {
@@ -491,6 +513,110 @@ describe("bem-misused-modifiers", function() {
 
 })
 
+describe("duplicate-ids", function() {
+
+  var log
+
+  function complete(reports) {
+    log = []
+    reports.forEach(function(report) {
+      log.push(report)
+    })
+  }
+
+  it("warns when the same ID attribute is used more than once", function() {
+    var $html = $(''
+          + '<div id="foobar">'
+          + '  <p id="foobar">Foo</p>'
+          + '  <p id="barfoo">Bar <em id="barfoo">Em</em></p>'
+          + '</div>'
+        )
+
+    HTMLInspector.inspect({
+      rules: ["duplicate-ids"],
+      domRoot: $html,
+      complete: complete
+    })
+
+    expect(log.length).toBe(2)
+    expect(log[0].message).toBe("The id 'foobar' appears more than once in the HTML.")
+    expect(log[1].message).toBe("The id 'barfoo' appears more than once in the HTML.")
+    expect(log[0].context).toEqual([$html[0], $html.find("p#foobar")[0]])
+    expect(log[1].context).toEqual([$html.find("p#barfoo")[0], $html.find("em#barfoo")[0]])
+
+  })
+
+  it("doesn't warn when all ids are unique", function() {
+    var $html = $(''
+          + '<div id="foobar1">'
+          + '  <p id="foobar2">Foo</p>'
+          + '  <p id="barfoo1">Bar <em id="barfoo2">Em</em></p>'
+          + '</div>'
+        )
+
+    HTMLInspector.inspect({
+      rules: ["duplicate-ids"],
+      domRoot: $html,
+      complete: complete
+    })
+
+    expect(log.length).toBe(0)
+  })
+
+})
+
+describe("inline-event-handlers", function() {
+
+  var log
+
+  function complete(reports) {
+    log = []
+    reports.forEach(function(report) {
+      log.push(report)
+    })
+  }
+
+  it("warns when inline event handlers are found on elements", function() {
+    var $html = $(''
+          + '<div onresize="alert(\'bad!\')">'
+          + '  <p>Foo</p>'
+          + '  <p>Bar <a href="#" onclick="alert(\'bad!\')">click me</em></p>'
+          + '</div>'
+        )
+
+    HTMLInspector.inspect({
+      rules: ["inline-event-handlers"],
+      domRoot: $html,
+      complete: complete
+    })
+
+    expect(log.length).toBe(2)
+    expect(log[0].message).toBe("The 'onresize' event handler was found inline in the HTML.")
+    expect(log[1].message).toBe("The 'onclick' event handler was found inline in the HTML.")
+    expect(log[0].context).toEqual($html[0])
+    expect(log[1].context).toEqual($html.find("a")[0])
+
+  })
+
+  it("doesn't warn there are no inline event handlers", function() {
+    var $html = $(''
+          + '<div>'
+          + '  <p>Foo</p>'
+          + '  <p>Bar <a href="#">click me</em></p>'
+          + '</div>'
+        )
+
+    HTMLInspector.inspect({
+      rules: ["inline-event-handlers"],
+      domRoot: $html,
+      complete: complete
+    })
+
+    expect(log.length).toBe(0)
+  })
+
+})
+
 describe("nonsemantic-elements", function() {
 
   var log
@@ -615,6 +741,28 @@ describe("unused-classes", function() {
     })
 
     expect(log.length).toBe(0)
+
+  })
+
+  it("allows for customizing the whitelist", function() {
+
+    var $html = $(''
+          + '<div class="foo supports-flexbox">'
+          + '  <p class="js-alert bar">This is just a test</p>'
+          + '</div>'
+        )
+
+    HTMLInspector.extensions.css.whitelist = /foo|bar/
+
+    HTMLInspector.inspect({
+      rules: ["unused-classes"],
+      domRoot: $html,
+      complete: complete
+    })
+
+    expect(log.length).toBe(2)
+    expect(log[0].message).toBe("The class 'supports-flexbox' is used in the HTML but not found in any stylesheet.")
+    expect(log[1].message).toBe("The class 'js-alert' is used in the HTML but not found in any stylesheet.")
 
   })
 

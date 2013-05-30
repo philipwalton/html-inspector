@@ -2,7 +2,7 @@
  * Convert an array like object to an array
  */
 function toArray(arrayLike) {
-  return [].slice.call(arrayLike)
+  return arrayLike ? [].slice.call(arrayLike) : []
 }
 
 /**

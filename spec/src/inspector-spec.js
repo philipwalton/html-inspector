@@ -113,11 +113,11 @@ describe("HTMLInspector", function() {
           + '<section class="section">'
           + '  <h1 id="heading" class="multiple classes">Heading</h1>'
           + '  <p class="first">One</p>'
-          + '  <p>More</p>'
-          + '  <blockquote>'
-          + '    <p>Nested</p>'
+          + '  <p><a href="#">More</a></p>'
+          + '  <blockquote data-foo="bar" onclick="somefunc()">'
+          + '    <p style="display: inline;">Nested</p>'
           + '    <p class="stuff">Stuff'
-          + '      <em id="emphasis">lolz</em>'
+          + '      <em id="emphasis" data-bar="foo">lolz</em>'
           + '    </p>'
           + '  </blockquote>'
           + '</section>'
@@ -161,15 +161,16 @@ describe("HTMLInspector", function() {
         })
       })
       HTMLInspector.inspect($html)
-      expect(events.length).toBe(8)
+      expect(events.length).toBe(9)
       expect(events[0]).toBe("section")
       expect(events[1]).toBe("h1")
       expect(events[2]).toBe("p")
       expect(events[3]).toBe("p")
-      expect(events[4]).toBe("blockquote")
-      expect(events[5]).toBe("p")
+      expect(events[4]).toBe("a")
+      expect(events[5]).toBe("blockquote")
       expect(events[6]).toBe("p")
-      expect(events[7]).toBe("em")
+      expect(events[7]).toBe("p")
+      expect(events[8]).toBe("em")
     })
 
     it("traverses the DOM emitting events for each id attribute", function() {
@@ -185,7 +186,6 @@ describe("HTMLInspector", function() {
       expect(events[1]).toBe("emphasis")
     })
 
-
     it("traverses the DOM emitting events for each class attribute", function() {
       var events = []
       HTMLInspector.addRule("traverse-test", function(listener, reporter) {
@@ -200,6 +200,28 @@ describe("HTMLInspector", function() {
       expect(events[2]).toBe("classes")
       expect(events[3]).toBe("first")
       expect(events[4]).toBe("stuff")
+    })
+
+    it("traverses the DOM emitting events for each attribute", function() {
+      var events = []
+      HTMLInspector.addRule("traverse-test", function(listener, reporter) {
+        listener.on("attribute", function(name, value) {
+          events.push({name:name, value:value})
+        })
+      })
+      HTMLInspector.inspect($html)
+      expect(events.length).toBe(11)
+      expect(events[0]).toEqual({name:"class", value:"section"})
+      expect(events[1]).toEqual({name:"id", value:"heading"})
+      expect(events[2]).toEqual({name:"class", value:"multiple classes"})
+      expect(events[3]).toEqual({name:"class", value:"first"})
+      expect(events[4]).toEqual({name:"href", value:"#"})
+      expect(events[5]).toEqual({name:"data-foo", value:"bar"})
+      expect(events[6]).toEqual({name:"onclick", value:"somefunc()"})
+      expect(events[7]).toEqual({name:"style", value:"display: inline;"})
+      expect(events[8]).toEqual({name:"class", value:"stuff"})
+      expect(events[9]).toEqual({name:"id", value:"emphasis"})
+      expect(events[10]).toEqual({name:"data-bar", value:"foo"})
     })
 
     it("triggers `afterInspect` after the DOM traversal", function() {

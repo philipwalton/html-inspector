@@ -41,7 +41,8 @@ HTMLInspector.addExtension("css", (function() {
     // getSelectors: function() {
     //   return []
     // },
-    styleSheets: 'link[rel="stylesheet"], style'
+    styleSheets: 'link[rel="stylesheet"], style',
+    whitelist: /^js\-|^supports\-|^language\-|^lang\-/
   }
 
   return css

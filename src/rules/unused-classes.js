@@ -1,7 +1,8 @@
 HTMLInspector.addRule("unused-classes", function(listener, reporter) {
 
-  var whitelist = /^js\-|^supports\-|^language\-|^lang\-/
-    , classes = this.extensions.css.getClassSelectors()
+  var css = this.extensions.css
+    , whitelist = css.whitelist
+    , classes = css.getClassSelectors()
 
   listener.on('class', function(name) {
     if (!whitelist.test(name) && classes.indexOf(name) == -1) {

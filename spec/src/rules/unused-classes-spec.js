@@ -48,4 +48,26 @@ describe("unused-classes", function() {
 
   })
 
+  it("allows for customizing the whitelist", function() {
+
+    var $html = $(''
+          + '<div class="foo supports-flexbox">'
+          + '  <p class="js-alert bar">This is just a test</p>'
+          + '</div>'
+        )
+
+    HTMLInspector.extensions.css.whitelist = /foo|bar/
+
+    HTMLInspector.inspect({
+      rules: ["unused-classes"],
+      domRoot: $html,
+      complete: complete
+    })
+
+    expect(log.length).toBe(2)
+    expect(log[0].message).toBe("The class 'supports-flexbox' is used in the HTML but not found in any stylesheet.")
+    expect(log[1].message).toBe("The class 'js-alert' is used in the HTML but not found in any stylesheet.")
+
+  })
+
 })
