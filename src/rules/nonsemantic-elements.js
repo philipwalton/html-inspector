@@ -6,7 +6,7 @@ HTMLInspector.addRule("nonsemantic-elements", function(listener, reporter) {
     if (isUnsemantic && isAttributed) {
       reporter.addError(
         "nonsemantic-elements",
-        "Do not use <div> or <span> elements without any attributes",
+        "Do not use <div> or <span> elements without any attributes.",
         this
       )
     }

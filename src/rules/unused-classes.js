@@ -9,7 +9,7 @@ HTMLInspector.addRule("unused-classes", function(listener, reporter) {
         "unused-classes",
         "The class '"
         + name
-        + "' is used in the HTML but not found in any stylesheet",
+        + "' is used in the HTML but not found in any stylesheet.",
         this
       )
     }

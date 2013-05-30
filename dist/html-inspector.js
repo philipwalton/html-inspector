@@ -4,7 +4,7 @@
  * Copyright (c) 2013 Philip Walton <http://philipwalton.com>
  * Released under the MIT license
  *
- * Date: 2013-05-28
+ * Date: 2013-05-29
  */
 ;(function(root, $, document) {
 
@@ -149,7 +149,31 @@ var HTMLInspector = (function() {
 
 }())
 
-HTMLInspector.addExtension("css", (function(config) {
+HTMLInspector.addExtension("bem", (function() {
+
+  var reModifier = /^[A-Z][a-zA-Z]*\-\-[a-zA-Z]+$/
+    , reElement = /^[A-Z][a-zA-Z]*\-[a-zA-Z]+$/
+    , reElementOrModifier = /^([A-Z][a-zA-Z]*)\-\-?[a-zA-Z]+$/
+
+  return {
+
+    getBlockName: function(elementOrModifier) {
+      return reElementOrModifier.test(elementOrModifier) && RegExp.$1
+    },
+
+    isBlockModifier: function(cls) {
+      return reModifier.test(cls)
+    },
+
+    isBlockElement: function(cls) {
+      return reElement.test(cls)
+    }
+
+  }
+
+}()))
+
+HTMLInspector.addExtension("css", (function() {
 
   var reClassSelector = /\.[a-z0-9_\-]+/ig
 
@@ -199,6 +223,47 @@ HTMLInspector.addExtension("css", (function(config) {
 
 }()))
 
+HTMLInspector.addRule("bem-misused-elements", function(listener, reporter) {
+
+  var bem = this.extensions.bem
+
+  listener.on('class', function(name) {
+    if (bem.isBlockElement(name)) {
+      // check the ancestors for the block class
+      if (!$(this).parents().is("." + bem.getBlockName(name))) {
+        reporter.addError(
+          "bem-misused-modifier",
+          "The BEM element '" + name
+          + "' must be a descendent of '" + bem.getBlockName(name)
+          + "'.",
+          this
+        )
+      }
+    }
+  })
+
+})
+
+HTMLInspector.addRule("bem-misused-modifiers", function(listener, reporter) {
+
+  var bem = this.extensions.bem
+
+  listener.on('class', function(name) {
+    if (bem.isBlockModifier(name)) {
+      if (!$(this).is("." + bem.getBlockName(name))) {
+        reporter.addError(
+          "bem-misused-modifiers",
+          "The BEM modifier class '" + name
+          + "' was found without the block base class '" + bem.getBlockName(name)
+          +  "'.",
+          this
+        )
+      }
+    }
+  })
+
+})
+
 HTMLInspector.addRule("nonsemantic-elements", function(listener, reporter) {
 
   listener.on('element', function(name) {
@@ -207,7 +272,7 @@ HTMLInspector.addRule("nonsemantic-elements", function(listener, reporter) {
     if (isUnsemantic && isAttributed) {
       reporter.addError(
         "nonsemantic-elements",
-        "Do not use <div> or <span> elements without any attributes",
+        "Do not use <div> or <span> elements without any attributes.",
         this
       )
     }
@@ -226,7 +291,7 @@ HTMLInspector.addRule("unused-classes", function(listener, reporter) {
         "unused-classes",
         "The class '"
         + name
-        + "' is used in the HTML but not found in any stylesheet",
+        + "' is used in the HTML but not found in any stylesheet.",
         this
       )
     }

@@ -310,6 +310,39 @@ describe("Reporter", function() {
 
 })
 describe("Extensions", function() {
+describe("bem", function() {
+
+  var bem = HTMLInspector.extensions.bem
+
+  it("can take a BEM modifier or element class and returns its block's class name", function() {
+    expect(bem.getBlockName("Block--modifier")).toBe("Block")
+    expect(bem.getBlockName("BlockName--someModifier")).toBe("BlockName")
+    expect(bem.getBlockName("Block-element")).toBe("Block")
+    expect(bem.getBlockName("BlockName-subElement")).toBe("BlockName")
+    expect(bem.getBlockName("BlockName")).toBe(false)
+    expect(bem.getBlockName("Foo---bar")).toBe(false)
+    expect(bem.getBlockName("Foo--bar--baz")).toBe(false)
+  })
+
+  it("can determine if a class is a block modifier class", function() {
+    expect(bem.isBlockModifier("Block--modifier")).toBe(true)
+    expect(bem.isBlockModifier("BlockName--modifierName")).toBe(true)
+    expect(bem.isBlockModifier("Block-element")).toBe(false)
+    expect(bem.isBlockModifier("BlockName-elementName")).toBe(false)
+    expect(bem.isBlockModifier("Block--modifier-stuffz")).toBe(false)
+    expect(bem.isBlockModifier("Block--modifier--stuffz")).toBe(false)
+  })
+
+  it("can determine if a class is a block element class", function() {
+    expect(bem.isBlockElement("Block-element")).toBe(true)
+    expect(bem.isBlockElement("BlockName-elementName")).toBe(true)
+    expect(bem.isBlockElement("Block--modifier")).toBe(false)
+    expect(bem.isBlockElement("BlockName--modifierName")).toBe(false)
+    expect(bem.isBlockElement("Block--modifier-stuffz")).toBe(false)
+    expect(bem.isBlockElement("Block--modifier--stuffz")).toBe(false)
+  })
+
+})
 describe("css", function() {
 
   var css = HTMLInspector.extensions.css
@@ -351,31 +384,116 @@ describe("css", function() {
   })
 
 })
-
 })
 
 describe("Rules", function() {
+describe("bem-misused-elements", function() {
 
-  var originalConfig = HTMLInspector.config
+  var log
 
-  function setupSandbox(html) {
-    return  $("#html-inspector-sandbox").html(html)
+  function complete(reports) {
+    log = []
+    reports.forEach(function(report) {
+      log.push(report)
+    })
   }
 
-  beforeEach(function() {
-    // HTMLInspector.config.styleSheets = $("link:not([href*='jasmine'])")
-    $('<div id="html-inspector-sandbox"></div>').appendTo("body")
+  it("warns when a BEM element class is used when not the descendent of a block", function() {
+    var $html = $(''
+          + '<div class="BlockOne SomeOtherBlock">'
+          + '  <p class="BlockTwo-element">Foo</p>'
+          + '  <p>Bar <em class="BlockThree-element">three</em></p>'
+          + '</div>'
+        )
+
+    HTMLInspector.inspect({
+      rules: ["bem-misused-elements"],
+      domRoot: $html,
+      complete: complete
+    })
+
+    expect(log.length).toBe(2)
+    expect(log[0].message).toBe("The BEM element 'BlockTwo-element' must be a descendent of 'BlockTwo'.")
+    expect(log[1].message).toBe("The BEM element 'BlockThree-element' must be a descendent of 'BlockThree'.")
+    expect(log[0].context).toBe($html.find(".BlockTwo-element")[0])
+    expect(log[1].context).toBe($html.find(".BlockThree-element")[0])
+
   })
 
-  afterEach(function() {
-    // HTMLInspector.config = originalConfig
-    $("#html-inspector-sandbox").remove()
+  it("doesn't warn when a BEM element class is used as the descendent of a block", function() {
+    var $html = $(''
+          + '<div class="BlockThree BlockTwo SomeOtherBlock">'
+          + '  <p class="BlockTwo-element">Foo</p>'
+          + '  <p>Bar <em class="BlockThree-element">three</em></p>'
+          + '</div>'
+        )
+
+    HTMLInspector.inspect({
+      rules: ["bem-misused-elements"],
+      domRoot: $html,
+      complete: complete
+    })
+
+    expect(log.length).toBe(0)
   })
+
+})
+
+describe("bem-misused-modifiers", function() {
+
+  var log
+
+  function complete(reports) {
+    log = []
+    reports.forEach(function(report) {
+      log.push(report)
+    })
+  }
+
+  it("warns when a BEM modifier class is used without the base block class", function() {
+    var $html = $(''
+          + '<div class="BlockOne--active">'
+          + '  <p class="BlockTwo--valid BlockThree SomeOtherBlock">Foo</p>'
+          + '  <p>Bar</p>'
+          + '</div>'
+        )
+
+    HTMLInspector.inspect({
+      rules: ["bem-misused-modifiers"],
+      domRoot: $html,
+      complete: complete
+    })
+
+    expect(log.length).toBe(2)
+    expect(log[0].message).toBe("The BEM modifier class 'BlockOne--active' was found without the block base class 'BlockOne'.")
+    expect(log[1].message).toBe("The BEM modifier class 'BlockTwo--valid' was found without the block base class 'BlockTwo'.")
+    expect(log[0].context).toBe($html[0])
+    expect(log[1].context).toBe($html.find(".BlockTwo--valid")[0])
+
+  })
+
+  it("doesn't warn when a BEM modifier is used with a base block class", function() {
+    var $html = $(''
+          + '<div class="BlockOne BlockOne--active">'
+          + '  <p class="BlockTwo BlockTwo--valid SomeOtherBlock">Foo</p>'
+          + '  <p>Bar</p>'
+          + '</div>'
+        )
+
+    HTMLInspector.inspect({
+      rules: ["bem-misused-modifiers"],
+      domRoot: $html,
+      complete: complete
+    })
+
+    expect(log.length).toBe(0)
+  })
+
+})
 
 describe("nonsemantic-elements", function() {
 
   var log
-    , $sandbox
 
   function complete(reports) {
     log = []
@@ -385,59 +503,62 @@ describe("nonsemantic-elements", function() {
   }
 
   it("warns when unattributed <div> or <span> elements appear in the HTML", function() {
-    var html = ''
+    var $html = $(''
           + '<div>'
           + '  <span>Foo</span>'
           + '  <p>Foo</p>'
           + '  <div><b>Foo</b></div>'
           + '</div>'
+        )
 
     HTMLInspector.inspect({
       rules: ["nonsemantic-elements"],
-      domRoot: $sandbox = setupSandbox(html),
+      domRoot: $html,
       complete: complete
     })
 
     expect(log.length).toBe(3)
-    expect(log[0].message).toBe("Do not use <div> or <span> elements without any attributes")
-    expect(log[1].message).toBe("Do not use <div> or <span> elements without any attributes")
-    expect(log[2].message).toBe("Do not use <div> or <span> elements without any attributes")
-    expect(log[0].context).toBe($sandbox.find("div")[0])
-    expect(log[1].context).toBe($sandbox.find("span")[0])
-    expect(log[2].context).toBe($sandbox.find("div")[1])
+    expect(log[0].message).toBe("Do not use <div> or <span> elements without any attributes.")
+    expect(log[1].message).toBe("Do not use <div> or <span> elements without any attributes.")
+    expect(log[2].message).toBe("Do not use <div> or <span> elements without any attributes.")
+    expect(log[0].context).toBe($html[0])
+    expect(log[1].context).toBe($html.find("span")[0])
+    expect(log[2].context).toBe($html.find("div")[0])
 
   })
 
   it("doesn't warn when attributed <div> or <span> elements appear in the HTML", function() {
-    var html = ''
+    var $html = $(''
           + '<div data-foo="bar">'
           + '  <span class="alert">Foo</span>'
           + '  <p>Foo</p>'
           + '  <div><b>Foo</b></div>'
           + '</div>'
+        )
 
     HTMLInspector.inspect({
       rules: ["nonsemantic-elements"],
-      domRoot: $sandbox = setupSandbox(html),
+      domRoot: $html,
       complete: complete
     })
 
     expect(log.length).toBe(1)
-    expect(log[0].message).toBe("Do not use <div> or <span> elements without any attributes")
-    expect(log[0].context).toBe($sandbox.find("div").last()[0])
+    expect(log[0].message).toBe("Do not use <div> or <span> elements without any attributes.")
+    expect(log[0].context).toBe($html.find("div")[0])
 
   })
 
   it("doesn't warn when unattributed, semantic elements appear in the HTML", function() {
-    var html = ''
+    var $html = $(''
           + '<section data-foo="bar">'
           + '  <h1>Foo</h1>'
           + '  <p>Foo</p>'
           + '</section>'
+        )
 
     HTMLInspector.inspect({
       rules: ["nonsemantic-elements"],
-      domRoot: $sandbox = setupSandbox(html),
+      domRoot: $html,
       complete: complete
     })
 
@@ -459,35 +580,37 @@ describe("unused-classes", function() {
   }
 
   it("warns when non-whitelisted classes appear in the HTML but not in any stylesheet", function() {
-    var html = ''
+    var $html = $(''
           + '<div class="fizz buzz">'
           + '  <p class="foo bar baz">This is just a test</p>'
           + '</div>'
+        )
 
     HTMLInspector.inspect({
       rules: ["unused-classes"],
-      domRoot: setupSandbox(html),
+      domRoot: $html,
       complete: complete
     })
 
-    expect(log[0].message).toBe("The class 'fizz' is used in the HTML but not found in any stylesheet")
-    expect(log[1].message).toBe("The class 'buzz' is used in the HTML but not found in any stylesheet")
-    expect(log[2].message).toBe("The class 'baz' is used in the HTML but not found in any stylesheet")
-    expect(log[0].context).toBe($("div.fizz.buzz")[0])
-    expect(log[1].context).toBe($("div.fizz.buzz")[0])
-    expect(log[2].context).toBe($("p.foo.bar")[0])
+    expect(log[0].message).toBe("The class 'fizz' is used in the HTML but not found in any stylesheet.")
+    expect(log[1].message).toBe("The class 'buzz' is used in the HTML but not found in any stylesheet.")
+    expect(log[2].message).toBe("The class 'baz' is used in the HTML but not found in any stylesheet.")
+    expect(log[0].context).toBe($html[0])
+    expect(log[1].context).toBe($html[0])
+    expect(log[2].context).toBe($html.find("p")[0])
 
   })
 
   it("doesn't warn when whitelisted classes appear in the HTML", function() {
-    var html = ''
+    var $html = $(''
           + '<div class="supports-flexbox">'
           + '  <p class="js-alert">This is just a test</p>'
           + '</div>'
+        )
 
     HTMLInspector.inspect({
       rules: ["unused-classes"],
-      domRoot: setupSandbox(html),
+      domRoot: $html,
       complete: complete
     })
 
