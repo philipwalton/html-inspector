@@ -4,6 +4,7 @@ Coming soon...
 
 ## Rules:
 
+* don't use obsolete tags
 * make sure img tags have an alt attribute
 * don't use inline styles
 * style tags must appear in the head, if they appear in the body they must be scoped
