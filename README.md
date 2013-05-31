@@ -2,16 +2,9 @@
 
 Coming soon...
 
-## Rules:
+## Possbile Additional Rules
 
-
-* (required-attributes)
-  - make sure img tags have an alt attribute
-
-* don't use inline styles
-
-* style tags must appear in the head, if they appear in the body they must be scoped
-
+* Don't use inline styles
 * <script> tags should appear at the end, not throughout the document
 
 

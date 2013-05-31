@@ -657,6 +657,28 @@ HTMLInspector.addRule("required-attributes", function(listener, reporter) {
 
 })
 
+HTMLInspector.addRule("scoped-styles", function(listener, reporter) {
+
+  var elements = []
+
+  listener.on("element", function(name) {
+    var isOutsideHead
+      , isScoped
+    if (name == "style") {
+      isOutsideHead = !$(this).closest("head").length
+      isScoped = $(this).attr("scoped") != null
+      if (isOutsideHead && !isScoped) {
+        reporter.addError(
+          "scoped-styles",
+          "<style> elements outside of <head> must declare the 'scoped' attribute.",
+          this
+        )
+      }
+    }
+  })
+
+})
+
 HTMLInspector.addRule("unused-classes", function(listener, reporter) {
 
   var css = this.extensions.css
