@@ -1,17 +1,7 @@
 describe("required-attributes", function() {
 
   var log
-    , elementMap = [
-        { element: "area", attrs: ["alt"] },
-        { element: "applet", attrs: ["height", "width"] },
-        { element: "bdo", attrs: ["dir"] },
-        { element: "form", attrs: ["action"] },
-        { element: "img", attrs: ["alt", "src"] },
-        { element: "map", attrs: ["name"] },
-        { element: "optgroup", attrs: ["label"] },
-        { element: "param", attrs: ["name"] },
-        { element: "textarea", attrs: ["cols", "rows"] }
-      ]
+    , requiredAttributes = HTMLInspector.extensions.attributes.requiredAttributes
 
   function complete(reports) {
     log = []
@@ -24,7 +14,7 @@ describe("required-attributes", function() {
 
     var $html = $(document.createElement("div"))
 
-    elementMap.forEach(function(item) {
+    requiredAttributes.forEach(function(item) {
       $html.append(document.createElement(item.element))
     })
 
@@ -34,8 +24,8 @@ describe("required-attributes", function() {
       complete: complete
     })
 
-    expect(log.length).toBe(elementMap.length)
-    elementMap.forEach(function(item, i) {
+    expect(log.length).toBe(requiredAttributes.length)
+    requiredAttributes.forEach(function(item, i) {
       expect(log[i].message).toBe("<" + item.element + "> elements must include the following attributes: '" + item.attrs.join("', '") + "'.")
     })
 
@@ -45,7 +35,7 @@ describe("required-attributes", function() {
 
     var $html = $(document.createElement("div"))
 
-    elementMap.forEach(function(item) {
+    requiredAttributes.forEach(function(item) {
       var $el = $(document.createElement(item.element))
       item.attrs.forEach(function(attr) {
         $el.attr(attr, "")
