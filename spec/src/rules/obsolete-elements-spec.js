@@ -39,7 +39,7 @@ describe("obsolete-elements", function() {
 
     expect(log.length).toBe(obsoluteElements.length)
     obsoluteElements.forEach(function(el, i) {
-      expect(log[i].message).toBe("The '" + el + "' element is obsolete and should not be used.")
+      expect(log[i].message).toBe("The <" + el + "> element is obsolete and should not be used.")
       expect(log[i].context).toBe($html.find(el)[0])
     })
 

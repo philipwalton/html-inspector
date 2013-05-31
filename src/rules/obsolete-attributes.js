@@ -12,7 +12,7 @@ HTMLInspector.addRule("obsolete-attributes", function(listener, reporter) {
       ) {
         reporter.addError(
           "obsolete-attributes",
-          "The '" + name + "' attribute of the '" + nodeName + "' element is obsolete and should not be used.",
+          "The '" + name + "' attribute of the <" + nodeName + "> element is obsolete and should not be used.",
           el
         )
       }

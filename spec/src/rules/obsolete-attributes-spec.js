@@ -36,7 +36,7 @@ describe("obsolete-attributes", function() {
     obsoluteAttributes.forEach(function(item) {
       item.elements.forEach(function(element) {
         item.attrs.forEach(function(attr) {
-          expect(log[count].message).toBe("The '" + attr + "' attribute of the '" + element + "' element is obsolete and should not be used.")
+          expect(log[count].message).toBe("The '" + attr + "' attribute of the <" + element + "> element is obsolete and should not be used.")
           expect(log[count].context).toBe($html.find(element + "["+attr+"]")[0])
           count++
         })

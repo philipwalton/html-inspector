@@ -12,7 +12,7 @@ HTMLInspector.addRule("misused-attributes", function(listener, reporter) {
       ) {
         reporter.addError(
           "misused-attributes",
-          "The '" + name + "' attribute cannot be used on a '" + nodeName + "' element.",
+          "The '" + name + "' attribute cannot be used on a <" + nodeName + "> element.",
           el
         )
       }

@@ -21,7 +21,7 @@ HTMLInspector.addRule("obsolete-elements", function(listener, reporter) {
     if (obsoluteElements.indexOf(name) >= 0) {
       reporter.addError(
         "obsolete-elements",
-        "The '" + name + "' element is obsolete and should not be used.",
+        "The <" + name + "> element is obsolete and should not be used.",
         this
       )
     }
