@@ -553,7 +553,7 @@ HTMLInspector.addRule("misused-attributes", function(listener, reporter) {
       ) {
         reporter.addError(
           "misused-attributes",
-          "The '" + name + "' attribute cannot be used on a '" + nodeName + "' element.",
+          "The '" + name + "' attribute cannot be used on a <" + nodeName + "> element.",
           el
         )
       }
@@ -592,7 +592,7 @@ HTMLInspector.addRule("obsolete-attributes", function(listener, reporter) {
       ) {
         reporter.addError(
           "obsolete-attributes",
-          "The '" + name + "' attribute of the '" + nodeName + "' element is obsolete and should not be used.",
+          "The '" + name + "' attribute of the <" + nodeName + "> element is obsolete and should not be used.",
           el
         )
       }
@@ -624,7 +624,7 @@ HTMLInspector.addRule("obsolete-elements", function(listener, reporter) {
     if (obsoluteElements.indexOf(name) >= 0) {
       reporter.addError(
         "obsolete-elements",
-        "The '" + name + "' element is obsolete and should not be used.",
+        "The <" + name + "> element is obsolete and should not be used.",
         this
       )
     }

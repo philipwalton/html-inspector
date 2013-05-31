@@ -646,11 +646,11 @@ describe("misused-attributes", function() {
     })
 
     expect(log.length).toBe(5)
-    expect(log[0].message).toBe("The 'for' attribute cannot be used on a 'div' element.")
-    expect(log[1].message).toBe("The 'href' attribute cannot be used on a 'button' element.")
-    expect(log[2].message).toBe("The 'rows' attribute cannot be used on a 'p' element.")
-    expect(log[3].message).toBe("The 'disabled' attribute cannot be used on a 'div' element.")
-    expect(log[4].message).toBe("The 'defer' attribute cannot be used on a 'b' element.")
+    expect(log[0].message).toBe("The 'for' attribute cannot be used on a <div> element.")
+    expect(log[1].message).toBe("The 'href' attribute cannot be used on a <button> element.")
+    expect(log[2].message).toBe("The 'rows' attribute cannot be used on a <p> element.")
+    expect(log[3].message).toBe("The 'disabled' attribute cannot be used on a <div> element.")
+    expect(log[4].message).toBe("The 'defer' attribute cannot be used on a <b> element.")
     expect(log[0].context).toBe($html[0])
     expect(log[1].context).toBe($html.find("button")[0])
     expect(log[2].context).toBe($html.find("p")[0])
@@ -798,7 +798,7 @@ describe("obsolete-attributes", function() {
     obsoluteAttributes.forEach(function(item) {
       item.elements.forEach(function(element) {
         item.attrs.forEach(function(attr) {
-          expect(log[count].message).toBe("The '" + attr + "' attribute of the '" + element + "' element is obsolete and should not be used.")
+          expect(log[count].message).toBe("The '" + attr + "' attribute of the <" + element + "> element is obsolete and should not be used.")
           expect(log[count].context).toBe($html.find(element + "["+attr+"]")[0])
           count++
         })
@@ -870,7 +870,7 @@ describe("obsolete-elements", function() {
 
     expect(log.length).toBe(obsoluteElements.length)
     obsoluteElements.forEach(function(el, i) {
-      expect(log[i].message).toBe("The '" + el + "' element is obsolete and should not be used.")
+      expect(log[i].message).toBe("The <" + el + "> element is obsolete and should not be used.")
       expect(log[i].context).toBe($html.find(el)[0])
     })
 
