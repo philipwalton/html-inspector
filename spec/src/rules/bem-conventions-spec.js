@@ -161,25 +161,17 @@ describe("bem-conventions", function() {
     expect(log.length).toBe(0)
   })
 
-  it("allows customization by altering the config object", function() {
+  it("allows for customization by altering the config object", function() {
     var $html = $(''
           + '<div class="block-one">'
           + '  <p class="block-two---valid-name">Foo</p>'
           + '  <p class="block-three___element-name">Bar</p>'
           + '</div>'
         )
-    HTMLInspector.inspect({
-      rules: ["bem-conventions"],
-      domRoot: $html,
-      complete: complete
-    })
-    expect(log.length).toBe(0)
-
     HTMLInspector.rules["bem-conventions"].config.methods.push({
       modifier: /^((?:[a-z]+\-)*[a-z]+(?:___(?:[a-z]+\-)*[a-z]+)?)\-\-\-(?:[a-z]+\-)*[a-z]+$/,
       element: /^((?:[a-z]+\-)*[a-z]+)___(?:[a-z]+\-)*[a-z]+$/
     })
-
     HTMLInspector.inspect({
       rules: ["bem-conventions"],
       domRoot: $html,

@@ -1224,22 +1224,6 @@ HTMLInspector.addRule("inline-event-handlers", function(listener, reporter) {
 
 })
 
-HTMLInspector.addRule("nonsemantic-elements", function(listener, reporter) {
-
-  listener.on('element', function(name) {
-    var isUnsemantic = name == "div" || name == "span"
-      , isAttributed = this.attributes.length === 0
-    if (isUnsemantic && isAttributed) {
-      reporter.addError(
-        "nonsemantic-elements",
-        "Do not use <div> or <span> elements without any attributes.",
-        this
-      )
-    }
-  })
-
-})
-
 HTMLInspector.addRule("scoped-styles", function(listener, reporter) {
 
   var elements = []
@@ -1260,6 +1244,29 @@ HTMLInspector.addRule("scoped-styles", function(listener, reporter) {
     }
   })
 
+})
+
+HTMLInspector.addRule(
+  "unnecessary-elements",
+  {
+    isUnnecessary: function(element) {
+      var name = element.nodeName.toLowerCase()
+        , isUnsemantic = name == "div" || name == "span"
+        , isAttributed = element.attributes.length === 0
+      return isUnsemantic && isAttributed
+    }
+  },
+  function(listener, reporter, config) {
+    listener.on('element', function(name) {
+      if (config.isUnnecessary(this)) {
+        reporter.addError(
+          "unnecessary-elements",
+          "Do not use <div> or <span> elements without any attributes.",
+          this
+        )
+      }
+    }
+  )
 })
 
 HTMLInspector.addRule("unused-classes", function(listener, reporter) {

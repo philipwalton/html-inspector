@@ -601,25 +601,17 @@ describe("bem-conventions", function() {
     expect(log.length).toBe(0)
   })
 
-  it("allows customization by altering the config object", function() {
+  it("allows for customization by altering the config object", function() {
     var $html = $(''
           + '<div class="block-one">'
           + '  <p class="block-two---valid-name">Foo</p>'
           + '  <p class="block-three___element-name">Bar</p>'
           + '</div>'
         )
-    HTMLInspector.inspect({
-      rules: ["bem-conventions"],
-      domRoot: $html,
-      complete: complete
-    })
-    expect(log.length).toBe(0)
-
     HTMLInspector.rules["bem-conventions"].config.methods.push({
       modifier: /^((?:[a-z]+\-)*[a-z]+(?:___(?:[a-z]+\-)*[a-z]+)?)\-\-\-(?:[a-z]+\-)*[a-z]+$/,
       element: /^((?:[a-z]+\-)*[a-z]+)___(?:[a-z]+\-)*[a-z]+$/
     })
-
     HTMLInspector.inspect({
       rules: ["bem-conventions"],
       domRoot: $html,
@@ -735,83 +727,6 @@ describe("inline-event-handlers", function() {
 
 })
 
-describe("nonsemantic-elements", function() {
-
-  var log
-
-  function complete(reports) {
-    log = []
-    reports.forEach(function(report) {
-      log.push(report)
-    })
-  }
-
-  it("warns when unattributed <div> or <span> elements appear in the HTML", function() {
-    var $html = $(''
-          + '<div>'
-          + '  <span>Foo</span>'
-          + '  <p>Foo</p>'
-          + '  <div><b>Foo</b></div>'
-          + '</div>'
-        )
-
-    HTMLInspector.inspect({
-      rules: ["nonsemantic-elements"],
-      domRoot: $html,
-      complete: complete
-    })
-
-    expect(log.length).toBe(3)
-    expect(log[0].message).toBe("Do not use <div> or <span> elements without any attributes.")
-    expect(log[1].message).toBe("Do not use <div> or <span> elements without any attributes.")
-    expect(log[2].message).toBe("Do not use <div> or <span> elements without any attributes.")
-    expect(log[0].context).toBe($html[0])
-    expect(log[1].context).toBe($html.find("span")[0])
-    expect(log[2].context).toBe($html.find("div")[0])
-
-  })
-
-  it("doesn't warn when attributed <div> or <span> elements appear in the HTML", function() {
-    var $html = $(''
-          + '<div data-foo="bar">'
-          + '  <span class="alert">Foo</span>'
-          + '  <p>Foo</p>'
-          + '  <div><b>Foo</b></div>'
-          + '</div>'
-        )
-
-    HTMLInspector.inspect({
-      rules: ["nonsemantic-elements"],
-      domRoot: $html,
-      complete: complete
-    })
-
-    expect(log.length).toBe(1)
-    expect(log[0].message).toBe("Do not use <div> or <span> elements without any attributes.")
-    expect(log[0].context).toBe($html.find("div")[0])
-
-  })
-
-  it("doesn't warn when unattributed, semantic elements appear in the HTML", function() {
-    var $html = $(''
-          + '<section data-foo="bar">'
-          + '  <h1>Foo</h1>'
-          + '  <p>Foo</p>'
-          + '</section>'
-        )
-
-    HTMLInspector.inspect({
-      rules: ["nonsemantic-elements"],
-      domRoot: $html,
-      complete: complete
-    })
-
-    expect(log.length).toBe(0)
-
-  })
-
-})
-
 describe("scoped-styles", function() {
 
   var log
@@ -876,6 +791,103 @@ describe("scoped-styles", function() {
     })
 
     expect(log.length).toBe(0)
+
+  })
+
+})
+
+describe("unnecessary-elements", function() {
+
+  var log
+
+  function complete(reports) {
+    log = []
+    reports.forEach(function(report) {
+      log.push(report)
+    })
+  }
+
+  it("warns when unattributed <div> or <span> elements appear in the HTML", function() {
+    var $html = $(''
+          + '<div>'
+          + '  <span>Foo</span>'
+          + '  <p>Foo</p>'
+          + '  <div><b>Foo</b></div>'
+          + '</div>'
+        )
+
+    HTMLInspector.inspect({
+      rules: ["unnecessary-elements"],
+      domRoot: $html,
+      complete: complete
+    })
+
+    expect(log.length).toBe(3)
+    expect(log[0].message).toBe("Do not use <div> or <span> elements without any attributes.")
+    expect(log[1].message).toBe("Do not use <div> or <span> elements without any attributes.")
+    expect(log[2].message).toBe("Do not use <div> or <span> elements without any attributes.")
+    expect(log[0].context).toBe($html[0])
+    expect(log[1].context).toBe($html.find("span")[0])
+    expect(log[2].context).toBe($html.find("div")[0])
+
+  })
+
+  it("doesn't warn when attributed <div> or <span> elements appear in the HTML", function() {
+    var $html = $(''
+          + '<div data-foo="bar">'
+          + '  <span class="alert">Foo</span>'
+          + '  <p>Foo</p>'
+          + '  <div><b>Foo</b></div>'
+          + '</div>'
+        )
+
+    HTMLInspector.inspect({
+      rules: ["unnecessary-elements"],
+      domRoot: $html,
+      complete: complete
+    })
+
+    expect(log.length).toBe(1)
+    expect(log[0].message).toBe("Do not use <div> or <span> elements without any attributes.")
+    expect(log[0].context).toBe($html.find("div")[0])
+
+  })
+
+  it("doesn't warn when unattributed, semantic elements appear in the HTML", function() {
+    var $html = $(''
+          + '<section data-foo="bar">'
+          + '  <h1>Foo</h1>'
+          + '  <p>Foo</p>'
+          + '</section>'
+        )
+
+    HTMLInspector.inspect({
+      rules: ["unnecessary-elements"],
+      domRoot: $html,
+      complete: complete
+    })
+
+    expect(log.length).toBe(0)
+
+  })
+
+  it("allows for customization by altering the config object", function() {
+    var $html = $(''
+          + '<div>'
+          + '  <h1>Foo</h1>'
+          + '  <span>Foo</span>'
+          + '</div>'
+        )
+    HTMLInspector.rules["unnecessary-elements"].config.isUnnecessary = function(element) {
+      return element.nodeName === "SPAN"
+    }
+    HTMLInspector.inspect({
+      rules: ["unnecessary-elements"],
+      domRoot: $html,
+      complete: complete
+    })
+    expect(log.length).toBe(1)
+    expect(log[0].context).toBe($html.find("span")[0])
 
   })
 

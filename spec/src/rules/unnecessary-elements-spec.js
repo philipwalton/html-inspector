@@ -1,4 +1,4 @@
-describe("nonsemantic-elements", function() {
+describe("unnecessary-elements", function() {
 
   var log
 
@@ -19,7 +19,7 @@ describe("nonsemantic-elements", function() {
         )
 
     HTMLInspector.inspect({
-      rules: ["nonsemantic-elements"],
+      rules: ["unnecessary-elements"],
       domRoot: $html,
       complete: complete
     })
@@ -44,7 +44,7 @@ describe("nonsemantic-elements", function() {
         )
 
     HTMLInspector.inspect({
-      rules: ["nonsemantic-elements"],
+      rules: ["unnecessary-elements"],
       domRoot: $html,
       complete: complete
     })
@@ -64,12 +64,32 @@ describe("nonsemantic-elements", function() {
         )
 
     HTMLInspector.inspect({
-      rules: ["nonsemantic-elements"],
+      rules: ["unnecessary-elements"],
       domRoot: $html,
       complete: complete
     })
 
     expect(log.length).toBe(0)
+
+  })
+
+  it("allows for customization by altering the config object", function() {
+    var $html = $(''
+          + '<div>'
+          + '  <h1>Foo</h1>'
+          + '  <span>Foo</span>'
+          + '</div>'
+        )
+    HTMLInspector.rules["unnecessary-elements"].config.isUnnecessary = function(element) {
+      return element.nodeName === "SPAN"
+    }
+    HTMLInspector.inspect({
+      rules: ["unnecessary-elements"],
+      domRoot: $html,
+      complete: complete
+    })
+    expect(log.length).toBe(1)
+    expect(log[0].context).toBe($html.find("span")[0])
 
   })
 
