@@ -227,8 +227,7 @@ HTMLInspector.addExtension("css", (function() {
     // getSelectors: function() {
     //   return []
     // },
-    styleSheets: 'link[rel="stylesheet"], style',
-    whitelist: /^js\-|^supports\-|^language\-|^lang\-/
+    styleSheets: 'link[rel="stylesheet"], style'
   }
 
   return css
@@ -1269,24 +1268,28 @@ HTMLInspector.addRule(
   )
 })
 
-HTMLInspector.addRule("unused-classes", function(listener, reporter) {
+HTMLInspector.addRule(
+  "unused-classes",
+  {
+    whitelist: /^js\-|^supports\-|^language\-|^lang\-/
+  },
+  function(listener, reporter, config) {
 
-  var css = HTMLInspector.extensions.css
-    , whitelist = css.whitelist
-    , classes = css.getClassSelectors()
+    var css = HTMLInspector.extensions.css
+      , classes = css.getClassSelectors()
 
-  listener.on('class', function(name) {
-    if (!whitelist.test(name) && classes.indexOf(name) == -1) {
-      reporter.addError(
-        "unused-classes",
-        "The class '"
-        + name
-        + "' is used in the HTML but not found in any stylesheet.",
-        this
-      )
+    listener.on('class', function(name) {
+      if (!config.whitelist.test(name) && classes.indexOf(name) == -1) {
+        reporter.addError(
+          "unused-classes",
+          "The class '"
+          + name
+          + "' is used in the HTML but not found in any stylesheet.",
+          this
+        )
+      }
     }
-  })
-
+  )
 })
 
 HTMLInspector.addRule("validate-attributes", function(listener, reporter) {

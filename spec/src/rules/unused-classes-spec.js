@@ -48,7 +48,7 @@ describe("unused-classes", function() {
 
   })
 
-  it("allows for customizing the whitelist", function() {
+  it("allows for customization by altering the config object", function() {
 
     var $html = $(''
           + '<div class="foo supports-flexbox">'
@@ -56,7 +56,7 @@ describe("unused-classes", function() {
           + '</div>'
         )
 
-    HTMLInspector.extensions.css.whitelist = /foo|bar/
+    HTMLInspector.rules["unused-classes"].config.whitelist = /foo|bar/
 
     HTMLInspector.inspect({
       rules: ["unused-classes"],

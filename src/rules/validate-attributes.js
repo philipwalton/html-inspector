@@ -36,6 +36,4 @@ HTMLInspector.addRule("validate-attributes", function(listener, reporter) {
     }
   })
 
-
-
 })
