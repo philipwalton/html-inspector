@@ -43,5 +43,12 @@ describe("validation", function() {
     expect(validation.isAttributeRequiredForElement("target", "a")).toBe(false)
   })
 
+  it("can get a list of required attribute given an element", function() {
+    expect(validation.getRequiredAttributesForElement("img")).toEqual(["alt", "src"])
+    expect(validation.getRequiredAttributesForElement("optgroup")).toEqual(["label"])
+    expect(validation.getRequiredAttributesForElement("form")).toEqual(["action"])
+    expect(validation.getRequiredAttributesForElement("div")).toEqual([])
+  })
+
 
 })

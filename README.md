@@ -25,6 +25,7 @@ Coming soon...
 
 ## Possbile Additional Rules
 
+* for attributes on labels or fragment identifiers in urls that don't match any IDs in the document
 * no longer need type attr on <script> or <style>
 * Don't use inline styles
 * <script> tags should appear at the end, not throughout the document

@@ -24,8 +24,8 @@ describe("duplicate-ids", function() {
     })
 
     expect(log.length).toBe(2)
-    expect(log[0].message).toBe("The id 'foobar' appears more than once in the HTML.")
-    expect(log[1].message).toBe("The id 'barfoo' appears more than once in the HTML.")
+    expect(log[0].message).toBe("The id 'foobar' appears more than once in the document.")
+    expect(log[1].message).toBe("The id 'barfoo' appears more than once in the document.")
     expect(log[0].context).toEqual([$html[0], $html.find("p#foobar")[0]])
     expect(log[1].context).toEqual([$html.find("p#barfoo")[0], $html.find("em#barfoo")[0]])
 

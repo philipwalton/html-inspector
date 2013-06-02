@@ -451,6 +451,13 @@ describe("validation", function() {
     expect(validation.isAttributeRequiredForElement("target", "a")).toBe(false)
   })
 
+  it("can get a list of required attribute given an element", function() {
+    expect(validation.getRequiredAttributesForElement("img")).toEqual(["alt", "src"])
+    expect(validation.getRequiredAttributesForElement("optgroup")).toEqual(["label"])
+    expect(validation.getRequiredAttributesForElement("form")).toEqual(["action"])
+    expect(validation.getRequiredAttributesForElement("div")).toEqual([])
+  })
+
 
 })
 })
@@ -586,8 +593,8 @@ describe("duplicate-ids", function() {
     })
 
     expect(log.length).toBe(2)
-    expect(log[0].message).toBe("The id 'foobar' appears more than once in the HTML.")
-    expect(log[1].message).toBe("The id 'barfoo' appears more than once in the HTML.")
+    expect(log[0].message).toBe("The id 'foobar' appears more than once in the document.")
+    expect(log[1].message).toBe("The id 'barfoo' appears more than once in the document.")
     expect(log[0].context).toEqual([$html[0], $html.find("p#foobar")[0]])
     expect(log[1].context).toEqual([$html.find("p#barfoo")[0], $html.find("em#barfoo")[0]])
 
@@ -638,8 +645,8 @@ describe("inline-event-handlers", function() {
     })
 
     expect(log.length).toBe(2)
-    expect(log[0].message).toBe("The 'onresize' event handler was found inline in the HTML.")
-    expect(log[1].message).toBe("The 'onclick' event handler was found inline in the HTML.")
+    expect(log[0].message).toBe("An 'onresize' attribute was found in the HTML. Use external scripts for event binding instead.")
+    expect(log[1].message).toBe("An 'onclick' attribute was found in the HTML. Use external scripts for event binding instead.")
     expect(log[0].context).toEqual($html[0])
     expect(log[1].context).toEqual($html.find("a")[0])
 
@@ -660,72 +667,6 @@ describe("inline-event-handlers", function() {
     })
 
     expect(log.length).toBe(0)
-  })
-
-})
-
-describe("misused-attributes", function() {
-
-  var log
-    , allowedAttributes = HTMLInspector.extensions.attributes.allowedAttributes
-
-  function complete(reports) {
-    log = []
-    reports.forEach(function(report) {
-      log.push(report)
-    })
-  }
-
-  it("warns when attributes are used on elements they're not allowed to be on", function() {
-
-    var $html = $(''
-          + '<div for="form">'
-          + '  <button href="#"">Click Me</button>'
-          + '  <p rows="5">Foo</p>'
-          + '  <div disabled><b defer>Foo</b></div>'
-          + '</div>'
-        )
-
-    HTMLInspector.inspect({
-      rules: ["misused-attributes"],
-      domRoot: $html,
-      complete: complete
-    })
-
-    expect(log.length).toBe(5)
-    expect(log[0].message).toBe("The 'for' attribute cannot be used on a <div> element.")
-    expect(log[1].message).toBe("The 'href' attribute cannot be used on a <button> element.")
-    expect(log[2].message).toBe("The 'rows' attribute cannot be used on a <p> element.")
-    expect(log[3].message).toBe("The 'disabled' attribute cannot be used on a <div> element.")
-    expect(log[4].message).toBe("The 'defer' attribute cannot be used on a <b> element.")
-    expect(log[0].context).toBe($html[0])
-    expect(log[1].context).toBe($html.find("button")[0])
-    expect(log[2].context).toBe($html.find("p")[0])
-    expect(log[3].context).toBe($html.find("[disabled]")[0])
-    expect(log[4].context).toBe($html.find("b")[0])
-
-  })
-
-  it("doesn't warn when attributes are used on elements they're allowed to be on", function() {
-
-    var $html = $(document.createElement("div"))
-
-    allowedAttributes.forEach(function(item) {
-      item.elements.forEach(function(element) {
-        var $el = $(document.createElement(element))
-        $el.attr(item.attr, "")
-        $html.append($el)
-      })
-    })
-
-    HTMLInspector.inspect({
-      rules: ["misused-attributes"],
-      domRoot: $html,
-      complete: complete
-    })
-
-    expect(log.length).toBe(0)
-
   })
 
 })
@@ -805,200 +746,6 @@ describe("nonsemantic-elements", function() {
 
   })
 
-})
-
-describe("obsolete-attributes", function() {
-
-  var log
-    , obsoluteAttributes = HTMLInspector.extensions.attributes.obsoluteAttributes
-
-  function complete(reports) {
-    log = []
-    reports.forEach(function(report) {
-      log.push(report)
-    })
-  }
-
-  it("warns when obsolete element attributes appear in the HTML", function() {
-    var $html = $(document.createElement("div"))
-      , count = 0
-    obsoluteAttributes.forEach(function(item) {
-      item.elements.forEach(function(element) {
-        var $el = $(document.createElement(element))
-        item.attrs.forEach(function(attr) {
-          count++
-          $el.attr(attr, "")
-        })
-        $html.append($el)
-      })
-    })
-
-    HTMLInspector.inspect({
-      rules: ["obsolete-attributes"],
-      domRoot: $html,
-      complete: complete
-    })
-
-    expect(log.length).toBe(count)
-
-    count = 0
-    obsoluteAttributes.forEach(function(item) {
-      item.elements.forEach(function(element) {
-        item.attrs.forEach(function(attr) {
-          expect(log[count].message).toBe("The '" + attr + "' attribute of the <" + element + "> element is obsolete and should not be used.")
-          expect(log[count].context).toBe($html.find(element + "["+attr+"]")[0])
-          count++
-        })
-      })
-    })
-
-  })
-
-  it("doesn't warn when non-obsolete element attributes are used", function() {
-
-    var $html = $(''
-          + '<div class="foo">'
-          + '  <span id="bar">Foo</span>'
-          + '  <p title="p">Foo</p>'
-          + '  <div data-foo-bar><b style="display:none;">Foo</b></div>'
-          + '</div>'
-        )
-
-    HTMLInspector.inspect({
-      rules: ["obsolete-elements"],
-      domRoot: $html,
-      complete: complete
-    })
-
-    expect(log.length).toBe(0)
-
-  })
-
-})
-
-describe("obsolete-elements", function() {
-
-  var log
-    , obsoluteElements = [
-        "basefont",
-        "big",
-        "center",
-        "font",
-        "strike",
-        "tt",
-        "frame",
-        "frameset",
-        "noframes",
-        "acronym",
-        "applet",
-        "isindex",
-        "dir"
-      ]
-
-  function complete(reports) {
-    log = []
-    reports.forEach(function(report) {
-      log.push(report)
-    })
-  }
-
-  it("warns when obsolete elements appear in the HTML", function() {
-    var $html = $(document.createElement("div"))
-
-    obsoluteElements.forEach(function(el) {
-      $html.append(document.createElement(el))
-    })
-
-    HTMLInspector.inspect({
-      rules: ["obsolete-elements"],
-      domRoot: $html,
-      complete: complete
-    })
-
-    expect(log.length).toBe(obsoluteElements.length)
-    obsoluteElements.forEach(function(el, i) {
-      expect(log[i].message).toBe("The <" + el + "> element is obsolete and should not be used.")
-      expect(log[i].context).toBe($html.find(el)[0])
-    })
-
-  })
-
-  it("doesn't warn when non-obsolete elements are used", function() {
-
-    var $html = $(''
-          + '<div>'
-          + '  <span>Foo</span>'
-          + '  <p>Foo</p>'
-          + '  <div><b>Foo</b></div>'
-          + '</div>'
-        )
-
-    HTMLInspector.inspect({
-      rules: ["obsolete-elements"],
-      domRoot: $html,
-      complete: complete
-    })
-
-    expect(log.length).toBe(0)
-
-  })
-
-})
-
-describe("required-attributes", function() {
-
-  var log
-    , requiredAttributes = HTMLInspector.extensions.attributes.requiredAttributes
-
-  function complete(reports) {
-    log = []
-    reports.forEach(function(report) {
-      log.push(report)
-    })
-  }
-
-  it("warns when elements don't have their required attributes", function() {
-
-    var $html = $(document.createElement("div"))
-
-    requiredAttributes.forEach(function(item) {
-      $html.append(document.createElement(item.element))
-    })
-
-    HTMLInspector.inspect({
-      rules: ["required-attributes"],
-      domRoot: $html,
-      complete: complete
-    })
-
-    expect(log.length).toBe(requiredAttributes.length)
-    requiredAttributes.forEach(function(item, i) {
-      expect(log[i].message).toBe("<" + item.element + "> elements must include the following attributes: '" + item.attrs.join("', '") + "'.")
-    })
-
-  })
-
-  it("doesn't warn when elements have all their required attributes", function() {
-
-    var $html = $(document.createElement("div"))
-
-    requiredAttributes.forEach(function(item) {
-      var $el = $(document.createElement(item.element))
-      item.attrs.forEach(function(attr) {
-        $el.attr(attr, "")
-      })
-      $html.append($el)
-    })
-
-    HTMLInspector.inspect({
-      rules: ["required-attributes"],
-      domRoot: $html,
-      complete: complete
-    })
-
-    expect(log.length).toBe(0)
-
-  })
 })
 
 describe("scoped-styles", function() {
@@ -1144,4 +891,258 @@ describe("unused-classes", function() {
 
 })
 
+describe("validate-attributes", function() {
+
+  var log
+
+  function complete(reports) {
+    log = []
+    reports.forEach(function(report) {
+      log.push(report)
+    })
+  }
+
+  it("warns when obsolete attributes of elements appear in the HTML", function() {
+
+    var $html = $(''
+          + '<div align="center">'
+          + '  <section>'
+          + '     <h1>Title</h1>'
+          + '     <h2 align="right">Subtitle</h2>'
+          + '     <p>foo <br clear="both"> bar</p>'
+          + '  </section>'
+          + '  <hr color="red">'
+          + '  <ul type="foo">'
+          + '    <li>blah</li>'
+          + '  </ul>'
+          + '</div>'
+        )
+
+    HTMLInspector.inspect({
+      rules: ["validate-attributes"],
+      domRoot: $html,
+      complete: complete
+    })
+
+    expect(log.length).toBe(5)
+    expect(log[0].message).toBe("The 'align' attribute is no longer valid on the <div> element and should not be used.")
+    expect(log[0].context).toBe($html[0])
+    expect(log[1].message).toBe("The 'align' attribute is no longer valid on the <h2> element and should not be used.")
+    expect(log[1].context).toBe($html.find("h2")[0])
+    expect(log[2].message).toBe("The 'clear' attribute is no longer valid on the <br> element and should not be used.")
+    expect(log[2].context).toBe($html.find("br")[0])
+    expect(log[3].message).toBe("The 'color' attribute is no longer valid on the <hr> element and should not be used.")
+    expect(log[3].context).toBe($html.find("hr")[0])
+    expect(log[4].message).toBe("The 'type' attribute is no longer valid on the <ul> element and should not be used.")
+    expect(log[4].context).toBe($html.find("ul")[0])
+
+  })
+
+  it("warns when invalid attributes of elements appear in the HTML", function() {
+
+    var $html = $(''
+          + '<div foo="bar">'
+          + '  <section action="http://example.com">'
+          + '     <h1>Title</h1>'
+          + '     <h2 cell-padding="1">Subtitle</h2>'
+          + '     <p>foo <br blah="true"> bar</p>'
+          + '  </section>'
+          + '</div>'
+        )
+
+    HTMLInspector.inspect({
+      rules: ["validate-attributes"],
+      domRoot: $html,
+      complete: complete
+    })
+
+    expect(log.length).toBe(4)
+    expect(log[0].message).toBe("'foo' is not a valid attribute of the <div> element.")
+    expect(log[0].context).toBe($html[0])
+    expect(log[1].message).toBe("'action' is not a valid attribute of the <section> element.")
+    expect(log[1].context).toBe($html.find("section")[0])
+    expect(log[2].message).toBe("'cell-padding' is not a valid attribute of the <h2> element.")
+    expect(log[2].context).toBe($html.find("h2")[0])
+    expect(log[3].message).toBe("'blah' is not a valid attribute of the <br> element.")
+    expect(log[3].context).toBe($html.find("br")[0])
+
+  })
+
+  it("warns when required attributes are missing", function() {
+
+    var $html = $(''
+          + '<div>'
+          + '  <img class="foo" />'
+          + '  <form>'
+          + '     <textarea><textarea>'
+          + '  </form>'
+          + '</div>'
+        )
+
+    HTMLInspector.inspect({
+      rules: ["validate-attributes"],
+      domRoot: $html,
+      complete: complete
+    })
+
+    expect(log.length).toBe(5)
+    expect(log[0].message).toBe("The 'alt' attribute is required for <img> elements.")
+    expect(log[0].context).toBe($html.find("img")[0])
+    expect(log[1].message).toBe("The 'src' attribute is required for <img> elements.")
+    expect(log[1].context).toBe($html.find("img")[0])
+    expect(log[2].message).toBe("The 'action' attribute is required for <form> elements.")
+    expect(log[2].context).toBe($html.find("form")[0])
+    expect(log[3].message).toBe("The 'cols' attribute is required for <textarea> elements.")
+    expect(log[3].context).toBe($html.find("textarea")[0])
+    expect(log[4].message).toBe("The 'rows' attribute is required for <textarea> elements.")
+    expect(log[4].context).toBe($html.find("textarea")[0])
+
+  })
+
+  it("doesn't double-warn when an element is both invalid and obsolete", function() {
+
+    var $html = $(''
+          + '<div align="center">'
+          + '   <h1>Title</h1>'
+          + '   <h2>Subtitle</h2>'
+          + '</div>'
+        )
+
+    HTMLInspector.inspect({
+      rules: ["validate-attributes"],
+      domRoot: $html,
+      complete: complete
+    })
+
+    expect(log.length).toBe(1)
+  })
+
+  it("doesn't warn when valid, non-obsolete elements are used", function() {
+
+    var $html = $(''
+          + '<div class="foo" data-foo="bar" role="main">'
+          + '  <span id="bar">Foo</span>'
+          + '  <a aria-foo="bar" href="#">Foo</a>'
+          + '</div>'
+        )
+
+    HTMLInspector.inspect({
+      rules: ["validate-attributes"],
+      domRoot: $html,
+      complete: complete
+    })
+
+    expect(log.length).toBe(0)
+
+  })
+
+})
+describe("validate-elements", function() {
+
+  var log
+
+  function complete(reports) {
+    log = []
+    reports.forEach(function(report) {
+      log.push(report)
+    })
+  }
+
+  it("warns when obsolete elements appear in the HTML", function() {
+
+    var $html = $(''
+          + '<div>'
+          + '  <hgroup>'
+          + '     <h1>Title</h1>'
+          + '     <h2>Subtitle</h2>'
+          + '  </hgroup>'
+          + '  <tt>Teletype text</tt>'
+          + '  <center><p><b>Foo</b></p></center>'
+          + '</div>'
+        )
+
+    HTMLInspector.inspect({
+      rules: ["validate-elements"],
+      domRoot: $html,
+      complete: complete
+    })
+
+    expect(log.length).toBe(3)
+    expect(log[0].message).toBe("The <hgroup> element is obsolete and should not be used.")
+    expect(log[0].context).toBe($html.find("hgroup")[0])
+    expect(log[1].message).toBe("The <tt> element is obsolete and should not be used.")
+    expect(log[1].context).toBe($html.find("tt")[0])
+    expect(log[2].message).toBe("The <center> element is obsolete and should not be used.")
+    expect(log[2].context).toBe($html.find("center")[0])
+
+  })
+
+  it("warns when invalid elements appear in the HTML", function() {
+
+    var $html = $(''
+          + '<div>'
+          + '  <foo>'
+          + '     <h1>Title</h1>'
+          + '     <h2>Subtitle</h2>'
+          + '  </foo>'
+          + '  <bar>Teletype text</bar>'
+          + '  <bogus><p><b>Foo</b></p></bogus>'
+          + '</div>'
+        )
+
+    HTMLInspector.inspect({
+      rules: ["validate-elements"],
+      domRoot: $html,
+      complete: complete
+    })
+
+    expect(log.length).toBe(3)
+    expect(log[0].message).toBe("The <foo> element is not a valid HTML element.")
+    expect(log[0].context).toBe($html.find("foo")[0])
+    expect(log[1].message).toBe("The <bar> element is not a valid HTML element.")
+    expect(log[1].context).toBe($html.find("bar")[0])
+    expect(log[2].message).toBe("The <bogus> element is not a valid HTML element.")
+    expect(log[2].context).toBe($html.find("bogus")[0])
+
+  })
+
+  it("doesn't double-warn when an element is both invalid and obsolete", function() {
+
+    var $html = $(''
+          + '<hgroup>'
+          + '   <h1>Title</h1>'
+          + '   <h2>Subtitle</h2>'
+          + '</hgroup>'
+        )
+
+    HTMLInspector.inspect({
+      rules: ["validate-elements"],
+      domRoot: $html,
+      complete: complete
+    })
+
+    expect(log.length).toBe(1)
+  })
+
+  it("doesn't warn when valid, non-obsolete elements are used", function() {
+
+    var $html = $(''
+          + '<div>'
+          + '  <span>Foo</span>'
+          + '  <p>Foo</p>'
+          + '  <div><b>Foo</b></div>'
+          + '</div>'
+        )
+
+    HTMLInspector.inspect({
+      rules: ["validate-elements"],
+      domRoot: $html,
+      complete: complete
+    })
+
+    expect(log.length).toBe(0)
+
+  })
+
+})
 })

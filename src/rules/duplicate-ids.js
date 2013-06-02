@@ -28,7 +28,7 @@ HTMLInspector.addRule("duplicate-ids", function(listener, reporter) {
         }))
         reporter.addError(
           "duplicate-ids",
-          "The id '" + element.id + "' appears more than once in the HTML.",
+          "The id '" + element.id + "' appears more than once in the document.",
           offenders
         )
       }

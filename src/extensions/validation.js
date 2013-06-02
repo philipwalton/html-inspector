@@ -815,6 +815,13 @@ HTMLInspector.addExtension("validation", function() {
       return requiredAttributes.some(function(item) {
         return element == item.element && item.attributes.indexOf(attribute) >= 0
       })
+    },
+
+    getRequiredAttributesForElement: function(element) {
+      var filtered = requiredAttributes.filter(function(item) {
+        return item.element == element
+      })
+      return (filtered[0] && filtered[0].attributes) || []
     }
 
     //

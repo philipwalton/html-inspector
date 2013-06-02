@@ -4,7 +4,7 @@ HTMLInspector.addRule("inline-event-handlers", function(listener, reporter) {
     if (name.indexOf("on") === 0) {
       reporter.addError(
         "inline-event-handlers",
-        "The '" + name + "' event handler was found inline in the HTML.",
+        "An '" + name + "' attribute was found in the HTML. Use external scripts for event binding instead.",
         this
       )
     }

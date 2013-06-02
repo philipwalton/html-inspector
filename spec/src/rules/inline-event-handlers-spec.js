@@ -24,8 +24,8 @@ describe("inline-event-handlers", function() {
     })
 
     expect(log.length).toBe(2)
-    expect(log[0].message).toBe("The 'onresize' event handler was found inline in the HTML.")
-    expect(log[1].message).toBe("The 'onclick' event handler was found inline in the HTML.")
+    expect(log[0].message).toBe("An 'onresize' attribute was found in the HTML. Use external scripts for event binding instead.")
+    expect(log[1].message).toBe("An 'onclick' attribute was found in the HTML. Use external scripts for event binding instead.")
     expect(log[0].context).toEqual($html[0])
     expect(log[1].context).toEqual($html.find("a")[0])
 
