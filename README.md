@@ -1,50 +1,115 @@
 # HTML Inspector
 
-Coming soon...
+HTML Inspector is a highly-customizable, code quality tool to help you (and your team) write better markup. It aims to find a balance between the uncompromisingly strict W3C validator and absolutely no rules at all.
 
-## Markup Structure
+Every rule or error used by HTML Inspector is completely customizable to fit your projects needs, and it's easy to extend so development teams can write their own rules to enforce their chosen conventions.
 
-* Section element should usaully contain a heading (they are not generic containers)
-  - https://developer.mozilla.org/en-US/docs/Web/HTML/Element/section
-* Don't put <td> elements inside of <thead>, use <th> instead
-* <li> elements should always be the first-level descendents of <ol> or <ul>. They cannot be wrapped in containers.
-* the <main> element can only appear once per page
-* <tfoot> must appear before <tbody>
-  - http://www.w3.org/TR/html401/struct/tables.html#edef-TFOOT
-* <nav> elements should contain at least some <a> elements
-* <figcaption> must be the first or last child of <figure>
-  - https://developer.mozilla.org/en-US/docs/Web/HTML/Element/figcaption
+## Getting Started
 
-* don't use multiple consecutive <br> elements
-* don't use multiple consecutive &nbsp; entities
+The easiest way to get started is to simply download the full html-inspector.js file and add it to the bottom of your page, then call `inspect()` on the `HTMLInspector` object. Calling inspect with no options will load all rules with the default options. You can find more information on changing those options below.
 
-* Don't use <meta>, <link>, <title> elements outside of <head>, and only use <style> if its scoped
+*(Note: HTML Inspector requires jQuery, so if you're not already including it on your page, you'll need to.)*
 
-* <title> is required
+Here's the simpliest way to add HTML Inspector to your project:
 
+```html
+<script src="path/to/html-inspector.js"></script>
+<script> HTMLInspector.inspect() </script>
+```
+After the script runs, any errors will be reported to the console. Here's a sample of what you might see:
 
-## Possbile Additional Rules
+* * * Put Sample Image Here * * *
 
-* for attributes on labels or fragment identifiers in urls that don't match any IDs in the document
-* no longer need type attr on <script> or <style>
-* Don't use inline styles
-* <script> tags should appear at the end, not throughout the document
+*(Note: make sure you call `inspect` after any other DOM altering scripts have finished running.)*
 
+## Customizing
 
+By default, HTML Inspectors runs all added rules, starts traversing from the `<html>` element, and logs errors to the console when complete, but all of this can be customized.
 
-## HTML 5.1
+The `.inspect()` method takes a config object to allow you to change any of this behavior. Here are the config options:
 
-### Global Attributes Reference
-http://drafts.htmlwg.org/html/master/dom.html#global-attributes
+- **rules**: *(Array)* a list of strings that represent rule IDs
+- **domRoot: *(selector|element|jQuery)* the DOM element to start traversing from
+- **complete: **(Function) the callback to be invoked when the inspecting is complete. The function is passed an array of errors that were reported by the rules.
 
-### Element Reference
-http://drafts.htmlwg.org/html/master/iana.html#index
+Here's an example:
 
-### Obsolute Reference
-http://drafts.htmlwg.org/html/master/obsolete.html#obsolete
+```js
+HTMLInspector.inspect({
+  rules: ["some-rule-name", "some-other-rule-name"],
+  domRoot: $("body"),
+  complete: function(errors) {
+    errors.forEach(function(error) {
+      // report errors to external service...
+    }
+  }
+})
+```
 
+Alternatively, if you only need to set a single configuration option, you don't need to pass an object, the `inspect` method will figure out what it is based on its type.
 
-## In A Future Release Consider
+```js
+// only set the rules options
+HTMLInspector.inspect(["some-rule-name", "some-other-rule-name"])
 
-Actually parsing the markup instead of relying on the browser
-https://github.com/tautologistics/node-htmlparser
+// only set the domRoot
+HTMLInspector.inspect($("body"))
+
+// only set the complete callback
+HTMLInspector.inspect(function(errors) {
+  errors.forEach(function(error) {
+    // report errors to external service...
+  }
+})
+```
+
+## Extending
+
+The `HTMLInspector` object can be extended in two main ways:
+
+1) Adding rules
+2) Adding extensions
+
+### Rules
+
+Rules are the bread of butter of HTML Inspector. They are where you check for problems, and report errors.
+
+New rules can be added in the following way:
+
+```
+HTMLInspector.addRule(name, func)
+```
+
+The `name` parameter is a unique string to identify the rule, and the `func` parameter is an initialization function that is invoked when `HTMLInspector.inspect()` is called. The function is passed two arguments `listener` and `reporter`. After `.inspect()` is called and the HTML inspector traverses the DOM, it triggers events that the `listener` object can subscribe to. When problems are found, they can be reported to the `reporter` object.
+
+#### Events
+
+The `listener` object can subscribe to events via the `on` method. Like with many other event binding libraries, `on` takes two arguments: the event name, and a callback function:
+
+```js
+listener.on("class", function(className) {
+  // listener callback bind `this` to the DOM element
+  if (className === "foo" and this.nodeName.toLowerCase() == "bar") {
+    // report the error
+  }
+})
+```
+
+Here is a complete list of events along with the arguments that are passed to their respective callback functions:
+
+- **beforeInspect** : domRoot
+- **element** : elementName, domElement
+- **id**: idName, domElement
+- **class**: className, domElement
+- **attribute**: name, value, domElement
+- **afterInspect** : domRoot
+
+*(Note: for the `element`, `id`, `class`, and `attribute` events, the DOM element is bound to the `this` context.)*
+
+### Extensions
+
+Extensions provide a place where you can share config options, data, and/or functionality between multiple rules. HTML Inspector ships with two extensions which may be useful to authors writing custom rules:
+
+- **validation**: a collection of data from the W3C used in validation rules to determine which elements and attributes are valid/required and which are obsolete.
+
+- **css**: traverses `document.styleSheets` and returns a list of all the CSS class selectors referenced in all the CSS style sheets. A selector can be used to configure which elements are traversed.

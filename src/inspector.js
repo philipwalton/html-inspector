@@ -29,7 +29,7 @@ var HTMLInspector = (function() {
         listener.trigger("class", el, [name, el])
       })
       toArray(el.attributes).forEach(function(attr) {
-        listener.trigger("attribute", el, [attr.name, attr.value])
+        listener.trigger("attribute", el, [attr.name, attr.value, el])
       })
     })
     listener.trigger("afterInspect", inspector.config.domRoot)
