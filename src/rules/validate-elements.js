@@ -1,6 +1,6 @@
 HTMLInspector.addRule("validate-elements", function(listener, reporter) {
 
-  var validation = this.extensions.validation
+  var validation = HTMLInspector.extensions.validation
 
   listener.on("element", function(name) {
     if (validation.isElementObsolete(name)) {

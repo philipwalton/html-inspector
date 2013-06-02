@@ -1,6 +1,6 @@
 HTMLInspector.addRule("unused-classes", function(listener, reporter) {
 
-  var css = this.extensions.css
+  var css = HTMLInspector.extensions.css
     , whitelist = css.whitelist
     , classes = css.getClassSelectors()
 

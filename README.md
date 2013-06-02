@@ -63,6 +63,23 @@ HTMLInspector.inspect(function(errors) {
 })
 ```
 
+### Rule Configurations
+
+Individual rules may or may not do exactly what you need, which is why most rules expose a configurations object that users can customize. Individual rules configs can be overridden by setting new values like so:
+
+```js
+HTMLInspector.rules["some-rule-name"] = {
+  // your config goes here
+}
+
+// or perhaps by just adjusting one property of the config object
+HTMLInspector.rules["some-rule-name"].someProp = newValue
+
+// or by using jQuery
+$.extend(HTMLInspector.rules["some-rule-name"], { someProp: newValue})
+```
+
+
 ## Extending
 
 The `HTMLInspector` object can be extended in two main ways:

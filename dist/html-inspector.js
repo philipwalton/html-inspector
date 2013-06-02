@@ -4,7 +4,7 @@
  * Copyright (c) 2013 Philip Walton <http://philipwalton.com>
  * Released under the MIT license
  *
- * Date: 2013-06-01
+ * Date: 2013-06-02
  */
 ;(function(root, $, document) {
 
@@ -84,12 +84,17 @@ var HTMLInspector = (function() {
    * and initialize the specified rules
    */
   function setup(useRules, listener, reporter) {
-    useRules = (useRules == "all")
+    useRules = useRules == null
       ? Object.keys(inspector.rules)
       : useRules
     useRules.forEach(function(rule) {
       if (inspector.rules[rule]) {
-        inspector.rules[rule].call(inspector, listener, reporter)
+        inspector.rules[rule].fn.call(
+          inspector.rules[rule].config,
+          listener,
+          reporter,
+          inspector.rules[rule].config
+        )
       }
     })
   }
@@ -108,7 +113,7 @@ var HTMLInspector = (function() {
         listener.trigger("class", el, [name, el])
       })
       toArray(el.attributes).forEach(function(attr) {
-        listener.trigger("attribute", el, [attr.name, attr.value])
+        listener.trigger("attribute", el, [attr.name, attr.value, el])
       })
     })
     listener.trigger("afterInspect", inspector.config.domRoot)
@@ -135,7 +140,7 @@ var HTMLInspector = (function() {
   var inspector = {
 
     config: {
-      rules: "all",
+      rules: null,
       domRoot: "html",
       complete: function(errors) {
         errors.forEach(function(error) {
@@ -148,8 +153,15 @@ var HTMLInspector = (function() {
 
     extensions: {},
 
-    addRule: function(name, fn) {
-      inspector.rules[name] = fn
+    addRule: function(name, config, fn) {
+      if (typeof config == "function") {
+        fn = config
+        config = {}
+      }
+      inspector.rules[name] = {
+        config: config,
+        fn: fn
+      }
     },
 
     addExtension: function(name, obj) {
@@ -171,30 +183,6 @@ var HTMLInspector = (function() {
   return inspector
 
 }())
-
-HTMLInspector.addExtension("bem", (function() {
-
-  var reModifier = /^[A-Z][a-zA-Z]*\-\-[a-zA-Z]+$/
-    , reElement = /^[A-Z][a-zA-Z]*\-[a-zA-Z]+$/
-    , reElementOrModifier = /^([A-Z][a-zA-Z]*)\-\-?[a-zA-Z]+$/
-
-  return {
-
-    getBlockName: function(elementOrModifier) {
-      return reElementOrModifier.test(elementOrModifier) && RegExp.$1
-    },
-
-    isBlockModifier: function(cls) {
-      return reModifier.test(cls)
-    },
-
-    isBlockElement: function(cls) {
-      return reElement.test(cls)
-    }
-
-  }
-
-}()))
 
 HTMLInspector.addExtension("css", (function() {
 
@@ -1088,46 +1076,98 @@ HTMLInspector.addExtension("validation", function() {
 
 }())
 
-HTMLInspector.addRule("bem-misused-elements", function(listener, reporter) {
+;(function() {
 
-  var bem = this.extensions.bem
+  // ============================================================
+  // There are several different BEM naming conventions that
+  // I'm aware of. The `methods` property supports these three:
+  //
+  //  1) block-name
+  //     block-name--modifier-name
+  //     block-name__element-name
+  //     block-name__element-name--modifier-name
+  //
+  //  2) BlockName
+  //     BlockName--modifierName
+  //     BlockName-elementName
+  //     BlockName-elementName--modifierName
+  //
+  //  3) block-name
+  //     block-name__elemement-name
+  //     block-name_modifier_name
+  //     block-name__element-name_modifier_name
+  //
+  // ============================================================
 
-  listener.on('class', function(name) {
-    if (bem.isBlockElement(name)) {
-      // check the ancestors for the block class
-      if (!$(this).parents().is("." + bem.getBlockName(name))) {
-        reporter.addError(
-          "bem-misused-modifier",
-          "The BEM element '" + name
-          + "' must be a descendent of '" + bem.getBlockName(name)
-          + "'.",
-          this
-        )
+  var config = {
+    methods: [
+      {
+        modifier: /^([A-Z][a-zA-Z]*(?:\-[a-zA-Z]+)?)\-\-[a-zA-Z]+$/,
+        element: /^([A-Z][a-zA-Z]*)\-[a-zA-Z]+$/
+      },
+      {
+        modifier: /^((?:[a-z]+\-)*[a-z]+(?:__(?:[a-z]+\-)*[a-z]+)?)\-\-(?:[a-z]+\-)*[a-z]+$/,
+        element: /^((?:[a-z]+\-)*[a-z]+)__(?:[a-z]+\-)*[a-z]+$/
+      },
+      {
+        modifier: /^((?:[a-z]+\-)*[a-z]+(?:__(?:[a-z]+\-)*[a-z]+)?)_(?:[a-z]+_)*[a-z]+$/,
+        element: /^((?:[a-z]+\-)*[a-z]+)__(?:[a-z]+\-)*[a-z]+$/
       }
+    ],
+    getBlockName: function(elementOrModifier) {
+      var block
+      config.methods.forEach(function(method) {
+        if (method.modifier.test(elementOrModifier))
+          return block = RegExp.$1
+        if (method.element.test(elementOrModifier))
+          return block = RegExp.$1
+      })
+      return block || false
+    },
+    isElement: function(cls) {
+      return config.methods.some(function(method) {
+        return method.element.test(cls)
+      })
+    },
+    isModifier: function(cls) {
+      return config.methods.some(function(method) {
+        return method.modifier.test(cls)
+      })
     }
-  })
+  }
 
-})
-
-HTMLInspector.addRule("bem-misused-modifiers", function(listener, reporter) {
-
-  var bem = this.extensions.bem
-
-  listener.on('class', function(name) {
-    if (bem.isBlockModifier(name)) {
-      if (!$(this).is("." + bem.getBlockName(name))) {
-        reporter.addError(
-          "bem-misused-modifiers",
-          "The BEM modifier class '" + name
-          + "' was found without the block base class '" + bem.getBlockName(name)
-          +  "'.",
-          this
-        )
+  HTMLInspector.addRule(
+    "bem-conventions",
+    config,
+    function(listener, reporter, config) {
+      listener.on('class', function(name) {
+        if (config.isElement(name)) {
+          // check the ancestors for the block class
+          if (!$(this).parents().is("." + config.getBlockName(name))) {
+            reporter.addError(
+              "bem-conventions",
+              "The BEM element '" + name
+              + "' must be a descendent of '" + config.getBlockName(name)
+              + "'.",
+              this
+            )
+          }
+        }
+        if (config.isModifier(name)) {
+          if (!$(this).is("." + config.getBlockName(name))) {
+            reporter.addError(
+              "bem-conventions",
+              "The BEM modifier class '" + name
+              + "' was found without the unmodified class '" + config.getBlockName(name)
+              +  "'.",
+              this
+            )
+          }
+        }
       }
-    }
+    )
   })
-
-})
+}())
 
 HTMLInspector.addRule("duplicate-ids", function(listener, reporter) {
 
@@ -1224,7 +1264,7 @@ HTMLInspector.addRule("scoped-styles", function(listener, reporter) {
 
 HTMLInspector.addRule("unused-classes", function(listener, reporter) {
 
-  var css = this.extensions.css
+  var css = HTMLInspector.extensions.css
     , whitelist = css.whitelist
     , classes = css.getClassSelectors()
 
@@ -1244,7 +1284,7 @@ HTMLInspector.addRule("unused-classes", function(listener, reporter) {
 
 HTMLInspector.addRule("validate-attributes", function(listener, reporter) {
 
-  var validation = this.extensions.validation
+  var validation = HTMLInspector.extensions.validation
 
   listener.on("element", function(name) {
     var required = validation.getRequiredAttributesForElement(name)
@@ -1286,7 +1326,7 @@ HTMLInspector.addRule("validate-attributes", function(listener, reporter) {
 
 HTMLInspector.addRule("validate-elements", function(listener, reporter) {
 
-  var validation = this.extensions.validation
+  var validation = HTMLInspector.extensions.validation
 
   listener.on("element", function(name) {
     if (validation.isElementObsolete(name)) {

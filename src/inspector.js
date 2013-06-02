@@ -5,12 +5,17 @@ var HTMLInspector = (function() {
    * and initialize the specified rules
    */
   function setup(useRules, listener, reporter) {
-    useRules = (useRules == "all")
+    useRules = useRules == null
       ? Object.keys(inspector.rules)
       : useRules
     useRules.forEach(function(rule) {
       if (inspector.rules[rule]) {
-        inspector.rules[rule].call(inspector, listener, reporter)
+        inspector.rules[rule].fn.call(
+          inspector.rules[rule].config,
+          listener,
+          reporter,
+          inspector.rules[rule].config
+        )
       }
     })
   }
@@ -56,7 +61,7 @@ var HTMLInspector = (function() {
   var inspector = {
 
     config: {
-      rules: "all",
+      rules: null,
       domRoot: "html",
       complete: function(errors) {
         errors.forEach(function(error) {
@@ -69,8 +74,15 @@ var HTMLInspector = (function() {
 
     extensions: {},
 
-    addRule: function(name, fn) {
-      inspector.rules[name] = fn
+    addRule: function(name, config, fn) {
+      if (typeof config == "function") {
+        fn = config
+        config = {}
+      }
+      inspector.rules[name] = {
+        config: config,
+        fn: fn
+      }
     },
 
     addExtension: function(name, obj) {

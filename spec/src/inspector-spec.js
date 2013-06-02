@@ -39,11 +39,11 @@ describe("HTMLInspector", function() {
     expect(rules[1]).toBe("two")
     expect(rules[2]).toBe("three")
     rules = []
-    HTMLInspector.inspect({rules: ["one"]})
+    HTMLInspector.inspect(["one"])
     expect(rules.length).toBe(1)
     expect(rules[0]).toBe("one")
     rules = []
-    HTMLInspector.inspect({rules: ["one", "two"]})
+    HTMLInspector.inspect(["one", "two"])
     expect(rules.length).toBe(2)
     expect(rules[0]).toBe("one")
     expect(rules[1]).toBe("two")
