@@ -2,7 +2,7 @@ describe("duplicate-ids", function() {
 
   var log
 
-  function complete(reports) {
+  function onComplete(reports) {
     log = []
     reports.forEach(function(report) {
       log.push(report)
@@ -18,9 +18,9 @@ describe("duplicate-ids", function() {
         )
 
     HTMLInspector.inspect({
-      rules: ["duplicate-ids"],
+      useRules: ["duplicate-ids"],
       domRoot: $html,
-      complete: complete
+      onComplete: onComplete
     })
 
     expect(log.length).toBe(2)
@@ -40,9 +40,9 @@ describe("duplicate-ids", function() {
         )
 
     HTMLInspector.inspect({
-      rules: ["duplicate-ids"],
+      useRules: ["duplicate-ids"],
       domRoot: $html,
-      complete: complete
+      onComplete: onComplete
     })
 
     expect(log.length).toBe(0)

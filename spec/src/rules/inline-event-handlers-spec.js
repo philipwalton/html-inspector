@@ -2,7 +2,7 @@ describe("inline-event-handlers", function() {
 
   var log
 
-  function complete(reports) {
+  function onComplete(reports) {
     log = []
     reports.forEach(function(report) {
       log.push(report)
@@ -18,9 +18,9 @@ describe("inline-event-handlers", function() {
         )
 
     HTMLInspector.inspect({
-      rules: ["inline-event-handlers"],
+      useRules: ["inline-event-handlers"],
       domRoot: $html,
-      complete: complete
+      onComplete: onComplete
     })
 
     expect(log.length).toBe(2)
@@ -40,9 +40,9 @@ describe("inline-event-handlers", function() {
         )
 
     HTMLInspector.inspect({
-      rules: ["inline-event-handlers"],
+      useRules: ["inline-event-handlers"],
       domRoot: $html,
-      complete: complete
+      onComplete: onComplete
     })
 
     expect(log.length).toBe(0)

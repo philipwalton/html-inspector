@@ -2,7 +2,7 @@ describe("scoped-styles", function() {
 
   var log
 
-  function complete(reports) {
+  function onComplete(reports) {
     log = []
     reports.forEach(function(report) {
       log.push(report)
@@ -17,9 +17,9 @@ describe("scoped-styles", function() {
         )
 
     HTMLInspector.inspect({
-      rules: ["scoped-styles"],
+      useRules: ["scoped-styles"],
       domRoot: $html,
-      complete: complete
+      onComplete: onComplete
     })
 
     expect(log.length).toBe(1)
@@ -36,9 +36,9 @@ describe("scoped-styles", function() {
         )
 
     HTMLInspector.inspect({
-      rules: ["scoped-styles"],
+      useRules: ["scoped-styles"],
       domRoot: $html,
-      complete: complete
+      onComplete: onComplete
     })
 
     expect(log.length).toBe(0)
@@ -56,9 +56,9 @@ describe("scoped-styles", function() {
         )
 
     HTMLInspector.inspect({
-      rules: ["scoped-styles"],
+      useRules: ["scoped-styles"],
       domRoot: $html,
-      complete: complete
+      onComplete: onComplete
     })
 
     expect(log.length).toBe(0)

@@ -1,4 +1,4 @@
-HTMLInspector.addRule(
+HTMLInspector.rules.add(
   "unnecessary-elements",
   {
     isUnnecessary: function(element) {

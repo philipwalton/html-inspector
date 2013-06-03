@@ -58,7 +58,7 @@
     }
   }
 
-  HTMLInspector.addRule(
+  HTMLInspector.rules.add(
     "bem-conventions",
     config,
     function(listener, reporter, config) {

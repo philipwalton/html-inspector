@@ -77,6 +77,38 @@ Reporter.prototype.getErrors = function() {
   return this._errors
 }
 
+function Rules() {}
+
+Rules.prototype.add = function(name, config, fn) {
+  if (typeof config == "function") {
+    fn = config
+    config = {}
+  }
+  this[name] = {
+    name: name,
+    config: config,
+    fn: fn
+  }
+}
+
+Rules.prototype.extend = function(name, options) {
+  if (typeof options == "function")
+    options = options.call(this[name].config, this[name].config)
+  $.extend(this[name].config, options)
+}
+
+function Modules() {}
+
+Modules.prototype.add = function(name, module) {
+  this[name] = module
+}
+
+Modules.prototype.extend = function(name, options) {
+  if (typeof options == "function")
+    options = options.call(this[name], this[name])
+  $.extend(this[name], options)
+}
+
 var HTMLInspector = (function() {
 
   /**
@@ -128,9 +160,9 @@ var HTMLInspector = (function() {
       {
         config = { domRoot: config }
       } else if (Array.isArray(config)) {
-        config = { rules: config }
+        config = { useRules: config }
       } else if (typeof config == "function") {
-        config = { complete: config }
+        config = { onComplete: config }
       }
     }
     // merge config with the defaults
@@ -140,51 +172,35 @@ var HTMLInspector = (function() {
   var inspector = {
 
     config: {
-      rules: null,
+      useRules: null,
       domRoot: "html",
-      complete: function(errors) {
+      onComplete: function(errors) {
         errors.forEach(function(error) {
           console.warn(error.message, error.context)
         })
       }
     },
 
-    rules: {},
+    rules: new Rules(),
 
-    modules: {},
-
-    addRule: function(name, config, fn) {
-      if (typeof config == "function") {
-        fn = config
-        config = {}
-      }
-      inspector.rules[name] = {
-        config: config,
-        fn: fn
-      }
-    },
-
-    addModule: function(name, obj) {
-      inspector.modules[name] = obj
-    },
+    modules: new Modules(),
 
     inspect: function(config) {
       var listener = new Listener()
         , reporter = new Reporter()
       config = processConfig(config)
-      setup(config.rules, listener, reporter)
+      setup(config.useRules, listener, reporter)
       traverseDOM(config.domRoot, listener)
-      config.complete(reporter.getErrors())
+      config.onComplete(reporter.getErrors())
     }
 
   }
 
-  // mixin the observable module
   return inspector
 
 }())
 
-HTMLInspector.addModule("css", (function() {
+HTMLInspector.modules.add("css", (function() {
 
   var reClassSelector = /\.[a-z0-9_\-]+/ig
 
@@ -234,7 +250,7 @@ HTMLInspector.addModule("css", (function() {
 
 }()))
 
-HTMLInspector.addModule("validation", function() {
+HTMLInspector.modules.add("validation", function() {
 
   // ============================================================
   // A data map of all valid HTML elements, their attributes
@@ -1135,7 +1151,7 @@ HTMLInspector.addModule("validation", function() {
     }
   }
 
-  HTMLInspector.addRule(
+  HTMLInspector.rules.add(
     "bem-conventions",
     config,
     function(listener, reporter, config) {
@@ -1168,7 +1184,7 @@ HTMLInspector.addModule("validation", function() {
   })
 }())
 
-HTMLInspector.addRule("duplicate-ids", function(listener, reporter) {
+HTMLInspector.rules.add("duplicate-ids", function(listener, reporter) {
 
   var elements = []
 
@@ -1209,7 +1225,7 @@ HTMLInspector.addRule("duplicate-ids", function(listener, reporter) {
 
 })
 
-HTMLInspector.addRule("inline-event-handlers", function(listener, reporter) {
+HTMLInspector.rules.add("inline-event-handlers", function(listener, reporter) {
 
   listener.on('attribute', function(name, value) {
     if (name.indexOf("on") === 0) {
@@ -1223,7 +1239,7 @@ HTMLInspector.addRule("inline-event-handlers", function(listener, reporter) {
 
 })
 
-HTMLInspector.addRule("scoped-styles", function(listener, reporter) {
+HTMLInspector.rules.add("scoped-styles", function(listener, reporter) {
 
   var elements = []
 
@@ -1245,7 +1261,7 @@ HTMLInspector.addRule("scoped-styles", function(listener, reporter) {
 
 })
 
-HTMLInspector.addRule(
+HTMLInspector.rules.add(
   "unnecessary-elements",
   {
     isUnnecessary: function(element) {
@@ -1268,7 +1284,7 @@ HTMLInspector.addRule(
   )
 })
 
-HTMLInspector.addRule(
+HTMLInspector.rules.add(
   "unused-classes",
   {
     whitelist: /^js\-|^supports\-|^language\-|^lang\-/
@@ -1292,7 +1308,7 @@ HTMLInspector.addRule(
   )
 })
 
-HTMLInspector.addRule("validate-attributes", function(listener, reporter) {
+HTMLInspector.rules.add("validate-attributes", function(listener, reporter) {
 
   var validation = HTMLInspector.modules.validation
 
@@ -1332,7 +1348,7 @@ HTMLInspector.addRule("validate-attributes", function(listener, reporter) {
 
 })
 
-HTMLInspector.addRule("validate-elements", function(listener, reporter) {
+HTMLInspector.rules.add("validate-elements", function(listener, reporter) {
 
   var validation = HTMLInspector.modules.validation
 

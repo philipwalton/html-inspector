@@ -2,7 +2,7 @@ describe("unnecessary-elements", function() {
 
   var log
 
-  function complete(reports) {
+  function onComplete(reports) {
     log = []
     reports.forEach(function(report) {
       log.push(report)
@@ -19,9 +19,9 @@ describe("unnecessary-elements", function() {
         )
 
     HTMLInspector.inspect({
-      rules: ["unnecessary-elements"],
+      useRules: ["unnecessary-elements"],
       domRoot: $html,
-      complete: complete
+      onComplete: onComplete
     })
 
     expect(log.length).toBe(3)
@@ -44,9 +44,9 @@ describe("unnecessary-elements", function() {
         )
 
     HTMLInspector.inspect({
-      rules: ["unnecessary-elements"],
+      useRules: ["unnecessary-elements"],
       domRoot: $html,
-      complete: complete
+      onComplete: onComplete
     })
 
     expect(log.length).toBe(1)
@@ -64,9 +64,9 @@ describe("unnecessary-elements", function() {
         )
 
     HTMLInspector.inspect({
-      rules: ["unnecessary-elements"],
+      useRules: ["unnecessary-elements"],
       domRoot: $html,
-      complete: complete
+      onComplete: onComplete
     })
 
     expect(log.length).toBe(0)
@@ -80,13 +80,15 @@ describe("unnecessary-elements", function() {
           + '  <span>Foo</span>'
           + '</div>'
         )
-    HTMLInspector.rules["unnecessary-elements"].config.isUnnecessary = function(element) {
-      return element.nodeName === "SPAN"
-    }
+    HTMLInspector.rules.extend("unnecessary-elements", {
+      isUnnecessary: function(element) {
+        return element.nodeName === "SPAN"
+      }
+    })
     HTMLInspector.inspect({
-      rules: ["unnecessary-elements"],
+      useRules: ["unnecessary-elements"],
       domRoot: $html,
-      complete: complete
+      onComplete: onComplete
     })
     expect(log.length).toBe(1)
     expect(log[0].context).toBe($html.find("span")[0])

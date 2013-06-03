@@ -1,4 +1,4 @@
-HTMLInspector.addRule(
+HTMLInspector.rules.add(
   "unused-classes",
   {
     whitelist: /^js\-|^supports\-|^language\-|^lang\-/

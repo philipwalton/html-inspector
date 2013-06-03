@@ -1,4 +1,4 @@
-HTMLInspector.addRule("scoped-styles", function(listener, reporter) {
+HTMLInspector.rules.add("scoped-styles", function(listener, reporter) {
 
   var elements = []
 

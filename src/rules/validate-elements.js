@@ -1,4 +1,4 @@
-HTMLInspector.addRule("validate-elements", function(listener, reporter) {
+HTMLInspector.rules.add("validate-elements", function(listener, reporter) {
 
   var validation = HTMLInspector.modules.validation
 

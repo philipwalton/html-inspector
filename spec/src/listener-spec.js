@@ -5,11 +5,11 @@ describe("Listener", function() {
   function getListenerConstructor() {
     var Listener
       , originalRules = HTMLInspector.rules
-    HTMLInspector.addRule("listener", function(listener) {
+    HTMLInspector.rules.add("listener", function(listener) {
       Listener = listener.constructor
     })
     HTMLInspector.inspect({
-      rules: ["listener"],
+      useRules: ["listener"],
       domRoot: document.createElement("div")
     })
     HTMLInspector.rules = originalRules

@@ -2,7 +2,7 @@ describe("unused-classes", function() {
 
   var log
 
-  function complete(reports) {
+  function onComplete(reports) {
     log = []
     reports.forEach(function(report) {
       log.push(report)
@@ -17,9 +17,9 @@ describe("unused-classes", function() {
         )
 
     HTMLInspector.inspect({
-      rules: ["unused-classes"],
+      useRules: ["unused-classes"],
       domRoot: $html,
-      complete: complete
+      onComplete: onComplete
     })
 
     expect(log[0].message).toBe("The class 'fizz' is used in the HTML but not found in any stylesheet.")
@@ -39,9 +39,9 @@ describe("unused-classes", function() {
         )
 
     HTMLInspector.inspect({
-      rules: ["unused-classes"],
+      useRules: ["unused-classes"],
       domRoot: $html,
-      complete: complete
+      onComplete: onComplete
     })
 
     expect(log.length).toBe(0)
@@ -56,12 +56,12 @@ describe("unused-classes", function() {
           + '</div>'
         )
 
-    HTMLInspector.rules["unused-classes"].config.whitelist = /foo|bar/
+    HTMLInspector.rules.extend("unused-classes", {whitelist: /foo|bar/})
 
     HTMLInspector.inspect({
-      rules: ["unused-classes"],
+      useRules: ["unused-classes"],
       domRoot: $html,
-      complete: complete
+      onComplete: onComplete
     })
 
     expect(log.length).toBe(2)

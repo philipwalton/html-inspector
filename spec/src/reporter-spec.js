@@ -5,11 +5,11 @@ describe("Reporter", function() {
   function getReporterConstructor() {
     var Reporter
       , originalRules = HTMLInspector.rules
-    HTMLInspector.addRule("reporter", function(reporter, reporter) {
+    HTMLInspector.rules.add("reporter", function(reporter, reporter) {
       Reporter = reporter.constructor
     })
     HTMLInspector.inspect({
-      rules: ["reporter"],
+      useRules: ["reporter"],
       domRoot: document.createElement("div")
     })
     HTMLInspector.rules = originalRules

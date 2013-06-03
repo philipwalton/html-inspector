@@ -4,33 +4,26 @@ describe("HTMLInspector", function() {
     , originalModules = HTMLInspector.modules
 
   beforeEach(function() {
-    HTMLInspector.rules = {}
+    // remove all rule and modules
+    HTMLInspector.rules = new originalRules.constructor()
+    HTMLInspector.modules = new originalModules.constructor()
   })
 
   afterEach(function() {
+    // restore all rules and modules
     HTMLInspector.rules = originalRules
     HTMLInspector.modules = originalModules
   })
 
-  it("can add new rules", function() {
-    HTMLInspector.addRule("new-rule", $.noop)
-    expect(HTMLInspector.rules["new-rule"]).toBeDefined()
-  })
-
-  it("can add new modules", function() {
-    HTMLInspector.addModule("new-module", {})
-    expect(HTMLInspector.modules["new-module"]).toBeDefined()
-  })
-
   it("only runs the specified rules (or all rules if none are specified)", function() {
     var rules = []
-    HTMLInspector.addRule("one", function(listener, reporter) {
+    HTMLInspector.rules.add("one", function(listener, reporter) {
       listener.on("beforeInspect", function(name) { rules.push("one") })
     })
-    HTMLInspector.addRule("two", function(listener, reporter) {
+    HTMLInspector.rules.add("two", function(listener, reporter) {
       listener.on("beforeInspect", function(name) { rules.push("two") })
     })
-    HTMLInspector.addRule("three", function(listener, reporter) {
+    HTMLInspector.rules.add("three", function(listener, reporter) {
       listener.on("beforeInspect", function(name) { rules.push("three") })
     })
     HTMLInspector.inspect()
@@ -49,20 +42,18 @@ describe("HTMLInspector", function() {
     expect(rules[1]).toBe("two")
   })
 
-  it("invokes the complete callback passing in an array of errors", function() {
+  it("invokes the onComplete callback passing in an array of errors", function() {
     var log
-    HTMLInspector.addRule("one-two", function(listener, reporter) {
+    HTMLInspector.rules.add("one-two", function(listener, reporter) {
       reporter.addError("one-two", "This is the `one` error message", document)
       reporter.addError("one-two", "This is the `two` error message", document)
 
     })
-    HTMLInspector.addRule("three", function(listener, reporter) {
+    HTMLInspector.rules.add("three", function(listener, reporter) {
       reporter.addError("three", "This is the `three` error message", document)
     })
-    HTMLInspector.inspect({
-      complete: function(errors) {
-        log = errors
-      }
+    HTMLInspector.inspect(function(errors) {
+      log = errors
     })
     expect(log.length).toBe(3)
     expect(log[0].message).toBe("This is the `one` error message")
@@ -73,14 +64,25 @@ describe("HTMLInspector", function() {
   it("accepts a variety of options for the config paramter", function() {
     var log = []
       , div = document.createElement("div")
-    HTMLInspector.addRule("dom", function(listener, reporter) {
+    HTMLInspector.rules.add("dom", function(listener, reporter) {
       listener.on("element", function(name) {
         log.push(this)
       })
     })
-    HTMLInspector.addRule("rules", function() {
+    HTMLInspector.rules.add("rules", function() {
       log.push("rules")
     })
+    // if it's an object, assume it's the full config object
+    HTMLInspector.inspect({
+      useRules: ["dom"],
+      domRoot: "<p>foobar</p>",
+      onComplete: function(errors) {
+        log.push("done")
+      }
+    })
+    expect(log.length).toBe(2)
+    expect(log[0].innerHTML).toBe("foobar")
+    expect(log[1]).toBe("done")
     // if it's an array, assume it's a list of rules
     HTMLInspector.inspect(["dom"])
     expect(log[0]).not.toBe("rules")
@@ -125,7 +127,7 @@ describe("HTMLInspector", function() {
 
     it("inspects the HTML starting from the specified domRoot", function() {
       var events = []
-      HTMLInspector.addRule("traverse-test", function(listener, reporter) {
+      HTMLInspector.rules.add("traverse-test", function(listener, reporter) {
         listener.on("element", function(name) {
           events.push(name)
         })
@@ -139,7 +141,7 @@ describe("HTMLInspector", function() {
 
     it("triggers `beforeInspect` before the DOM traversal", function() {
       var events = []
-      HTMLInspector.addRule("traverse-test", function(listener, reporter) {
+      HTMLInspector.rules.add("traverse-test", function(listener, reporter) {
         listener.on("beforeInspect", function() {
           events.push("beforeInspect")
         })
@@ -155,7 +157,7 @@ describe("HTMLInspector", function() {
 
     it("traverses the DOM emitting events for each element", function() {
       var events = []
-      HTMLInspector.addRule("traverse-test", function(listener, reporter) {
+      HTMLInspector.rules.add("traverse-test", function(listener, reporter) {
         listener.on("element", function(name) {
           events.push(name)
         })
@@ -175,7 +177,7 @@ describe("HTMLInspector", function() {
 
     it("traverses the DOM emitting events for each id attribute", function() {
       var events = []
-      HTMLInspector.addRule("traverse-test", function(listener, reporter) {
+      HTMLInspector.rules.add("traverse-test", function(listener, reporter) {
         listener.on("id", function(name) {
           events.push(name)
         })
@@ -188,7 +190,7 @@ describe("HTMLInspector", function() {
 
     it("traverses the DOM emitting events for each class attribute", function() {
       var events = []
-      HTMLInspector.addRule("traverse-test", function(listener, reporter) {
+      HTMLInspector.rules.add("traverse-test", function(listener, reporter) {
         listener.on("class", function(name) {
           events.push(name)
         })
@@ -204,7 +206,7 @@ describe("HTMLInspector", function() {
 
     it("traverses the DOM emitting events for each attribute", function() {
       var events = []
-      HTMLInspector.addRule("traverse-test", function(listener, reporter) {
+      HTMLInspector.rules.add("traverse-test", function(listener, reporter) {
         listener.on("attribute", function(name, value) {
           events.push({name:name, value:value})
         })
@@ -226,7 +228,7 @@ describe("HTMLInspector", function() {
 
     it("triggers `afterInspect` after the DOM traversal", function() {
       var events = []
-      HTMLInspector.addRule("traverse-test", function(listener, reporter) {
+      HTMLInspector.rules.add("traverse-test", function(listener, reporter) {
         listener.on("afterInspect", function() {
           events.push("afterInspect")
         })

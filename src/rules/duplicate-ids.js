@@ -1,4 +1,4 @@
-HTMLInspector.addRule("duplicate-ids", function(listener, reporter) {
+HTMLInspector.rules.add("duplicate-ids", function(listener, reporter) {
 
   var elements = []
 

@@ -1,4 +1,4 @@
-HTMLInspector.addRule("inline-event-handlers", function(listener, reporter) {
+HTMLInspector.rules.add("inline-event-handlers", function(listener, reporter) {
 
   listener.on('attribute', function(name, value) {
     if (name.indexOf("on") === 0) {

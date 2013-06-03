@@ -1,4 +1,4 @@
-HTMLInspector.addRule("validate-attributes", function(listener, reporter) {
+HTMLInspector.rules.add("validate-attributes", function(listener, reporter) {
 
   var validation = HTMLInspector.modules.validation
 

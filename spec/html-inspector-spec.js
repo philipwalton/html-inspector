@@ -4,33 +4,26 @@ describe("HTMLInspector", function() {
     , originalModules = HTMLInspector.modules
 
   beforeEach(function() {
-    HTMLInspector.rules = {}
+    // remove all rule and modules
+    HTMLInspector.rules = new originalRules.constructor()
+    HTMLInspector.modules = new originalModules.constructor()
   })
 
   afterEach(function() {
+    // restore all rules and modules
     HTMLInspector.rules = originalRules
     HTMLInspector.modules = originalModules
   })
 
-  it("can add new rules", function() {
-    HTMLInspector.addRule("new-rule", $.noop)
-    expect(HTMLInspector.rules["new-rule"]).toBeDefined()
-  })
-
-  it("can add new modules", function() {
-    HTMLInspector.addModule("new-module", {})
-    expect(HTMLInspector.modules["new-module"]).toBeDefined()
-  })
-
   it("only runs the specified rules (or all rules if none are specified)", function() {
     var rules = []
-    HTMLInspector.addRule("one", function(listener, reporter) {
+    HTMLInspector.rules.add("one", function(listener, reporter) {
       listener.on("beforeInspect", function(name) { rules.push("one") })
     })
-    HTMLInspector.addRule("two", function(listener, reporter) {
+    HTMLInspector.rules.add("two", function(listener, reporter) {
       listener.on("beforeInspect", function(name) { rules.push("two") })
     })
-    HTMLInspector.addRule("three", function(listener, reporter) {
+    HTMLInspector.rules.add("three", function(listener, reporter) {
       listener.on("beforeInspect", function(name) { rules.push("three") })
     })
     HTMLInspector.inspect()
@@ -49,20 +42,18 @@ describe("HTMLInspector", function() {
     expect(rules[1]).toBe("two")
   })
 
-  it("invokes the complete callback passing in an array of errors", function() {
+  it("invokes the onComplete callback passing in an array of errors", function() {
     var log
-    HTMLInspector.addRule("one-two", function(listener, reporter) {
+    HTMLInspector.rules.add("one-two", function(listener, reporter) {
       reporter.addError("one-two", "This is the `one` error message", document)
       reporter.addError("one-two", "This is the `two` error message", document)
 
     })
-    HTMLInspector.addRule("three", function(listener, reporter) {
+    HTMLInspector.rules.add("three", function(listener, reporter) {
       reporter.addError("three", "This is the `three` error message", document)
     })
-    HTMLInspector.inspect({
-      complete: function(errors) {
-        log = errors
-      }
+    HTMLInspector.inspect(function(errors) {
+      log = errors
     })
     expect(log.length).toBe(3)
     expect(log[0].message).toBe("This is the `one` error message")
@@ -73,14 +64,25 @@ describe("HTMLInspector", function() {
   it("accepts a variety of options for the config paramter", function() {
     var log = []
       , div = document.createElement("div")
-    HTMLInspector.addRule("dom", function(listener, reporter) {
+    HTMLInspector.rules.add("dom", function(listener, reporter) {
       listener.on("element", function(name) {
         log.push(this)
       })
     })
-    HTMLInspector.addRule("rules", function() {
+    HTMLInspector.rules.add("rules", function() {
       log.push("rules")
     })
+    // if it's an object, assume it's the full config object
+    HTMLInspector.inspect({
+      useRules: ["dom"],
+      domRoot: "<p>foobar</p>",
+      onComplete: function(errors) {
+        log.push("done")
+      }
+    })
+    expect(log.length).toBe(2)
+    expect(log[0].innerHTML).toBe("foobar")
+    expect(log[1]).toBe("done")
     // if it's an array, assume it's a list of rules
     HTMLInspector.inspect(["dom"])
     expect(log[0]).not.toBe("rules")
@@ -125,7 +127,7 @@ describe("HTMLInspector", function() {
 
     it("inspects the HTML starting from the specified domRoot", function() {
       var events = []
-      HTMLInspector.addRule("traverse-test", function(listener, reporter) {
+      HTMLInspector.rules.add("traverse-test", function(listener, reporter) {
         listener.on("element", function(name) {
           events.push(name)
         })
@@ -139,7 +141,7 @@ describe("HTMLInspector", function() {
 
     it("triggers `beforeInspect` before the DOM traversal", function() {
       var events = []
-      HTMLInspector.addRule("traverse-test", function(listener, reporter) {
+      HTMLInspector.rules.add("traverse-test", function(listener, reporter) {
         listener.on("beforeInspect", function() {
           events.push("beforeInspect")
         })
@@ -155,7 +157,7 @@ describe("HTMLInspector", function() {
 
     it("traverses the DOM emitting events for each element", function() {
       var events = []
-      HTMLInspector.addRule("traverse-test", function(listener, reporter) {
+      HTMLInspector.rules.add("traverse-test", function(listener, reporter) {
         listener.on("element", function(name) {
           events.push(name)
         })
@@ -175,7 +177,7 @@ describe("HTMLInspector", function() {
 
     it("traverses the DOM emitting events for each id attribute", function() {
       var events = []
-      HTMLInspector.addRule("traverse-test", function(listener, reporter) {
+      HTMLInspector.rules.add("traverse-test", function(listener, reporter) {
         listener.on("id", function(name) {
           events.push(name)
         })
@@ -188,7 +190,7 @@ describe("HTMLInspector", function() {
 
     it("traverses the DOM emitting events for each class attribute", function() {
       var events = []
-      HTMLInspector.addRule("traverse-test", function(listener, reporter) {
+      HTMLInspector.rules.add("traverse-test", function(listener, reporter) {
         listener.on("class", function(name) {
           events.push(name)
         })
@@ -204,7 +206,7 @@ describe("HTMLInspector", function() {
 
     it("traverses the DOM emitting events for each attribute", function() {
       var events = []
-      HTMLInspector.addRule("traverse-test", function(listener, reporter) {
+      HTMLInspector.rules.add("traverse-test", function(listener, reporter) {
         listener.on("attribute", function(name, value) {
           events.push({name:name, value:value})
         })
@@ -226,7 +228,7 @@ describe("HTMLInspector", function() {
 
     it("triggers `afterInspect` after the DOM traversal", function() {
       var events = []
-      HTMLInspector.addRule("traverse-test", function(listener, reporter) {
+      HTMLInspector.rules.add("traverse-test", function(listener, reporter) {
         listener.on("afterInspect", function() {
           events.push("afterInspect")
         })
@@ -249,11 +251,11 @@ describe("Listener", function() {
   function getListenerConstructor() {
     var Listener
       , originalRules = HTMLInspector.rules
-    HTMLInspector.addRule("listener", function(listener) {
+    HTMLInspector.rules.add("listener", function(listener) {
       Listener = listener.constructor
     })
     HTMLInspector.inspect({
-      rules: ["listener"],
+      useRules: ["listener"],
       domRoot: document.createElement("div")
     })
     HTMLInspector.rules = originalRules
@@ -299,11 +301,11 @@ describe("Reporter", function() {
   function getReporterConstructor() {
     var Reporter
       , originalRules = HTMLInspector.rules
-    HTMLInspector.addRule("reporter", function(reporter, reporter) {
+    HTMLInspector.rules.add("reporter", function(reporter, reporter) {
       Reporter = reporter.constructor
     })
     HTMLInspector.inspect({
-      rules: ["reporter"],
+      useRules: ["reporter"],
       domRoot: document.createElement("div")
     })
     HTMLInspector.rules = originalRules
@@ -331,20 +333,163 @@ describe("Reporter", function() {
   })
 
 })
-describe("Rules", function() {
+describe("Modules", function() {
 
-  var originalRules = HTMLInspector.rules
-    , originalModules = HTMLInspector.modules
+  it("can add a new module", function() {
+    HTMLInspector.modules.add("new-module", {})
+    expect(HTMLInspector.modules["new-module"]).toBeDefined()
+    ;delete HTMLInspector.modules["new-module"]
+  })
+
+  it("can extend an existing module with an options object", function() {
+    HTMLInspector.modules.add("new-module", {foo: "bar"})
+    HTMLInspector.modules.extend("new-module", {fizz: "buzz"})
+    expect(HTMLInspector.modules["new-module"]).toEqual({foo:"bar", fizz:"buzz"})
+    ;delete HTMLInspector.modules["new-module"]
+  })
+
+  it("can extend an existing module with a function that returns an options object", function() {
+    HTMLInspector.modules.add("new-module", {list: [1]})
+    HTMLInspector.modules.extend("new-module", function() {
+      this.list.push(2)
+      this.foo = "bar"
+      return this
+    })
+    expect(HTMLInspector.modules["new-module"]).toEqual({list:[1, 2], foo:"bar"})
+    ;delete HTMLInspector.modules["new-module"]
+  })
+describe("css", function() {
+
+  var css = HTMLInspector.modules.css
+    , originalStyleSheets = css.styleSheets
+    , classes = ["alpha", "bar", "bravo", "charlie", "delta", "echo", "foo"]
 
   afterEach(function() {
-    HTMLInspector.rules = originalRules
-    HTMLInspector.modules = originalModules
+    css.styleSheets = originalStyleSheets
+  })
+
+  it("can filter the searched style sheets via the styleSheets selector", function() {
+    css.styleSheets = "link[href$='jasmine.css']"
+    var classes = css.getClassSelectors()
+    // limiting the style sheets to only jasmine.css means
+    // .alpha, .bravo, and .charlie won't be there
+    expect(classes.indexOf("alpha")).toEqual(-1)
+    expect(classes.indexOf("bravo")).toEqual(-1)
+    expect(classes.indexOf("charlie")).toEqual(-1)
+  })
+
+  it("can get all the class selectors in the style sheets", function() {
+    css.styleSheets = "link[href$='-spec.css']"
+    expect(css.getClassSelectors()).toEqual(classes)
+  })
+
+  it("can include both <link> and <style> elements", function() {
+    var extraClasses = classes.concat(["style", "fizz", "buzz"]).sort()
+    // first remove any style tags browser modules might be putting in
+    $("style").remove()
+    $("head").append(""
+      + "<style id='style'>"
+      + ".style .foo, .style .bar { visiblility: visible }"
+      + ".style .fizz, .style .buzz { visiblility: visible }"
+      + "</style>"
+    )
+    css.styleSheets = "link[href$='-spec.css'], style"
+    expect(css.getClassSelectors()).toEqual(extraClasses)
+    $("#style").remove()
+  })
+
+})
+describe("validation", function() {
+
+  var validation = HTMLInspector.modules.validation
+
+  it("can determine if an element is a valid HTML element", function() {
+    expect(validation.isElementValid("p")).toBe(true)
+    expect(validation.isElementValid("time")).toBe(true)
+    expect(validation.isElementValid("bogus")).toBe(false)
+    expect(validation.isElementValid("hgroup")).toBe(false)
+  })
+
+  it("can determine if an element is obsolete", function() {
+    expect(validation.isElementObsolete("p")).toBe(false)
+    expect(validation.isElementObsolete("bogus")).toBe(false)
+    expect(validation.isElementObsolete("hgroup")).toBe(true)
+    expect(validation.isElementObsolete("blink")).toBe(true)
+    expect(validation.isElementObsolete("center")).toBe(true)
+  })
+
+  it("can determine if an attribute is allowed on an element", function() {
+    expect(validation.isAttributeValidForElement("href", "a")).toBe(true)
+    expect(validation.isAttributeValidForElement("aria-foobar", "nav")).toBe(true)
+    expect(validation.isAttributeValidForElement("data-stuff", "section")).toBe(true)
+    expect(validation.isAttributeValidForElement("href", "button")).toBe(false)
+    expect(validation.isAttributeValidForElement("placeholder", "select")).toBe(false)
+  })
+
+  it("can determine if an attribute is obsolute for an element", function() {
+    expect(validation.isAttributeObsoleteForElement("align", "div")).toBe(true)
+    expect(validation.isAttributeObsoleteForElement("bgcolor", "body")).toBe(true)
+    expect(validation.isAttributeObsoleteForElement("border", "img")).toBe(true)
+    expect(validation.isAttributeObsoleteForElement("href", "div")).toBe(false)
+    expect(validation.isAttributeObsoleteForElement("charset", "meta")).toBe(false)
+  })
+
+  it("can determine if an attribute is required for an element", function() {
+    expect(validation.isAttributeRequiredForElement("src", "img")).toBe(true)
+    expect(validation.isAttributeRequiredForElement("alt", "img")).toBe(true)
+    expect(validation.isAttributeRequiredForElement("action", "form")).toBe(true)
+    expect(validation.isAttributeRequiredForElement("rows", "textarea")).toBe(true)
+    expect(validation.isAttributeRequiredForElement("cols", "textarea")).toBe(true)
+    expect(validation.isAttributeRequiredForElement("id", "div")).toBe(false)
+    expect(validation.isAttributeRequiredForElement("target", "a")).toBe(false)
+  })
+
+  it("can get a list of required attribute given an element", function() {
+    expect(validation.getRequiredAttributesForElement("img")).toEqual(["alt", "src"])
+    expect(validation.getRequiredAttributesForElement("optgroup")).toEqual(["label"])
+    expect(validation.getRequiredAttributesForElement("form")).toEqual(["action"])
+    expect(validation.getRequiredAttributesForElement("div")).toEqual([])
+  })
+
+
+})
+})
+describe("Rules", function() {
+
+  it("can add a new rule", function() {
+    HTMLInspector.rules.add("new-rule", $.noop)
+    expect(HTMLInspector.rules["new-rule"]).toBeDefined()
+    ;delete HTMLInspector.rules["new-rule"]
+  })
+
+  it("can extend an existing rule with an options object", function() {
+    var config = {foo: "bar"}
+    HTMLInspector.rules.add("new-rule", config, $.noop)
+    HTMLInspector.rules.extend("new-rule", {fizz: "buzz"})
+    expect(HTMLInspector.rules["new-rule"].config).toEqual({foo:"bar", fizz:"buzz"})
+    ;delete HTMLInspector.rules["new-rule"]
+  })
+
+  it("can extend an existing rule with a function that returns an options object", function() {
+    var config = {list: [1]}
+    HTMLInspector.rules.add("new-rule", config, $.noop)
+    HTMLInspector.rules.extend("new-rule", function(config) {
+      config.list.push(2)
+      return config
+    })
+    expect(HTMLInspector.rules["new-rule"].config).toEqual({list:[1, 2]})
+    HTMLInspector.rules.extend("new-rule", function(config) {
+      this.foo = "bar"
+      return this
+    })
+    expect(HTMLInspector.rules["new-rule"].config).toEqual({list:[1, 2], foo:"bar"})
+    ;delete HTMLInspector.rules["new-rule"]
   })
 describe("bem-conventions", function() {
 
   var log
 
-  function complete(reports) {
+  function onComplete(reports) {
     log = []
     reports.forEach(function(report) {
       log.push(report)
@@ -441,9 +586,9 @@ describe("bem-conventions", function() {
           + '</div>'
         )
     HTMLInspector.inspect({
-      rules: ["bem-conventions"],
+      useRules: ["bem-conventions"],
       domRoot: $html,
-      complete: complete
+      onComplete: onComplete
     })
     expect(log.length).toBe(2)
     expect(log[0].message).toBe("The BEM element 'BlockTwo-element' must be a descendent of 'BlockTwo'.")
@@ -460,9 +605,9 @@ describe("bem-conventions", function() {
           + '</div>'
         )
     HTMLInspector.inspect({
-      rules: ["bem-conventions"],
+      useRules: ["bem-conventions"],
       domRoot: $html,
-      complete: complete
+      onComplete: onComplete
     })
     expect(log.length).toBe(0)
   })
@@ -475,9 +620,9 @@ describe("bem-conventions", function() {
           + '</div>'
         )
     HTMLInspector.inspect({
-      rules: ["bem-conventions"],
+      useRules: ["bem-conventions"],
       domRoot: $html,
-      complete: complete
+      onComplete: onComplete
     })
     expect(log.length).toBe(3)
     expect(log[0].message).toBe("The BEM modifier class 'BlockOne--active' was found without the unmodified class 'BlockOne'.")
@@ -496,9 +641,9 @@ describe("bem-conventions", function() {
           + '</div>'
         )
     HTMLInspector.inspect({
-      rules: ["bem-conventions"],
+      useRules: ["bem-conventions"],
       domRoot: $html,
-      complete: complete
+      onComplete: onComplete
     })
     expect(log.length).toBe(0)
   })
@@ -510,14 +655,16 @@ describe("bem-conventions", function() {
           + '  <p class="block-three___element-name">Bar</p>'
           + '</div>'
         )
-    HTMLInspector.rules["bem-conventions"].config.methods.push({
-      modifier: /^((?:[a-z]+\-)*[a-z]+(?:___(?:[a-z]+\-)*[a-z]+)?)\-\-\-(?:[a-z]+\-)*[a-z]+$/,
-      element: /^((?:[a-z]+\-)*[a-z]+)___(?:[a-z]+\-)*[a-z]+$/
+    HTMLInspector.rules.extend("bem-conventions", {
+      methods: [{
+        modifier: /^((?:[a-z]+\-)*[a-z]+(?:___(?:[a-z]+\-)*[a-z]+)?)\-\-\-(?:[a-z]+\-)*[a-z]+$/,
+        element: /^((?:[a-z]+\-)*[a-z]+)___(?:[a-z]+\-)*[a-z]+$/
+      }]
     })
     HTMLInspector.inspect({
-      rules: ["bem-conventions"],
+      useRules: ["bem-conventions"],
       domRoot: $html,
-      complete: complete
+      onComplete: onComplete
     })
     expect(log.length).toBe(2)
     expect(log[0].message).toBe("The BEM modifier class 'block-two---valid-name' was found without the unmodified class 'block-two'.")
@@ -529,7 +676,7 @@ describe("duplicate-ids", function() {
 
   var log
 
-  function complete(reports) {
+  function onComplete(reports) {
     log = []
     reports.forEach(function(report) {
       log.push(report)
@@ -545,9 +692,9 @@ describe("duplicate-ids", function() {
         )
 
     HTMLInspector.inspect({
-      rules: ["duplicate-ids"],
+      useRules: ["duplicate-ids"],
       domRoot: $html,
-      complete: complete
+      onComplete: onComplete
     })
 
     expect(log.length).toBe(2)
@@ -567,9 +714,9 @@ describe("duplicate-ids", function() {
         )
 
     HTMLInspector.inspect({
-      rules: ["duplicate-ids"],
+      useRules: ["duplicate-ids"],
       domRoot: $html,
-      complete: complete
+      onComplete: onComplete
     })
 
     expect(log.length).toBe(0)
@@ -581,7 +728,7 @@ describe("inline-event-handlers", function() {
 
   var log
 
-  function complete(reports) {
+  function onComplete(reports) {
     log = []
     reports.forEach(function(report) {
       log.push(report)
@@ -597,9 +744,9 @@ describe("inline-event-handlers", function() {
         )
 
     HTMLInspector.inspect({
-      rules: ["inline-event-handlers"],
+      useRules: ["inline-event-handlers"],
       domRoot: $html,
-      complete: complete
+      onComplete: onComplete
     })
 
     expect(log.length).toBe(2)
@@ -619,9 +766,9 @@ describe("inline-event-handlers", function() {
         )
 
     HTMLInspector.inspect({
-      rules: ["inline-event-handlers"],
+      useRules: ["inline-event-handlers"],
       domRoot: $html,
-      complete: complete
+      onComplete: onComplete
     })
 
     expect(log.length).toBe(0)
@@ -633,7 +780,7 @@ describe("scoped-styles", function() {
 
   var log
 
-  function complete(reports) {
+  function onComplete(reports) {
     log = []
     reports.forEach(function(report) {
       log.push(report)
@@ -648,9 +795,9 @@ describe("scoped-styles", function() {
         )
 
     HTMLInspector.inspect({
-      rules: ["scoped-styles"],
+      useRules: ["scoped-styles"],
       domRoot: $html,
-      complete: complete
+      onComplete: onComplete
     })
 
     expect(log.length).toBe(1)
@@ -667,9 +814,9 @@ describe("scoped-styles", function() {
         )
 
     HTMLInspector.inspect({
-      rules: ["scoped-styles"],
+      useRules: ["scoped-styles"],
       domRoot: $html,
-      complete: complete
+      onComplete: onComplete
     })
 
     expect(log.length).toBe(0)
@@ -687,9 +834,9 @@ describe("scoped-styles", function() {
         )
 
     HTMLInspector.inspect({
-      rules: ["scoped-styles"],
+      useRules: ["scoped-styles"],
       domRoot: $html,
-      complete: complete
+      onComplete: onComplete
     })
 
     expect(log.length).toBe(0)
@@ -702,7 +849,7 @@ describe("unnecessary-elements", function() {
 
   var log
 
-  function complete(reports) {
+  function onComplete(reports) {
     log = []
     reports.forEach(function(report) {
       log.push(report)
@@ -719,9 +866,9 @@ describe("unnecessary-elements", function() {
         )
 
     HTMLInspector.inspect({
-      rules: ["unnecessary-elements"],
+      useRules: ["unnecessary-elements"],
       domRoot: $html,
-      complete: complete
+      onComplete: onComplete
     })
 
     expect(log.length).toBe(3)
@@ -744,9 +891,9 @@ describe("unnecessary-elements", function() {
         )
 
     HTMLInspector.inspect({
-      rules: ["unnecessary-elements"],
+      useRules: ["unnecessary-elements"],
       domRoot: $html,
-      complete: complete
+      onComplete: onComplete
     })
 
     expect(log.length).toBe(1)
@@ -764,9 +911,9 @@ describe("unnecessary-elements", function() {
         )
 
     HTMLInspector.inspect({
-      rules: ["unnecessary-elements"],
+      useRules: ["unnecessary-elements"],
       domRoot: $html,
-      complete: complete
+      onComplete: onComplete
     })
 
     expect(log.length).toBe(0)
@@ -780,13 +927,15 @@ describe("unnecessary-elements", function() {
           + '  <span>Foo</span>'
           + '</div>'
         )
-    HTMLInspector.rules["unnecessary-elements"].config.isUnnecessary = function(element) {
-      return element.nodeName === "SPAN"
-    }
+    HTMLInspector.rules.extend("unnecessary-elements", {
+      isUnnecessary: function(element) {
+        return element.nodeName === "SPAN"
+      }
+    })
     HTMLInspector.inspect({
-      rules: ["unnecessary-elements"],
+      useRules: ["unnecessary-elements"],
       domRoot: $html,
-      complete: complete
+      onComplete: onComplete
     })
     expect(log.length).toBe(1)
     expect(log[0].context).toBe($html.find("span")[0])
@@ -799,7 +948,7 @@ describe("unused-classes", function() {
 
   var log
 
-  function complete(reports) {
+  function onComplete(reports) {
     log = []
     reports.forEach(function(report) {
       log.push(report)
@@ -814,9 +963,9 @@ describe("unused-classes", function() {
         )
 
     HTMLInspector.inspect({
-      rules: ["unused-classes"],
+      useRules: ["unused-classes"],
       domRoot: $html,
-      complete: complete
+      onComplete: onComplete
     })
 
     expect(log[0].message).toBe("The class 'fizz' is used in the HTML but not found in any stylesheet.")
@@ -836,9 +985,9 @@ describe("unused-classes", function() {
         )
 
     HTMLInspector.inspect({
-      rules: ["unused-classes"],
+      useRules: ["unused-classes"],
       domRoot: $html,
-      complete: complete
+      onComplete: onComplete
     })
 
     expect(log.length).toBe(0)
@@ -853,12 +1002,12 @@ describe("unused-classes", function() {
           + '</div>'
         )
 
-    HTMLInspector.rules["unused-classes"].config.whitelist = /foo|bar/
+    HTMLInspector.rules.extend("unused-classes", {whitelist: /foo|bar/})
 
     HTMLInspector.inspect({
-      rules: ["unused-classes"],
+      useRules: ["unused-classes"],
       domRoot: $html,
-      complete: complete
+      onComplete: onComplete
     })
 
     expect(log.length).toBe(2)
@@ -873,7 +1022,7 @@ describe("validate-attributes", function() {
 
   var log
 
-  function complete(reports) {
+  function onComplete(reports) {
     log = []
     reports.forEach(function(report) {
       log.push(report)
@@ -897,9 +1046,9 @@ describe("validate-attributes", function() {
         )
 
     HTMLInspector.inspect({
-      rules: ["validate-attributes"],
+      useRules: ["validate-attributes"],
       domRoot: $html,
-      complete: complete
+      onComplete: onComplete
     })
 
     expect(log.length).toBe(5)
@@ -929,9 +1078,9 @@ describe("validate-attributes", function() {
         )
 
     HTMLInspector.inspect({
-      rules: ["validate-attributes"],
+      useRules: ["validate-attributes"],
       domRoot: $html,
-      complete: complete
+      onComplete: onComplete
     })
 
     expect(log.length).toBe(4)
@@ -958,9 +1107,9 @@ describe("validate-attributes", function() {
         )
 
     HTMLInspector.inspect({
-      rules: ["validate-attributes"],
+      useRules: ["validate-attributes"],
       domRoot: $html,
-      complete: complete
+      onComplete: onComplete
     })
 
     expect(log.length).toBe(5)
@@ -987,9 +1136,9 @@ describe("validate-attributes", function() {
         )
 
     HTMLInspector.inspect({
-      rules: ["validate-attributes"],
+      useRules: ["validate-attributes"],
       domRoot: $html,
-      complete: complete
+      onComplete: onComplete
     })
 
     expect(log.length).toBe(1)
@@ -1005,9 +1154,9 @@ describe("validate-attributes", function() {
         )
 
     HTMLInspector.inspect({
-      rules: ["validate-attributes"],
+      useRules: ["validate-attributes"],
       domRoot: $html,
-      complete: complete
+      onComplete: onComplete
     })
 
     expect(log.length).toBe(0)
@@ -1019,7 +1168,7 @@ describe("validate-elements", function() {
 
   var log
 
-  function complete(reports) {
+  function onComplete(reports) {
     log = []
     reports.forEach(function(report) {
       log.push(report)
@@ -1040,9 +1189,9 @@ describe("validate-elements", function() {
         )
 
     HTMLInspector.inspect({
-      rules: ["validate-elements"],
+      useRules: ["validate-elements"],
       domRoot: $html,
-      complete: complete
+      onComplete: onComplete
     })
 
     expect(log.length).toBe(3)
@@ -1069,9 +1218,9 @@ describe("validate-elements", function() {
         )
 
     HTMLInspector.inspect({
-      rules: ["validate-elements"],
+      useRules: ["validate-elements"],
       domRoot: $html,
-      complete: complete
+      onComplete: onComplete
     })
 
     expect(log.length).toBe(3)
@@ -1094,9 +1243,9 @@ describe("validate-elements", function() {
         )
 
     HTMLInspector.inspect({
-      rules: ["validate-elements"],
+      useRules: ["validate-elements"],
       domRoot: $html,
-      complete: complete
+      onComplete: onComplete
     })
 
     expect(log.length).toBe(1)
@@ -1113,9 +1262,9 @@ describe("validate-elements", function() {
         )
 
     HTMLInspector.inspect({
-      rules: ["validate-elements"],
+      useRules: ["validate-elements"],
       domRoot: $html,
-      complete: complete
+      onComplete: onComplete
     })
 
     expect(log.length).toBe(0)

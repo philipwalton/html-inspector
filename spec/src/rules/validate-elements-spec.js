@@ -2,7 +2,7 @@ describe("validate-elements", function() {
 
   var log
 
-  function complete(reports) {
+  function onComplete(reports) {
     log = []
     reports.forEach(function(report) {
       log.push(report)
@@ -23,9 +23,9 @@ describe("validate-elements", function() {
         )
 
     HTMLInspector.inspect({
-      rules: ["validate-elements"],
+      useRules: ["validate-elements"],
       domRoot: $html,
-      complete: complete
+      onComplete: onComplete
     })
 
     expect(log.length).toBe(3)
@@ -52,9 +52,9 @@ describe("validate-elements", function() {
         )
 
     HTMLInspector.inspect({
-      rules: ["validate-elements"],
+      useRules: ["validate-elements"],
       domRoot: $html,
-      complete: complete
+      onComplete: onComplete
     })
 
     expect(log.length).toBe(3)
@@ -77,9 +77,9 @@ describe("validate-elements", function() {
         )
 
     HTMLInspector.inspect({
-      rules: ["validate-elements"],
+      useRules: ["validate-elements"],
       domRoot: $html,
-      complete: complete
+      onComplete: onComplete
     })
 
     expect(log.length).toBe(1)
@@ -96,9 +96,9 @@ describe("validate-elements", function() {
         )
 
     HTMLInspector.inspect({
-      rules: ["validate-elements"],
+      useRules: ["validate-elements"],
       domRoot: $html,
-      complete: complete
+      onComplete: onComplete
     })
 
     expect(log.length).toBe(0)

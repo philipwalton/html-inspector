@@ -2,7 +2,7 @@ describe("bem-conventions", function() {
 
   var log
 
-  function complete(reports) {
+  function onComplete(reports) {
     log = []
     reports.forEach(function(report) {
       log.push(report)
@@ -99,9 +99,9 @@ describe("bem-conventions", function() {
           + '</div>'
         )
     HTMLInspector.inspect({
-      rules: ["bem-conventions"],
+      useRules: ["bem-conventions"],
       domRoot: $html,
-      complete: complete
+      onComplete: onComplete
     })
     expect(log.length).toBe(2)
     expect(log[0].message).toBe("The BEM element 'BlockTwo-element' must be a descendent of 'BlockTwo'.")
@@ -118,9 +118,9 @@ describe("bem-conventions", function() {
           + '</div>'
         )
     HTMLInspector.inspect({
-      rules: ["bem-conventions"],
+      useRules: ["bem-conventions"],
       domRoot: $html,
-      complete: complete
+      onComplete: onComplete
     })
     expect(log.length).toBe(0)
   })
@@ -133,9 +133,9 @@ describe("bem-conventions", function() {
           + '</div>'
         )
     HTMLInspector.inspect({
-      rules: ["bem-conventions"],
+      useRules: ["bem-conventions"],
       domRoot: $html,
-      complete: complete
+      onComplete: onComplete
     })
     expect(log.length).toBe(3)
     expect(log[0].message).toBe("The BEM modifier class 'BlockOne--active' was found without the unmodified class 'BlockOne'.")
@@ -154,9 +154,9 @@ describe("bem-conventions", function() {
           + '</div>'
         )
     HTMLInspector.inspect({
-      rules: ["bem-conventions"],
+      useRules: ["bem-conventions"],
       domRoot: $html,
-      complete: complete
+      onComplete: onComplete
     })
     expect(log.length).toBe(0)
   })
@@ -168,14 +168,16 @@ describe("bem-conventions", function() {
           + '  <p class="block-three___element-name">Bar</p>'
           + '</div>'
         )
-    HTMLInspector.rules["bem-conventions"].config.methods.push({
-      modifier: /^((?:[a-z]+\-)*[a-z]+(?:___(?:[a-z]+\-)*[a-z]+)?)\-\-\-(?:[a-z]+\-)*[a-z]+$/,
-      element: /^((?:[a-z]+\-)*[a-z]+)___(?:[a-z]+\-)*[a-z]+$/
+    HTMLInspector.rules.extend("bem-conventions", {
+      methods: [{
+        modifier: /^((?:[a-z]+\-)*[a-z]+(?:___(?:[a-z]+\-)*[a-z]+)?)\-\-\-(?:[a-z]+\-)*[a-z]+$/,
+        element: /^((?:[a-z]+\-)*[a-z]+)___(?:[a-z]+\-)*[a-z]+$/
+      }]
     })
     HTMLInspector.inspect({
-      rules: ["bem-conventions"],
+      useRules: ["bem-conventions"],
       domRoot: $html,
-      complete: complete
+      onComplete: onComplete
     })
     expect(log.length).toBe(2)
     expect(log[0].message).toBe("The BEM modifier class 'block-two---valid-name' was found without the unmodified class 'block-two'.")

@@ -1,4 +1,4 @@
-HTMLInspector.addModule("css", (function() {
+HTMLInspector.modules.add("css", (function() {
 
   var reClassSelector = /\.[a-z0-9_\-]+/ig
 

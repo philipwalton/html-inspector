@@ -1,4 +1,4 @@
-HTMLInspector.addModule("validation", function() {
+HTMLInspector.modules.add("validation", function() {
 
   // ============================================================
   // A data map of all valid HTML elements, their attributes

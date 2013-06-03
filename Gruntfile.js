@@ -25,10 +25,12 @@ module.exports = function(grunt) {
           "src/utils.js",
           "src/listener.js",
           "src/reporter.js",
+          "src/rules.js",
+          "src/modules.js",
           "src/inspector.js",
           "src/modules/**/*.js",
           "src/rules/**/*.js",
-          "src/outro.js",
+          "src/outro.js"
         ],
         dest: "dist/<%= pkg.name %>.js"
       },
@@ -42,7 +44,7 @@ module.exports = function(grunt) {
           "spec/src/modules-outro.js",
           "spec/src/rules-intro.js",
           "spec/src/rules/*.js",
-          "spec/src/rules-outro.js",
+          "spec/src/rules-outro.js"
         ],
         dest: "spec/html-inspector-spec.js"
       }
@@ -87,7 +89,7 @@ module.exports = function(grunt) {
         outfile: "spec-runner.html",
         keepRunner: true
       },
-      src: ["dist/html-inspector.js"],
+      src: ["dist/html-inspector.js"]
     }
   });
 

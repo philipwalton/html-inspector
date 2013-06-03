@@ -49,9 +49,9 @@ var HTMLInspector = (function() {
       {
         config = { domRoot: config }
       } else if (Array.isArray(config)) {
-        config = { rules: config }
+        config = { useRules: config }
       } else if (typeof config == "function") {
-        config = { complete: config }
+        config = { onComplete: config }
       }
     }
     // merge config with the defaults
@@ -61,46 +61,30 @@ var HTMLInspector = (function() {
   var inspector = {
 
     config: {
-      rules: null,
+      useRules: null,
       domRoot: "html",
-      complete: function(errors) {
+      onComplete: function(errors) {
         errors.forEach(function(error) {
           console.warn(error.message, error.context)
         })
       }
     },
 
-    rules: {},
+    rules: new Rules(),
 
-    modules: {},
-
-    addRule: function(name, config, fn) {
-      if (typeof config == "function") {
-        fn = config
-        config = {}
-      }
-      inspector.rules[name] = {
-        config: config,
-        fn: fn
-      }
-    },
-
-    addModule: function(name, obj) {
-      inspector.modules[name] = obj
-    },
+    modules: new Modules(),
 
     inspect: function(config) {
       var listener = new Listener()
         , reporter = new Reporter()
       config = processConfig(config)
-      setup(config.rules, listener, reporter)
+      setup(config.useRules, listener, reporter)
       traverseDOM(config.domRoot, listener)
-      config.complete(reporter.getErrors())
+      config.onComplete(reporter.getErrors())
     }
 
   }
 
-  // mixin the observable module
   return inspector
 
 }())

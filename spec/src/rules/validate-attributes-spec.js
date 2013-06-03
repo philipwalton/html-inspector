@@ -2,7 +2,7 @@ describe("validate-attributes", function() {
 
   var log
 
-  function complete(reports) {
+  function onComplete(reports) {
     log = []
     reports.forEach(function(report) {
       log.push(report)
@@ -26,9 +26,9 @@ describe("validate-attributes", function() {
         )
 
     HTMLInspector.inspect({
-      rules: ["validate-attributes"],
+      useRules: ["validate-attributes"],
       domRoot: $html,
-      complete: complete
+      onComplete: onComplete
     })
 
     expect(log.length).toBe(5)
@@ -58,9 +58,9 @@ describe("validate-attributes", function() {
         )
 
     HTMLInspector.inspect({
-      rules: ["validate-attributes"],
+      useRules: ["validate-attributes"],
       domRoot: $html,
-      complete: complete
+      onComplete: onComplete
     })
 
     expect(log.length).toBe(4)
@@ -87,9 +87,9 @@ describe("validate-attributes", function() {
         )
 
     HTMLInspector.inspect({
-      rules: ["validate-attributes"],
+      useRules: ["validate-attributes"],
       domRoot: $html,
-      complete: complete
+      onComplete: onComplete
     })
 
     expect(log.length).toBe(5)
@@ -116,9 +116,9 @@ describe("validate-attributes", function() {
         )
 
     HTMLInspector.inspect({
-      rules: ["validate-attributes"],
+      useRules: ["validate-attributes"],
       domRoot: $html,
-      complete: complete
+      onComplete: onComplete
     })
 
     expect(log.length).toBe(1)
@@ -134,9 +134,9 @@ describe("validate-attributes", function() {
         )
 
     HTMLInspector.inspect({
-      rules: ["validate-attributes"],
+      useRules: ["validate-attributes"],
       domRoot: $html,
-      complete: complete
+      onComplete: onComplete
     })
 
     expect(log.length).toBe(0)
