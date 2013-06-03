@@ -1,1 +1,1 @@
-describe("Extensions", function() {
+describe("Modules", function() {

@@ -1,6 +1,6 @@
 HTMLInspector.addRule("validate-attributes", function(listener, reporter) {
 
-  var validation = HTMLInspector.extensions.validation
+  var validation = HTMLInspector.modules.validation
 
   listener.on("element", function(name) {
     var required = validation.getRequiredAttributesForElement(name)

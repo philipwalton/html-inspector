@@ -1,6 +1,6 @@
 describe("validation", function() {
 
-  var validation = HTMLInspector.extensions.validation
+  var validation = HTMLInspector.modules.validation
 
   it("can determine if an element is a valid HTML element", function() {
     expect(validation.isElementValid("p")).toBe(true)

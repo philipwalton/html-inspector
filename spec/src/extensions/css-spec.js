@@ -1,6 +1,6 @@
 describe("css", function() {
 
-  var css = HTMLInspector.extensions.css
+  var css = HTMLInspector.modules.css
     , originalStyleSheets = css.styleSheets
     , classes = ["alpha", "bar", "bravo", "charlie", "delta", "echo", "foo"]
 
@@ -25,7 +25,7 @@ describe("css", function() {
 
   it("can include both <link> and <style> elements", function() {
     var extraClasses = classes.concat(["style", "fizz", "buzz"]).sort()
-    // first remove any style tags browser extensions might be putting in
+    // first remove any style tags browser modules might be putting in
     $("style").remove()
     $("head").append(""
       + "<style id='style'>"

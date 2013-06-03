@@ -85,7 +85,7 @@ $.extend(HTMLInspector.rules["some-rule-name"], { someProp: newValue})
 The `HTMLInspector` object can be extended in two main ways:
 
 1) Adding rules
-2) Adding extensions
+2) Adding modules
 
 ### Rules
 
@@ -123,9 +123,9 @@ Here is a complete list of events along with the arguments that are passed to th
 
 *(Note: for the `element`, `id`, `class`, and `attribute` events, the DOM element is bound to the `this` context.)*
 
-### Extensions
+### Modules
 
-Extensions provide a place where you can share config options, data, and/or functionality between multiple rules. HTML Inspector ships with two extensions which may be useful to authors writing custom rules:
+Modules provide a place where you can share config options, data, and/or functionality between multiple rules. HTML Inspector ships with two modules which may be useful to authors writing custom rules:
 
 - **validation**: a collection of data from the W3C used in validation rules to determine which elements and attributes are valid/required and which are obsolete.
 

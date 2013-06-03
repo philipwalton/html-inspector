@@ -151,7 +151,7 @@ var HTMLInspector = (function() {
 
     rules: {},
 
-    extensions: {},
+    modules: {},
 
     addRule: function(name, config, fn) {
       if (typeof config == "function") {
@@ -164,8 +164,8 @@ var HTMLInspector = (function() {
       }
     },
 
-    addExtension: function(name, obj) {
-      inspector.extensions[name] = obj
+    addModule: function(name, obj) {
+      inspector.modules[name] = obj
     },
 
     inspect: function(config) {
@@ -184,7 +184,7 @@ var HTMLInspector = (function() {
 
 }())
 
-HTMLInspector.addExtension("css", (function() {
+HTMLInspector.addModule("css", (function() {
 
   var reClassSelector = /\.[a-z0-9_\-]+/ig
 
@@ -234,7 +234,7 @@ HTMLInspector.addExtension("css", (function() {
 
 }()))
 
-HTMLInspector.addExtension("validation", function() {
+HTMLInspector.addModule("validation", function() {
 
   // ============================================================
   // A data map of all valid HTML elements, their attributes
@@ -1275,7 +1275,7 @@ HTMLInspector.addRule(
   },
   function(listener, reporter, config) {
 
-    var css = HTMLInspector.extensions.css
+    var css = HTMLInspector.modules.css
       , classes = css.getClassSelectors()
 
     listener.on('class', function(name) {
@@ -1294,7 +1294,7 @@ HTMLInspector.addRule(
 
 HTMLInspector.addRule("validate-attributes", function(listener, reporter) {
 
-  var validation = HTMLInspector.extensions.validation
+  var validation = HTMLInspector.modules.validation
 
   listener.on("element", function(name) {
     var required = validation.getRequiredAttributesForElement(name)
@@ -1330,13 +1330,11 @@ HTMLInspector.addRule("validate-attributes", function(listener, reporter) {
     }
   })
 
-
-
 })
 
 HTMLInspector.addRule("validate-elements", function(listener, reporter) {
 
-  var validation = HTMLInspector.extensions.validation
+  var validation = HTMLInspector.modules.validation
 
   listener.on("element", function(name) {
     if (validation.isElementObsolete(name)) {

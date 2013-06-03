@@ -1,9 +1,9 @@
 describe("Rules", function() {
 
   var originalRules = HTMLInspector.rules
-    , originalExtensions = HTMLInspector.extensions
+    , originalModules = HTMLInspector.modules
 
   afterEach(function() {
     HTMLInspector.rules = originalRules
-    HTMLInspector.extensions = originalExtensions
+    HTMLInspector.modules = originalModules
   })

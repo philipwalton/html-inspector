@@ -1,7 +1,7 @@
 describe("HTMLInspector", function() {
 
   var originalRules = HTMLInspector.rules
-    , originalExtensions = HTMLInspector.extensions
+    , originalModules = HTMLInspector.modules
 
   beforeEach(function() {
     HTMLInspector.rules = {}
@@ -9,7 +9,7 @@ describe("HTMLInspector", function() {
 
   afterEach(function() {
     HTMLInspector.rules = originalRules
-    HTMLInspector.extensions = originalExtensions
+    HTMLInspector.modules = originalModules
   })
 
   it("can add new rules", function() {
@@ -17,9 +17,9 @@ describe("HTMLInspector", function() {
     expect(HTMLInspector.rules["new-rule"]).toBeDefined()
   })
 
-  it("can add new extensions", function() {
-    HTMLInspector.addExtension("new-extension", {})
-    expect(HTMLInspector.extensions["new-extension"]).toBeDefined()
+  it("can add new modules", function() {
+    HTMLInspector.addModule("new-module", {})
+    expect(HTMLInspector.modules["new-module"]).toBeDefined()
   })
 
   it("only runs the specified rules (or all rules if none are specified)", function() {
@@ -331,112 +331,14 @@ describe("Reporter", function() {
   })
 
 })
-describe("Extensions", function() {
-describe("css", function() {
-
-  var css = HTMLInspector.extensions.css
-    , originalStyleSheets = css.styleSheets
-    , classes = ["alpha", "bar", "bravo", "charlie", "delta", "echo", "foo"]
-
-  afterEach(function() {
-    css.styleSheets = originalStyleSheets
-  })
-
-  it("can filter the searched style sheets via the styleSheets selector", function() {
-    css.styleSheets = "link[href$='jasmine.css']"
-    var classes = css.getClassSelectors()
-    // limiting the style sheets to only jasmine.css means
-    // .alpha, .bravo, and .charlie won't be there
-    expect(classes.indexOf("alpha")).toEqual(-1)
-    expect(classes.indexOf("bravo")).toEqual(-1)
-    expect(classes.indexOf("charlie")).toEqual(-1)
-  })
-
-  it("can get all the class selectors in the style sheets", function() {
-    css.styleSheets = "link[href$='-spec.css']"
-    expect(css.getClassSelectors()).toEqual(classes)
-  })
-
-  it("can include both <link> and <style> elements", function() {
-    var extraClasses = classes.concat(["style", "fizz", "buzz"]).sort()
-    // first remove any style tags browser extensions might be putting in
-    $("style").remove()
-    $("head").append(""
-      + "<style id='style'>"
-      + ".style .foo, .style .bar { visiblility: visible }"
-      + ".style .fizz, .style .buzz { visiblility: visible }"
-      + "</style>"
-    )
-    css.styleSheets = "link[href$='-spec.css'], style"
-    expect(css.getClassSelectors()).toEqual(extraClasses)
-    $("#style").remove()
-  })
-
-})
-describe("validation", function() {
-
-  var validation = HTMLInspector.extensions.validation
-
-  it("can determine if an element is a valid HTML element", function() {
-    expect(validation.isElementValid("p")).toBe(true)
-    expect(validation.isElementValid("time")).toBe(true)
-    expect(validation.isElementValid("bogus")).toBe(false)
-    expect(validation.isElementValid("hgroup")).toBe(false)
-  })
-
-  it("can determine if an element is obsolete", function() {
-    expect(validation.isElementObsolete("p")).toBe(false)
-    expect(validation.isElementObsolete("bogus")).toBe(false)
-    expect(validation.isElementObsolete("hgroup")).toBe(true)
-    expect(validation.isElementObsolete("blink")).toBe(true)
-    expect(validation.isElementObsolete("center")).toBe(true)
-  })
-
-  it("can determine if an attribute is allowed on an element", function() {
-    expect(validation.isAttributeValidForElement("href", "a")).toBe(true)
-    expect(validation.isAttributeValidForElement("aria-foobar", "nav")).toBe(true)
-    expect(validation.isAttributeValidForElement("data-stuff", "section")).toBe(true)
-    expect(validation.isAttributeValidForElement("href", "button")).toBe(false)
-    expect(validation.isAttributeValidForElement("placeholder", "select")).toBe(false)
-  })
-
-  it("can determine if an attribute is obsolute for an element", function() {
-    expect(validation.isAttributeObsoleteForElement("align", "div")).toBe(true)
-    expect(validation.isAttributeObsoleteForElement("bgcolor", "body")).toBe(true)
-    expect(validation.isAttributeObsoleteForElement("border", "img")).toBe(true)
-    expect(validation.isAttributeObsoleteForElement("href", "div")).toBe(false)
-    expect(validation.isAttributeObsoleteForElement("charset", "meta")).toBe(false)
-  })
-
-  it("can determine if an attribute is required for an element", function() {
-    expect(validation.isAttributeRequiredForElement("src", "img")).toBe(true)
-    expect(validation.isAttributeRequiredForElement("alt", "img")).toBe(true)
-    expect(validation.isAttributeRequiredForElement("action", "form")).toBe(true)
-    expect(validation.isAttributeRequiredForElement("rows", "textarea")).toBe(true)
-    expect(validation.isAttributeRequiredForElement("cols", "textarea")).toBe(true)
-    expect(validation.isAttributeRequiredForElement("id", "div")).toBe(false)
-    expect(validation.isAttributeRequiredForElement("target", "a")).toBe(false)
-  })
-
-  it("can get a list of required attribute given an element", function() {
-    expect(validation.getRequiredAttributesForElement("img")).toEqual(["alt", "src"])
-    expect(validation.getRequiredAttributesForElement("optgroup")).toEqual(["label"])
-    expect(validation.getRequiredAttributesForElement("form")).toEqual(["action"])
-    expect(validation.getRequiredAttributesForElement("div")).toEqual([])
-  })
-
-
-})
-})
-
 describe("Rules", function() {
 
   var originalRules = HTMLInspector.rules
-    , originalExtensions = HTMLInspector.extensions
+    , originalModules = HTMLInspector.modules
 
   afterEach(function() {
     HTMLInspector.rules = originalRules
-    HTMLInspector.extensions = originalExtensions
+    HTMLInspector.modules = originalModules
   })
 describe("bem-conventions", function() {
 

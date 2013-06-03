@@ -72,7 +72,7 @@ var HTMLInspector = (function() {
 
     rules: {},
 
-    extensions: {},
+    modules: {},
 
     addRule: function(name, config, fn) {
       if (typeof config == "function") {
@@ -85,8 +85,8 @@ var HTMLInspector = (function() {
       }
     },
 
-    addExtension: function(name, obj) {
-      inspector.extensions[name] = obj
+    addModule: function(name, obj) {
+      inspector.modules[name] = obj
     },
 
     inspect: function(config) {

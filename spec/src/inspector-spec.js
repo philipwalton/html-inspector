@@ -1,7 +1,7 @@
 describe("HTMLInspector", function() {
 
   var originalRules = HTMLInspector.rules
-    , originalExtensions = HTMLInspector.extensions
+    , originalModules = HTMLInspector.modules
 
   beforeEach(function() {
     HTMLInspector.rules = {}
@@ -9,7 +9,7 @@ describe("HTMLInspector", function() {
 
   afterEach(function() {
     HTMLInspector.rules = originalRules
-    HTMLInspector.extensions = originalExtensions
+    HTMLInspector.modules = originalModules
   })
 
   it("can add new rules", function() {
@@ -17,9 +17,9 @@ describe("HTMLInspector", function() {
     expect(HTMLInspector.rules["new-rule"]).toBeDefined()
   })
 
-  it("can add new extensions", function() {
-    HTMLInspector.addExtension("new-extension", {})
-    expect(HTMLInspector.extensions["new-extension"]).toBeDefined()
+  it("can add new modules", function() {
+    HTMLInspector.addModule("new-module", {})
+    expect(HTMLInspector.modules["new-module"]).toBeDefined()
   })
 
   it("only runs the specified rules (or all rules if none are specified)", function() {

@@ -5,7 +5,7 @@ HTMLInspector.addRule(
   },
   function(listener, reporter, config) {
 
-    var css = HTMLInspector.extensions.css
+    var css = HTMLInspector.modules.css
       , classes = css.getClassSelectors()
 
     listener.on('class', function(name) {
