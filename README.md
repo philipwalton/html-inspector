@@ -16,7 +16,7 @@ Calling `inspect` with no options will load all rules and run them with their de
 <script src="path/to/html-inspector.js"></script>
 <script> HTMLInspector.inspect() </script>
 ```
-After the script runs, any errors will be reported to the console (unless you specify otherwise). Here's a example of what you might see:
+After the script runs, any errors will be reported to the console (unless you change this behavior). Here's an example of what you might see:
 
 ![Sample HTML Inspector Output](https://raw.github.com/philipwalton/html-inspector/master/img/html-inspector-console.png)
 
@@ -30,13 +30,11 @@ HTML Inspector ships with a base set of rules which fall into one of three main 
 
 HTML Inspector is different than a markup validator. Validators parse static markup, while HTML Inspector runs on a live DOM. This makes it a lot more powerful, but there are some drawbacks as well. Because HTML Inspector runs after the browser has parsed your HTML, any mistakes the browser has forgiven will not be seen by HTML Inspector.
 
-As a result HTML Inspector should not be seen as a replacement for validation. It's simply another tool in the toolbox.
-
-That being said, there is still a lot that it can do (and does) to validate your markup.
+As a result HTML Inspector should not be seen as a replacement for validation. It's simply another tool in the toolbox. That being said, there is still a lot that it can do (and does) to validate your markup.
 
 Here are the validation rules that ship with HTML Inspector. (Expect this list to get more comprehensive in the future.)
 
-- **Validate Elements**: Inspect each element in the DOM and reports any elements that are invalid or obsolete. This will catch simple things like misspelled tags (`<il>` instead of `<li>`), and it will also let you know that `<hgroup>` is no longer a valid HTML element. Any element you don't want to be warned about can be whitelisted.
+- **Validate Elements**: Inspect each element in the DOM and reports any elements that are invalid or obsolete. This will catch simple things like misspelled tags (`<il>` instead of `<li>`), and it will inform you of deprecated tags (like `<center>`, `<font>`, and more recently `<hgroup>`). Any element you don't want to be warned about can be whitelisted.
 
 - **Validate Attributes**: Like validating elements, this rule will let you know if you're using attributes that don't belong on a particular element or perhaps don't belong on any element. If your project uses custom attributes (like `ng-*` in AngularJS) they can be whitelisted.
 
@@ -46,9 +44,9 @@ Here are the validation rules that ship with HTML Inspector. (Expect this list t
 
 ### Best Practices
 
-Some markup is perfectly valid but commonly considered to use poor or outdated practices. The following rules check for these types of things. (Note that everything in this list is subjective and optional.)
+Some markup may be perfectly valid but use practices that are commonly considered to be poor or outdated. The following rules check for these types of things. (Note that everything in this list is subjective and optional.)
 
-- **Inline Event Handlers**: Warn if inline event handlers, like `onclick="return false"` are found in the document. Inline event handlers are hard to manage, hard to debug, and completely un-reusable.
+- **Inline Event Handlers**: Warn if inline event handlers, like `onclick="return false"` are found in the document. Inline event handlers are hard to manage, hard to debug, and completely non-reusable.
 
 - **Unused Classes**: Sometimes you'll remove a CSS rule from your stylesheet but forget to remove the class from the HTML. The "unused-classes" rule compares all the class selectors in the CSS to the classes in the HTML and reports any that aren't being used.
 
@@ -62,9 +60,11 @@ Some markup is perfectly valid but commonly considered to use poor or outdated p
 
 The real power of HTML Inspector lies in it's ability to enforce your teams chosen conventions. If you've decided that all groups of links should be contained in a `<nav>` element, or all `<section>` elements must contain a heading, you can write those rules, and an error will be thrown when someone breaks them.
 
-Because convention is usually specific to individual teams, there's only one built-in rule in this category, but hopefully it'll get you thinking about rules your teams could use.
+Because convention is usually specific to individual teams, there's only one built-in rule in this category, but hopefully it'll get you thinking about rules your team could use.
 
-- **BEM**: The increasingly popular BEM (block, element, modifier) methodology is a CSS naming convention that is very helpful for large project. The problem is that using it correctly in the CSS is only half the battle. If it's not used correctly in the HTML it doesn't work either. This rule throws an error when an element class name is used but that element isn't a descendant of a block by the same name. It also errors when a modifier is used on a block or element without the unmodified class there too.
+- **BEM**: The increasingly popular BEM (block, element, modifier) methodology is a CSS naming convention that is very helpful for large projects. The problem is that using it correctly in the CSS is only half the battle. If it's not used correctly in the HTML it doesn't work either.
+
+  This rule throws an error when an element class name is used but that element isn't a descendant of a block by the same name. It also errors when a modifier is used on a block or element without the unmodified class there too.
 
 ## Configuring HTML Inspector
 
@@ -159,7 +159,7 @@ reporter.warn(
 
 ### A Example Rule
 
-Imagine your team previously used a custom data attribute `data-foo-*`, but now the convention is to use `data-bar-*`. Here's a rule that would warn for that situation:
+Imagine your team previously used a custom data attribute `data-foo-*`, but now the convention is to use `data-bar-*` instead. Here's a rule that would warn users when they're using the old convention:
 
 ```js
 HTMLInspector.rules.add("switch-from-foo-to-bar", function(listener, reporter) {
@@ -177,7 +177,7 @@ HTMLInspector.rules.add("switch-from-foo-to-bar", function(listener, reporter) {
 
 ## Overriding Rule Configurations
 
-Individual rules may or may not do exactly what you need, which is why most rules come with a configurations object that users can customize. A rule's configuration can be changed to meet your needs via the `extend` method of the `HTMLInspector.rules` object. The `extend` method take two arguments, the rule's unique name, and an object whose properties will override the properties of the rule's default config object which is specified when the rule is initially added.
+Individual rules may or may not do exactly what you need, which is why most rules come with a configurations object that users can customize. A rule's configuration can be changed to meet your needs via the `extend` method of the `HTMLInspector.rules` object. The `extend` method take two arguments, the rule's unique name, and an object whose properties will override the properties of the rule's default config object, which is specified when the rule is initially added.
 
 Here are a few examples:
 
@@ -197,7 +197,13 @@ HTMLInspector.rules.extend("unused-classes", {
 
 HTML Inspector uses [Grunt](http://gruntjs.com) which runs on [Node](http://nodejs.org/) to build and minify its source files as well as to run the [Jasmine](http://pivotal.github.io/jasmine/) tests. If you don't have those installed, please refer to their websites for installation instructions.
 
-Running `grunt` from the command line in the project root will concatenate and minify all the source files as well as all the rules in the `src/rules` directory. You can customize what rules go in your build by adding/removing them from the rules directory.
+To build your own verions of HTML Inspector, simply run the following command from the project's root director:
+
+```
+grunt
+```
+
+Running `grunt` will concatenate and minify all the source files as well as all the rules in the `src/rules` directory. You can customize what rules go in your build by adding/removing them from the rules directory.
 
 Keep in mind that rules can be excluded both at build time and at runtime. In other words, you don't necessarily need a custom build to exclude certain rules.
 
@@ -211,7 +217,7 @@ To run the Jasmine tests from the command line with Grunt and PhantomJS:
 grunt test
 ```
 
-To run the tests in the browser you'll need a web server running locally. Once the server is running, load the `spec-runner.html`.
+To run the tests in the browser you'll need a web server running locally. Once the server is running, load the `spec-runner.html` file in the browser.
 
 
 ## Contributing
@@ -224,6 +230,6 @@ HTML Inspector is still new and has a lot of room to grow. I'm working on some n
 
 HTML Inspector can only be as useful as the conventions it aims to enforce. If you have conventions that have been working well for you or your team, please suggest them.
 
-Since not all rules are appropriate for general use, I also on setting up a repo solely for custom rules that users can pick and choose from.
+Since not all rules are appropriate for general use, I also plan on setting up a repo solely for custom rules from which users can pick and choose.
 
 Keep checking back for updates or star/watch the repo to receive email notifications.
