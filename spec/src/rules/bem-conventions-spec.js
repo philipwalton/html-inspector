@@ -1,6 +1,7 @@
 describe("bem-conventions", function() {
 
   var log
+    , originalConfig = HTMLInspector.rules["bem-conventions"].config
 
   function onComplete(reports) {
     log = []
@@ -8,6 +9,10 @@ describe("bem-conventions", function() {
       log.push(report)
     })
   }
+
+  afterEach(function() {
+    HTMLInspector.rules["bem-conventions"].config.methodology = "suit"
+  })
 
   describe("config", function() {
 
@@ -23,6 +28,7 @@ describe("bem-conventions", function() {
       expect(config.getBlockName("Foo---bar")).toBe(false)
       expect(config.getBlockName("Foo--bar--baz")).toBe(false)
       // the second convention
+      config.methodology = "inuit"
       expect(config.getBlockName("block--modifier")).toBe("block")
       expect(config.getBlockName("block-name--some-modifier")).toBe("block-name")
       expect(config.getBlockName("block__element")).toBe("block")
@@ -32,6 +38,7 @@ describe("bem-conventions", function() {
       expect(config.getBlockName("foo---bar")).toBe(false)
       expect(config.getBlockName("foo--bar__baz")).toBe(false)
       // the third convention
+      config.methodology = "yandex"
       expect(config.getBlockName("block_modifier")).toBe("block")
       expect(config.getBlockName("block-name_some_modifier")).toBe("block-name")
       expect(config.getBlockName("block__element")).toBe("block")
@@ -50,6 +57,7 @@ describe("bem-conventions", function() {
       expect(config.isElement("Block--modifier-stuffz")).toBe(false)
       expect(config.isElement("Block--modifier--stuffz")).toBe(false)
       // the second convention
+      config.methodology = "inuit"
       expect(config.isElement("block__element")).toBe(true)
       expect(config.isElement("block-name__element-name")).toBe(true)
       expect(config.isElement("block--modifier")).toBe(false)
@@ -57,6 +65,7 @@ describe("bem-conventions", function() {
       expect(config.isElement("block__element__sub-element")).toBe(false)
       expect(config.isElement("block--modifier--stuffz")).toBe(false)
       // the third convention
+      config.methodology = "yandex"
       expect(config.isElement("block__element")).toBe(true)
       expect(config.isElement("block-name__element-name")).toBe(true)
       expect(config.isElement("block_modifier")).toBe(false)
@@ -74,6 +83,7 @@ describe("bem-conventions", function() {
       expect(config.isModifier("Block--modifier-stuffz")).toBe(false)
       expect(config.isModifier("Block--modifier--stuffz")).toBe(false)
       // the second convention
+      config.methodology = "inuit"
       expect(config.isModifier("block--modifier")).toBe(true)
       expect(config.isModifier("block-name--modifier-name")).toBe(true)
       expect(config.isModifier("block-name__element-name--modifier-name")).toBe(true)
@@ -81,6 +91,7 @@ describe("bem-conventions", function() {
       expect(config.isModifier("block-name__element-name")).toBe(false)
       expect(config.isModifier("block--modifierStuffz")).toBe(false)
       // the third convention
+      config.methodology = "yandex"
       expect(config.isModifier("block_modifier")).toBe(true)
       expect(config.isModifier("block-name_modifier_name")).toBe(true)
       expect(config.isModifier("block-name__element-name_modifier_name")).toBe(true)
@@ -169,10 +180,10 @@ describe("bem-conventions", function() {
           + '</div>'
         )
     HTMLInspector.rules.extend("bem-conventions", {
-      methods: [{
+      methodology: {
         modifier: /^((?:[a-z]+\-)*[a-z]+(?:___(?:[a-z]+\-)*[a-z]+)?)\-\-\-(?:[a-z]+\-)*[a-z]+$/,
         element: /^((?:[a-z]+\-)*[a-z]+)___(?:[a-z]+\-)*[a-z]+$/
-      }]
+      }
     })
     HTMLInspector.inspect({
       useRules: ["bem-conventions"],

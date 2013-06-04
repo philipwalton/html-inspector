@@ -1,22 +1,20 @@
 # HTML Inspector
 
-HTML Inspector is a highly-customizable, code quality tool to help you (and your team) write better markup. It aims to find a balance between the uncompromisingly strict W3C validator and the all-to-common "anything goes".
+__* * * HTML Inspector is in pre-release and still evolving. If you have suggestions for how to make it better or more useful, please file an issue or submit a pull request. * * *__
+
+HTML Inspector is a highly-customizable, code quality tool to help you (and your team) write better markup. It aims to find a balance between the uncompromisingly strict W3C validator and the all-to-common "anything goes" Web we have today.
 
 With HTML Inspector, every rule or warning is completely customizable to fit your projects needs, and it's easy to extend so development teams can write their own rules to enforce their chosen conventions.
 
-__* * * HTML Inspector is brand new and still evolving. If you have suggestions for how to make it better or more useful, please file an issue or submit a pull request. * * *__
-
 ## Getting Started
 
-The easiest way to get started is to simply download the full html-inspector.js file and add it to the bottom of your page, then call `HTMLInspector.inspect()`. Calling inspect with no options will load all rules and run them with their default options.
-
-Here's the simpliest way to add HTML Inspector to your project: *(Note: HTML Inspector requires jQuery, so if you're not already including it on your page, you'll need to.)*
+The easiest way to get started is to simply download the full html-inspector.js file and add it to the bottom of your page, then call `HTMLInspector.inspect()`. Calling inspect with no options will load all rules and run them with their default configuration options. *(Note: HTML Inspector requires jQuery, so if you're not already including it on your page, you'll need to.)*
 
 ```html
 <script src="path/to/html-inspector.js"></script>
 <script> HTMLInspector.inspect() </script>
 ```
-After the script runs, any errors will be reported to the console. Here's a sample of what you might see:
+After the script runs, any errors will be reported to the console (unless you specify otherwise). Here's a sample of what you might see:
 
 * * * Put Sample Image Here * * *
 
@@ -24,7 +22,7 @@ Make sure you call `inspect` after any other DOM altering scripts have finished 
 
 ## Rules Explanations ##
 
-HTML Inspector ships with a base set of rules which fall into one of three main categories: validation, best-pratices, and convention.
+HTML Inspector ships with a base set of rules which fall into one of three main categories: validation, best-practices, and convention.
 
 ### Validation
 
@@ -36,7 +34,7 @@ That being said, there is still a lot that HTML Inspector can do and does to val
 
 Here are the validation rules that ship with HTML Inspector. (Expect this list to get more comprehensive in the future.)
 
-- **Validate Elements**: Inspect each element in the DOM and reports any elements that are invalid or obsolete. This will catch anything from simple mispellings like `<il>` instead of `<li>`, and it may also inform you that `<hgroup>` is no longer a valid HTML element. Any element you don't want to be warned about can be whitelisted.
+- **Validate Elements**: Inspect each element in the DOM and reports any elements that are invalid or obsolete. This will catch simple things like misspelled tags (`<il>` instead of `<li>`), and it will also let you know that `<hgroup>` is no longer a valid HTML element. Any element you don't want to be warned about can be whitelisted.
 
 - **Validate Attributes**: Like validating elements, this rule will let you know if you're using attributes that don't belong on a particular element or perhaps don't belong on any element. If your project uses custom attributes (like `ng-*` in AngularJS) they can be whitelisted.
 
@@ -46,11 +44,11 @@ Here are the validation rules that ship with HTML Inspector. (Expect this list t
 
 ### Best Practices
 
-Some markup is perfectly valid, but is commonly considered to be a poor or outdated practice. The following rules check for these types of things.
+Some markup is perfectly valid but commonly considered to use poor or outdated practices. The following rules check for these types of things. (Note that everything in this list is subjective and optional.)
 
 - **Inline Event Handlers**: Warn if inline event handlers, like `onclick="return false"` are found in the document. Inline event handlers are harder to manage, harder to debug, and completely un-reusable.
 
-- **Unused Classes**: Sometimes we'll remove a CSS rule from our stylesheets but forget to remove the class from the HTML. This rule compares all the class selectors in the CSS to the classes in the HTML and reports any unused classes. Classes that are in the HTML as JavaScript hooks can be ignored via a whitelist. By default, any class prefixed with `js-`, `language-`, or `supports-` is whitelisted. More information on the rational behind this rule can be found [here](http://philipwalton.com/articles/css-architecture/)
+- **Unused Classes**: Sometimes you'll remove a CSS rule from your stylesheet but forget to remove the class from the HTML. The "unused-classes" rule compares all the class selectors in the CSS to the classes in the HTML and reports any unused classes. Classes that are in the HTML as JavaScript hooks can be ignored via a whitelist. By default, any class prefixed with `js-`, `language-`, or `supports-` is whitelisted. More information on the rational behind this rule can be found [here](http://philipwalton.com/articles/css-architecture/)
 
 - **Unnecessary Elements**: Anytime your have a plain `<div>` or `<span>` element in the HTML with no class, ID or any other attribute, it's probably unnecessary or a mark of poor design. Elements with no semantic meaning should only be used for presentation, but if the element has no attributes it means the styling is done through a rule like `.some-class > div { }` which is just asking for trouble. Again, more information on this rule can be found [here](http://philipwalton.com/articles/css-architecture/)
 
@@ -58,12 +56,11 @@ Some markup is perfectly valid, but is commonly considered to be a poor or outda
 
 The real power of HTML Inspector lies in it's ability to enforce your teams chosen convention. If you've decided that all group of links should be contained in a `<nav>` element, or all `<section>` element must contain a heading, you can write those rules, and an error will be thrown when someone breaks them.
 
-Because convention is mainly team preference, there's only one built-in rule in this category, but hopefully it'll get you thinking about rules for your team.
+Because convention is usually specific to individual teams, there's only one built-in rule in this category, but hopefully it'll get you thinking about rules your teams could use.
 
-- **BEM**: The increasingly popular BEM (block, element, modifier) methodology is a CSS naming convention that is very helpful for large project. The problem is using it correctly in the CSS is only half the battle, if it's not used correctly in the HTML it doesn't work either. This rule throws an error when an element class name is used but that element isn't a descendent of a block by the same name. It also errors when a modifier is used on an element or block without the modify class there too.
+- **BEM**: The increasingly popular BEM (block, element, modifier) methodology is a CSS naming convention that is very helpful for large project. The problem is that using it correctly in the CSS is only half the battle. If it's not used correctly in the HTML it doesn't work either. This rule throws an error when an element class name is used but that element isn't a descendant of a block by the same name. It also errors when a modifier is used on a block or element without the unmodified class there too.
 
-
-## Customizing
+## Configuring HTML Inspector
 
 By default, HTML Inspector runs all added rules, starts traversing from the `<html>` element, and logs errors to the console when complete, but all of this can be customized.
 
@@ -104,24 +101,7 @@ HTMLInspector.inspect(function(errors) {
 })
 ```
 
-### Rule Configurations
-
-Individual rules may or may not do exactly what you need, which is why most rules come with a configurations object that users can customize. A rule's configuration can be changed to meet your needs via the `extend` method of the `HTMLInspector.rules` object. The `extend` method take two arguments, the rule's unique name, and object whose properties will override the properties of the rule's default config object which is specified when the rule is initially added.
-
-```js
-HTMLInspector.rules.extend("some-rule-name", {
-  someProp: newValue
-})
-```
-
-## Extending
-
-The `HTMLInspector` object can be extended in two main ways:
-
-1) Adding rules
-2) Adding modules
-
-### Rules
+## Writing You Own Rules
 
 Rules are the bread of butter of HTML Inspector. They are where you check for problems, and report errors.
 
@@ -135,7 +115,7 @@ HTMLInspector.rules.add(name, [config], func)
 - **config** *optional*(Object) The `config` parameter stores configuration data that is used by the rule. Anything that users of your rule might want to customize themselves should be set in the `config` object.
 - **func**: (Function) The `func` parameter is an initialization function that is invoked as soon as you call `HTMLInspector.inspect()`. The function is passed three arguments `listener`, `reporter`, and `config`. The `listener` object is used to subscribe to events that are triggered HTML Inspector is traversing the DOM. When problems are found, they can be reported to the `reporter` object. The `config` object is the same `config` object that was passed to `HTMLInspector.rules.add`, but its properties may have been customized by other users between then and now.
 
-#### Events
+### Events
 
 The `listener` object can subscribe to events via the `on` method. Like with many other event binding libraries, `on` takes two arguments: the event name, and a callback function:
 
@@ -158,6 +138,42 @@ Here is a complete list of events along with the arguments that are passed to th
 - **afterInspect** : domRoot
 
 *(Note: for the `element`, `id`, `class`, and `attribute` events, the DOM element is bound to the `this` context.)*
+
+### Reporting Errors
+
+When you find something in the HTML that you to warn about, you simply call the `warn` method on the `reporter` object. `warn` takes an object with three properties, `rule`, `message`, and `context`.
+
+### A Example Rule
+
+Imagine your teams previously used a custom data attribute `data-foo-*`, but now the convention is to use `data-bar-*`. Here's a rule that would warn for that:
+
+```js
+HTMLInspector.rules.add("inline-event-handlers", function(listener, reporter) {
+
+  listener.on('attribute', function(name, value) {
+    if (name.indexOf("on") === 0) {
+      reporter.addError(
+        "inline-event-handlers",
+        "An '" + name + "' attribute was found in the HTML. Use external scripts for event binding instead.",
+        this
+      )
+    }
+  })
+
+})
+```
+
+
+## Overriding A Rule's Default Configuration
+
+Individual rules may or may not do exactly what you need, which is why most rules come with a configurations object that users can customize. A rule's configuration can be changed to meet your needs via the `extend` method of the `HTMLInspector.rules` object. The `extend` method take two arguments, the rule's unique name, and and object whose properties will override the properties of the rule's default config object which is specified when the rule is initially added.
+
+```js
+HTMLInspector.rules.extend("some-rule-name", {
+  someProp: newValue
+})
+```
+
 
 ### Modules
 

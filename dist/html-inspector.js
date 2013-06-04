@@ -4,7 +4,7 @@
  * Copyright (c) 2013 Philip Walton <http://philipwalton.com>
  * Released under the MIT license
  *
- * Date: 2013-06-02
+ * Date: 2013-06-03
  */
 ;(function(root, $, document) {
 
@@ -1094,60 +1094,75 @@ HTMLInspector.modules.add("validation", function() {
 ;(function() {
 
   // ============================================================
-  // There are several different BEM naming conventions that
-  // I'm aware of. The `methods` property supports these three:
+  // There are several different BEM  naming conventions that
+  // I'm aware of. To make things easier, I refer to the
+  // methodologies by the name of projects that utilize them.
   //
-  //  1) block-name
-  //     block-name--modifier-name
-  //     block-name__element-name
-  //     block-name__element-name--modifier-name
+  // suit: https://github.com/necolas/suit
+  // -------------------------------------
+  // BlockName
+  // BlockName--modifierName
+  // BlockName-elementName
+  // BlockName-elementName--modifierName
   //
-  //  2) BlockName
-  //     BlockName--modifierName
-  //     BlockName-elementName
-  //     BlockName-elementName--modifierName
+  // inuit: http://inuitcss.com/
+  // ---------------------------
+  // block-name
+  // block-name--modifier-name
+  // block-name__element-name
+  // block-name__element-name--modifier-name
   //
-  //  3) block-name
-  //     block-name__elemement-name
-  //     block-name_modifier_name
-  //     block-name__element-name_modifier_name
+  // yandex: http://bem.info/
+  // ------------------------
+  // block-name
+  // block-name__elemement-name
+  // block-name_modifier_name
+  // block-name__element-name_modifier_name
   //
   // ============================================================
 
+  var methodologies = {
+    "suit": {
+      modifier: /^([A-Z][a-zA-Z]*(?:\-[a-zA-Z]+)?)\-\-[a-zA-Z]+$/,
+      element: /^([A-Z][a-zA-Z]*)\-[a-zA-Z]+$/
+    },
+    "inuit": {
+      modifier: /^((?:[a-z]+\-)*[a-z]+(?:__(?:[a-z]+\-)*[a-z]+)?)\-\-(?:[a-z]+\-)*[a-z]+$/,
+      element: /^((?:[a-z]+\-)*[a-z]+)__(?:[a-z]+\-)*[a-z]+$/
+    },
+    "yandex": {
+      modifier: /^((?:[a-z]+\-)*[a-z]+(?:__(?:[a-z]+\-)*[a-z]+)?)_(?:[a-z]+_)*[a-z]+$/,
+      element: /^((?:[a-z]+\-)*[a-z]+)__(?:[a-z]+\-)*[a-z]+$/
+    }
+  }
+
+  function getMethodology() {
+    if (typeof config.methodology == "string") {
+      return methodologies[config.methodology]
+    }
+    return config.methodology
+  }
+
   var config = {
-    methods: [
-      {
-        modifier: /^([A-Z][a-zA-Z]*(?:\-[a-zA-Z]+)?)\-\-[a-zA-Z]+$/,
-        element: /^([A-Z][a-zA-Z]*)\-[a-zA-Z]+$/
-      },
-      {
-        modifier: /^((?:[a-z]+\-)*[a-z]+(?:__(?:[a-z]+\-)*[a-z]+)?)\-\-(?:[a-z]+\-)*[a-z]+$/,
-        element: /^((?:[a-z]+\-)*[a-z]+)__(?:[a-z]+\-)*[a-z]+$/
-      },
-      {
-        modifier: /^((?:[a-z]+\-)*[a-z]+(?:__(?:[a-z]+\-)*[a-z]+)?)_(?:[a-z]+_)*[a-z]+$/,
-        element: /^((?:[a-z]+\-)*[a-z]+)__(?:[a-z]+\-)*[a-z]+$/
-      }
-    ],
+
+    methodology: "suit",
+
     getBlockName: function(elementOrModifier) {
       var block
-      config.methods.forEach(function(method) {
-        if (method.modifier.test(elementOrModifier))
-          return block = RegExp.$1
-        if (method.element.test(elementOrModifier))
-          return block = RegExp.$1
-      })
+        , methodology = getMethodology()
+      if (methodology.modifier.test(elementOrModifier))
+        return block = RegExp.$1
+      if (methodology.element.test(elementOrModifier))
+        return block = RegExp.$1
       return block || false
     },
+
     isElement: function(cls) {
-      return config.methods.some(function(method) {
-        return method.element.test(cls)
-      })
+      return getMethodology().element.test(cls)
     },
+
     isModifier: function(cls) {
-      return config.methods.some(function(method) {
-        return method.modifier.test(cls)
-      })
+      return getMethodology().modifier.test(cls)
     }
   }
 
