@@ -26,7 +26,7 @@ HTMLInspector.rules.add("duplicate-ids", function(listener, reporter) {
         offenders = [element.context].concat(duplicates.map(function(dup) {
           return dup.context
         }))
-        reporter.addError(
+        reporter.warn(
           "duplicate-ids",
           "The id '" + element.id + "' appears more than once in the document.",
           offenders

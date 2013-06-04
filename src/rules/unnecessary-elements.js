@@ -11,7 +11,7 @@ HTMLInspector.rules.add(
   function(listener, reporter, config) {
     listener.on('element', function(name) {
       if (config.isUnnecessary(this)) {
-        reporter.addError(
+        reporter.warn(
           "unnecessary-elements",
           "Do not use <div> or <span> elements without any attributes.",
           this

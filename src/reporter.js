@@ -2,7 +2,7 @@ function Reporter() {
   this._errors = []
 }
 
-Reporter.prototype.addError = function(rule, message, context) {
+Reporter.prototype.warn = function(rule, message, context) {
   this._errors.push({
     rule: rule,
     message: message,
@@ -10,6 +10,6 @@ Reporter.prototype.addError = function(rule, message, context) {
   })
 }
 
-Reporter.prototype.getErrors = function() {
+Reporter.prototype.getWarnings = function() {
   return this._errors
 }

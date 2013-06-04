@@ -10,7 +10,7 @@ HTMLInspector.rules.add(
 
     listener.on('class', function(name) {
       if (!config.whitelist.test(name) && classes.indexOf(name) == -1) {
-        reporter.addError(
+        reporter.warn(
           "unused-classes",
           "The class '"
           + name

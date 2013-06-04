@@ -4,7 +4,7 @@
  * Copyright (c) 2013 Philip Walton <http://philipwalton.com>
  * Released under the MIT license
  *
- * Date: 2013-06-03
+ * Date: 2013-06-04
  */
 ;(function(root, $, document) {
 
@@ -65,7 +65,7 @@ function Reporter() {
   this._errors = []
 }
 
-Reporter.prototype.addError = function(rule, message, context) {
+Reporter.prototype.warn = function(rule, message, context) {
   this._errors.push({
     rule: rule,
     message: message,
@@ -73,7 +73,7 @@ Reporter.prototype.addError = function(rule, message, context) {
   })
 }
 
-Reporter.prototype.getErrors = function() {
+Reporter.prototype.getWarnings = function() {
   return this._errors
 }
 
@@ -191,7 +191,7 @@ var HTMLInspector = (function() {
       config = processConfig(config)
       setup(config.useRules, listener, reporter)
       traverseDOM(config.domRoot, listener)
-      config.onComplete(reporter.getErrors())
+      config.onComplete(reporter.getWarnings())
     }
 
   }
@@ -1174,7 +1174,7 @@ HTMLInspector.modules.add("validation", function() {
         if (config.isElement(name)) {
           // check the ancestors for the block class
           if (!$(this).parents().is("." + config.getBlockName(name))) {
-            reporter.addError(
+            reporter.warn(
               "bem-conventions",
               "The BEM element '" + name
               + "' must be a descendent of '" + config.getBlockName(name)
@@ -1185,7 +1185,7 @@ HTMLInspector.modules.add("validation", function() {
         }
         if (config.isModifier(name)) {
           if (!$(this).is("." + config.getBlockName(name))) {
-            reporter.addError(
+            reporter.warn(
               "bem-conventions",
               "The BEM modifier class '" + name
               + "' was found without the unmodified class '" + config.getBlockName(name)
@@ -1227,7 +1227,7 @@ HTMLInspector.rules.add("duplicate-ids", function(listener, reporter) {
         offenders = [element.context].concat(duplicates.map(function(dup) {
           return dup.context
         }))
-        reporter.addError(
+        reporter.warn(
           "duplicate-ids",
           "The id '" + element.id + "' appears more than once in the document.",
           offenders
@@ -1244,7 +1244,7 @@ HTMLInspector.rules.add("inline-event-handlers", function(listener, reporter) {
 
   listener.on('attribute', function(name, value) {
     if (name.indexOf("on") === 0) {
-      reporter.addError(
+      reporter.warn(
         "inline-event-handlers",
         "An '" + name + "' attribute was found in the HTML. Use external scripts for event binding instead.",
         this
@@ -1265,7 +1265,7 @@ HTMLInspector.rules.add("scoped-styles", function(listener, reporter) {
       isOutsideHead = !$(this).closest("head").length
       isScoped = $(this).attr("scoped") != null
       if (isOutsideHead && !isScoped) {
-        reporter.addError(
+        reporter.warn(
           "scoped-styles",
           "<style> elements outside of <head> must declare the 'scoped' attribute.",
           this
@@ -1289,7 +1289,7 @@ HTMLInspector.rules.add(
   function(listener, reporter, config) {
     listener.on('element', function(name) {
       if (config.isUnnecessary(this)) {
-        reporter.addError(
+        reporter.warn(
           "unnecessary-elements",
           "Do not use <div> or <span> elements without any attributes.",
           this
@@ -1311,7 +1311,7 @@ HTMLInspector.rules.add(
 
     listener.on('class', function(name) {
       if (!config.whitelist.test(name) && classes.indexOf(name) == -1) {
-        reporter.addError(
+        reporter.warn(
           "unused-classes",
           "The class '"
           + name
@@ -1331,7 +1331,7 @@ HTMLInspector.rules.add("validate-attributes", function(listener, reporter) {
     var required = validation.getRequiredAttributesForElement(name)
     required.forEach(function(attr) {
       if ($(this).attr(attr) == null) {
-        reporter.addError(
+        reporter.warn(
           "validate-attributes",
           "The '" + attr + "' attribute is required for <"
           + name + "> elements.",
@@ -1344,7 +1344,7 @@ HTMLInspector.rules.add("validate-attributes", function(listener, reporter) {
   listener.on("attribute", function(name) {
     var element = this.nodeName.toLowerCase()
     if (validation.isAttributeObsoleteForElement(name, element)) {
-      reporter.addError(
+      reporter.warn(
         "validate-attributes",
         "The '" + name + "' attribute is no longer valid on the <"
         + element + "> element and should not be used.",
@@ -1352,7 +1352,7 @@ HTMLInspector.rules.add("validate-attributes", function(listener, reporter) {
       )
     }
     else if (!validation.isAttributeValidForElement(name, element)) {
-      reporter.addError(
+      reporter.warn(
         "validate-attributes",
         "'" + name + "' is not a valid attribute of the <"
         + element + "> element.",
@@ -1369,14 +1369,14 @@ HTMLInspector.rules.add("validate-elements", function(listener, reporter) {
 
   listener.on("element", function(name) {
     if (validation.isElementObsolete(name)) {
-      reporter.addError(
+      reporter.warn(
         "validate-elements",
         "The <" + name + "> element is obsolete and should not be used.",
         this
       )
     }
     else if (!validation.isElementValid(name)) {
-      reporter.addError(
+      reporter.warn(
         "validate-elements",
         "The <" + name + "> element is not a valid HTML element.",
         this

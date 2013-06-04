@@ -45,12 +45,12 @@ describe("HTMLInspector", function() {
   it("invokes the onComplete callback passing in an array of errors", function() {
     var log
     HTMLInspector.rules.add("one-two", function(listener, reporter) {
-      reporter.addError("one-two", "This is the `one` error message", document)
-      reporter.addError("one-two", "This is the `two` error message", document)
+      reporter.warn("one-two", "This is the `one` error message", document)
+      reporter.warn("one-two", "This is the `two` error message", document)
 
     })
     HTMLInspector.rules.add("three", function(listener, reporter) {
-      reporter.addError("three", "This is the `three` error message", document)
+      reporter.warn("three", "This is the `three` error message", document)
     })
     HTMLInspector.inspect(function(errors) {
       log = errors

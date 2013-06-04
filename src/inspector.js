@@ -80,7 +80,7 @@ var HTMLInspector = (function() {
       config = processConfig(config)
       setup(config.useRules, listener, reporter)
       traverseDOM(config.domRoot, listener)
-      config.onComplete(reporter.getErrors())
+      config.onComplete(reporter.getWarnings())
     }
 
   }

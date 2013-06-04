@@ -4,14 +4,14 @@ HTMLInspector.rules.add("validate-elements", function(listener, reporter) {
 
   listener.on("element", function(name) {
     if (validation.isElementObsolete(name)) {
-      reporter.addError(
+      reporter.warn(
         "validate-elements",
         "The <" + name + "> element is obsolete and should not be used.",
         this
       )
     }
     else if (!validation.isElementValid(name)) {
-      reporter.addError(
+      reporter.warn(
         "validate-elements",
         "The <" + name + "> element is not a valid HTML element.",
         this

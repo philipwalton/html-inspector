@@ -6,7 +6,7 @@ HTMLInspector.rules.add("validate-attributes", function(listener, reporter) {
     var required = validation.getRequiredAttributesForElement(name)
     required.forEach(function(attr) {
       if ($(this).attr(attr) == null) {
-        reporter.addError(
+        reporter.warn(
           "validate-attributes",
           "The '" + attr + "' attribute is required for <"
           + name + "> elements.",
@@ -19,7 +19,7 @@ HTMLInspector.rules.add("validate-attributes", function(listener, reporter) {
   listener.on("attribute", function(name) {
     var element = this.nodeName.toLowerCase()
     if (validation.isAttributeObsoleteForElement(name, element)) {
-      reporter.addError(
+      reporter.warn(
         "validate-attributes",
         "The '" + name + "' attribute is no longer valid on the <"
         + element + "> element and should not be used.",
@@ -27,7 +27,7 @@ HTMLInspector.rules.add("validate-attributes", function(listener, reporter) {
       )
     }
     else if (!validation.isAttributeValidForElement(name, element)) {
-      reporter.addError(
+      reporter.warn(
         "validate-attributes",
         "'" + name + "' is not a valid attribute of the <"
         + element + "> element.",

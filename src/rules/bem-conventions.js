@@ -81,7 +81,7 @@
         if (config.isElement(name)) {
           // check the ancestors for the block class
           if (!$(this).parents().is("." + config.getBlockName(name))) {
-            reporter.addError(
+            reporter.warn(
               "bem-conventions",
               "The BEM element '" + name
               + "' must be a descendent of '" + config.getBlockName(name)
@@ -92,7 +92,7 @@
         }
         if (config.isModifier(name)) {
           if (!$(this).is("." + config.getBlockName(name))) {
-            reporter.addError(
+            reporter.warn(
               "bem-conventions",
               "The BEM modifier class '" + name
               + "' was found without the unmodified class '" + config.getBlockName(name)
