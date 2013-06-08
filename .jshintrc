@@ -1,0 +1,16 @@
+{
+  "asi": true,
+  "boss": true,
+  "browser": true,
+  "eqnull": true,
+  "expr": true,
+  "globals": {
+    "console": false,
+    "Inspector": true
+  },
+  "laxbreak": true,
+  "laxcomma": true,
+  "loopfunc": true,
+  "newcap": false,
+  "shadow": true
+}

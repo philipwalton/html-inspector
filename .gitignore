@@ -1,7 +1,7 @@
 .DS_Store
-.jshintrc
 .sass-cache
 .grunt
 
+components
 node_modules
 spec-runner.html

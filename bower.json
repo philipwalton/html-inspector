@@ -1,0 +1,8 @@
+{
+  "name": "html-inspector",
+  "version": "0.1.0",
+  "author": "Philip Walton",
+  "dependencies": {
+    "jquery": "~2"
+  }
+}
