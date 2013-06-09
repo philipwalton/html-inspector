@@ -3,6 +3,6 @@
   "version": "0.1.0",
   "author": "Philip Walton",
   "dependencies": {
-    "jquery": "~2"
+    "jquery": ">1.7"
   }
 }

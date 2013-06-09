@@ -83,7 +83,7 @@ module.exports = function(grunt) {
     },
     jasmine: {
       options: {
-        vendor: "components/jquery/jquery.js",
+        vendor: grunt.file.readJSON(".bowerrc").directory + "/jquery/jquery.js",
         specs: "spec/html-inspector-spec.js",
         styles: "spec/html-inspector-spec.css",
         outfile: "spec-runner.html",

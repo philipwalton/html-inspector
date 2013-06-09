@@ -2,6 +2,6 @@
 .sass-cache
 .grunt
 
-components
+bower_components
 node_modules
 spec-runner.html

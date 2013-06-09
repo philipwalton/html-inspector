@@ -58,7 +58,7 @@ Some markup may be perfectly valid but use practices that are commonly considere
 
 ### Convention
 
-The real power of HTML Inspector lies in it's ability to enforce your teams chosen conventions. If you've decided that all groups of links should be contained in a `<nav>` element, or all `<section>` elements must contain a heading, you can write those rules, and an error will be thrown when someone breaks them.
+The real power of HTML Inspector lies in its ability to enforce your teams chosen conventions. If you've decided that all groups of links should be contained in a `<nav>` element, or all `<section>` elements must contain a heading, you can write those rules, and an error will be thrown when someone breaks them.
 
 Because convention is usually specific to individual teams, there's only one built-in rule in this category, but hopefully it'll get you thinking about rules your team could use.
 
