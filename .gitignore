@@ -5,3 +5,6 @@
 bower_components
 node_modules
 spec-runner.html
+
+# used for local testing
+demos
