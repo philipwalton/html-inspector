@@ -40,6 +40,8 @@ Here are the validation rules that ship with HTML Inspector. (Expect this list t
 
 - **Duplicate IDs**: Warn if non-unique IDs are found on the same page.
 
+- **Unique Elements**: Warn if unique elements that should be unique (like `<title>` and `<main>`) appear more than once in the document.
+
 - **Scoped Styles**: `<style>` elements that appear outside of the document `<head>` are required to have a scoped attribute.
 
 ### Best Practices
@@ -47,6 +49,8 @@ Here are the validation rules that ship with HTML Inspector. (Expect this list t
 Some markup may be perfectly valid but use practices that are commonly considered to be poor or outdated. The following rules check for these types of things. (Note that everything in this list is subjective and optional.)
 
 - **Inline Event Handlers**: Warn if inline event handlers, like `onclick="return false"` are found in the document. Inline event handlers are hard to manage, hard to debug, and completely non-reusable.
+
+- **Script Placement**: Warn if script elements appear anywhere other than right before the closing `</body>` tag. Because JavaScript is blocking, adding `<script>` elements anywhere other than the end of the document may delay the loading of the page. If a script must appear somewhere other than the end of the doucment, it can be whitelisted.
 
 - **Unused Classes**: Sometimes you'll remove a CSS rule from your stylesheet but forget to remove the class from the HTML. The "unused-classes" rule compares all the class selectors in the CSS to the classes in the HTML and reports any that aren't being used.
 
