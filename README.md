@@ -1,6 +1,13 @@
 # HTML Inspector
 
-__* * * HTML Inspector is in pre-release and still evolving. If you have suggestions for how to make it better or more useful, please file an issue or submit a pull request. * * *__
+1. [Getting Started](#getting-started)
+2. [Configuring HTML Inspector](#configuring-html-inspector)
+3. [Rule Explanations](#rule-explanations)
+4. [Writing Your Own Rules](#writing-your-own-rules)
+5. [Overriding Rules Configurations](#overriding-rule-configurations)
+6. [Custom Builds](#custom-builds)
+7. [Contributing](#conributing)
+8. [What's Next](#running-the-tests)
 
 HTML Inspector is a highly-customizable, code quality tool to help you (and your team) write better markup. It aims to find a balance between the uncompromisingly strict W3C validator and having absolutely no rules at all (the unfortunate reality for most of us).
 
@@ -21,6 +28,47 @@ After the script runs, any errors will be reported to the console (unless you ch
 ![Sample HTML Inspector Output](https://raw.github.com/philipwalton/html-inspector/master/img/html-inspector-console.png)
 
 Make sure you call `inspect` after any other DOM altering scripts have finished running or those alterations won't get inspected.
+
+## Configuring HTML Inspector
+
+By default, HTML Inspector runs all added rules, starts traversing from the `<html>` element, and logs errors to the console when complete, but all of this can be customized.
+
+The `inspect` method takes a config object to allow you to change any of this behavior. Here are the config options:
+
+- **useRules**: (Array) a list of rule names to run when inspecting
+- **domRoot**: (selector | element | jQuery) the DOM element to start traversing from
+- **onComplete**: (Function) the callback to be invoked when the inspection is finished. The function is passed an array of errors that were reported by individual rules.
+
+Here's an example:
+
+```js
+HTMLInspector.inspect({
+  useRules: ["some-rule-name", "some-other-rule-name"],
+  domRoot: "body",
+  onComplete: function(errors) {
+    errors.forEach(function(error) {
+      // report errors to external service...
+    }
+  }
+})
+```
+
+Alternatively, if you only need to set a single configuration option, you don't need to pass an object, the `inspect` method will figure out what it is based on its type.
+
+```js
+// only set the useRules options
+HTMLInspector.inspect(["some-rule-name", "some-other-rule-name"])
+
+// only set the domRoot
+HTMLInspector.inspect($("#foobar"))
+
+// only set the onComplete callback
+HTMLInspector.inspect(function(errors) {
+  errors.forEach(function(error) {
+    // report errors to external service...
+  }
+})
+```
 
 ## Rules Explanations ##
 
@@ -69,47 +117,6 @@ Because convention is usually specific to individual teams, there's only one bui
 - **BEM**: The increasingly popular BEM (block, element, modifier) methodology is a CSS naming convention that is very helpful for large projects. The problem is that using it correctly in the CSS is only half the battle. If it's not used correctly in the HTML it doesn't work either.
 
   This rule throws an error when an element class name is used but that element isn't a descendant of a block by the same name. It also errors when a modifier is used on a block or element without the unmodified class there too.
-
-## Configuring HTML Inspector
-
-By default, HTML Inspector runs all added rules, starts traversing from the `<html>` element, and logs errors to the console when complete, but all of this can be customized.
-
-The `inspect` method takes a config object to allow you to change any of this behavior. Here are the config options:
-
-- **useRules**: (Array) a list of rule names to run when inspecting
-- **domRoot**: (selector | element | jQuery) the DOM element to start traversing from
-- **onComplete**: (Function) the callback to be invoked when the inspection is finished. The function is passed an array of errors that were reported by individual rules.
-
-Here's an example:
-
-```js
-HTMLInspector.inspect({
-  useRules: ["some-rule-name", "some-other-rule-name"],
-  domRoot: "body",
-  onComplete: function(errors) {
-    errors.forEach(function(error) {
-      // report errors to external service...
-    }
-  }
-})
-```
-
-Alternatively, if you only need to set a single configuration option, you don't need to pass an object, the `inspect` method will figure out what it is based on its type.
-
-```js
-// only set the useRules options
-HTMLInspector.inspect(["some-rule-name", "some-other-rule-name"])
-
-// only set the domRoot
-HTMLInspector.inspect($("#foobar"))
-
-// only set the onComplete callback
-HTMLInspector.inspect(function(errors) {
-  errors.forEach(function(error) {
-    // report errors to external service...
-  }
-})
-```
 
 ## Writing You Own Rules
 
