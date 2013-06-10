@@ -2,12 +2,13 @@
 
 1. [Getting Started](#getting-started)
 2. [Configuring HTML Inspector](#configuring-html-inspector)
-3. [Rule Explanations](#rule-explanations)
+3. [Built-in Rules](#built-in-rules)
 4. [Writing Your Own Rules](#writing-your-own-rules)
 5. [Overriding Rules Configurations](#overriding-rule-configurations)
 6. [Custom Builds](#custom-builds)
-7. [Contributing](#conributing)
-8. [What's Next](#running-the-tests)
+7. [Running the Tests](#running-the-tests)
+8. [Contributing](#contributing)
+9. [What's Next](#whats-next)
 
 HTML Inspector is a highly-customizable, code quality tool to help you (and your team) write better markup. It aims to find a balance between the uncompromisingly strict W3C validator and having absolutely no rules at all (the unfortunate reality for most of us).
 
@@ -70,7 +71,7 @@ HTMLInspector.inspect(function(errors) {
 })
 ```
 
-## Rules Explanations ##
+## Built-in Rules ##
 
 HTML Inspector ships with a base set of rules which fall into one of three main categories: validation, best-practices, and convention.
 
@@ -118,7 +119,7 @@ Because convention is usually specific to individual teams, there's only one bui
 
   This rule throws an error when an element class name is used but that element isn't a descendant of a block by the same name. It also errors when a modifier is used on a block or element without the unmodified class there too.
 
-## Writing You Own Rules
+## Writing Your Own Rules
 
 Rules are the bread and butter of HTML Inspector. They are where you check for problems and report errors.
 
@@ -235,7 +236,7 @@ To run the tests in the browser you'll need a web server running locally. Once t
 
 Please read [CONTRIBUTING.md](https://github.com/philipwalton/html-inspector/blob/master/CONTRIBUTING.md)
 
-## What's Next / How You Can Help
+## What's Next
 
 HTML Inspector is still new and has a lot of room to grow. I'm working on some new rules, and I'll definitely write some better documentation, but ultimately the project cannot be successful without community involvement.
 
