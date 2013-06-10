@@ -244,6 +244,7 @@ describe("HTMLInspector", function() {
   })
 
 })
+
 describe("Listener", function() {
 
   var Listener = getListenerConstructor()
@@ -294,6 +295,7 @@ describe("Listener", function() {
   })
 
 })
+
 describe("Reporter", function() {
 
   var Reporter = getReporterConstructor()
@@ -333,6 +335,7 @@ describe("Reporter", function() {
   })
 
 })
+
 describe("Modules", function() {
 
   it("can add a new module", function() {
@@ -358,6 +361,7 @@ describe("Modules", function() {
     expect(HTMLInspector.modules["new-module"]).toEqual({list:[1, 2], foo:"bar"})
     ;delete HTMLInspector.modules["new-module"]
   })
+
 describe("css", function() {
 
   var css = HTMLInspector.modules.css
@@ -399,6 +403,7 @@ describe("css", function() {
   })
 
 })
+
 describe("validation", function() {
 
   var validation = HTMLInspector.modules.validation
@@ -453,7 +458,9 @@ describe("validation", function() {
 
 
 })
+
 })
+
 describe("Rules", function() {
 
   it("can add a new rule", function() {
@@ -485,6 +492,7 @@ describe("Rules", function() {
     expect(HTMLInspector.rules["new-rule"].config).toEqual({list:[1, 2], foo:"bar"})
     ;delete HTMLInspector.rules["new-rule"]
   })
+
 describe("bem-conventions", function() {
 
   var log
@@ -683,6 +691,7 @@ describe("bem-conventions", function() {
   })
 
 })
+
 describe("duplicate-ids", function() {
 
   var log
@@ -735,6 +744,7 @@ describe("duplicate-ids", function() {
 
 })
 
+
 describe("inline-event-handlers", function() {
 
   var log
@@ -786,6 +796,7 @@ describe("inline-event-handlers", function() {
   })
 
 })
+
 
 describe("scoped-styles", function() {
 
@@ -855,6 +866,7 @@ describe("scoped-styles", function() {
   })
 
 })
+
 
 describe("script-placement", function() {
 
@@ -952,6 +964,7 @@ describe("script-placement", function() {
     expect(log.length).toBe(0)
   })
 })
+
 describe("unique-elements", function() {
 
   var log
@@ -1045,6 +1058,7 @@ describe("unique-elements", function() {
     expect(log[1].context).toEqual([$html.find("footer")[0], $html.find("footer")[1]])
   })
 })
+
 describe("unnecessary-elements", function() {
 
   var log
@@ -1144,6 +1158,7 @@ describe("unnecessary-elements", function() {
 
 })
 
+
 describe("unused-classes", function() {
 
   var log
@@ -1217,6 +1232,7 @@ describe("unused-classes", function() {
   })
 
 })
+
 
 describe("validate-attributes", function() {
 
@@ -1364,6 +1380,7 @@ describe("validate-attributes", function() {
   })
 
 })
+
 describe("validate-elements", function() {
 
   var log
@@ -1472,4 +1489,5 @@ describe("validate-elements", function() {
   })
 
 })
+
 })

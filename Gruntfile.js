@@ -11,15 +11,15 @@ module.exports = function(grunt) {
       + " * Released under the <%= pkg.license %> license\n"
       + " *\n"
       + " * Date: <%= grunt.template.today('yyyy-mm-dd') %>\n"
-      + " */\n",
+      + " */\n\n",
     // Task configuration.
     concat: {
+      options: {
+        separator: "\n\n",
+        stripBanners: true
+      },
       dist: {
-        options: {
-          separator: "\n\n",
-          banner: "<%= banner %>",
-          stripBanners: true
-        },
+        options: { banner: "<%= banner %>" },
         src: [
           "src/intro.js",
           "src/utils.js",
@@ -46,16 +46,33 @@ module.exports = function(grunt) {
           "spec/src/rules/*.js",
           "spec/src/rules-outro.js"
         ],
-        dest: "spec/html-inspector-spec.js"
-      }
-    },
-    uglify: {
-      options: {
-        banner: "<%= banner %>"
+        dest: "spec/<%= pkg.name %>-spec.js"
       },
-      dist: {
-        src: "<%= concat.dist.dest %>",
-        dest: "dist/<%= pkg.name %>.min.js"
+      core: {
+        src: [
+          "src/intro.js",
+          "src/utils.js",
+          "src/listener.js",
+          "src/reporter.js",
+          "src/rules.js",
+          "src/modules.js",
+          "src/inspector.js",
+          "src/modules/**/*.js",
+          "src/outro.js"
+        ],
+        dest: "dist/<%= pkg.name %>.core.js"
+      },
+      validation: {
+        src: "src/rules/validation/*.js",
+        dest: "dist/<%= pkg.name %>.validation.js"
+      },
+      convention: {
+        src: "src/rules/convention/*.js",
+        dest: "dist/<%= pkg.name %>.validation.js"
+      },
+      "best-practices": {
+        src: "src/rules/best-practices/*.js",
+        dest: "dist/<%= pkg.name %>.best-practices.js"
       }
     },
     jshint: {
@@ -74,7 +91,7 @@ module.exports = function(grunt) {
       },
       spec: {
         files: ["spec/src/**/*.js"],
-        tasks: ["concat:spec", "jshint:dist"]
+        tasks: ["concat:spec", "jshint:spec"]
       },
       gruntfile: {
         files: ["Gruntfile.js"],
@@ -95,13 +112,12 @@ module.exports = function(grunt) {
 
   // These plugins provide necessary tasks.
   grunt.loadNpmTasks("grunt-contrib-concat");
-  grunt.loadNpmTasks("grunt-contrib-uglify");
   grunt.loadNpmTasks("grunt-contrib-jshint");
   grunt.loadNpmTasks("grunt-contrib-watch");
   grunt.loadNpmTasks('grunt-contrib-jasmine');
 
   // Default task.
-  grunt.registerTask("default", ["concat:dist", "jshint:dist", "uglify:dist"]);
+  grunt.registerTask("default", ["concat", "jshint"]);
 
   grunt.registerTask("test", ["concat", "jshint", "jasmine"]);
 
