@@ -138,15 +138,23 @@ HTMLInspector.rules.add(name, [config], func)
 The `listener` object can subscribe to events via the `on` method. Like with many other event binding libraries, `on` takes two arguments: the event name, and a callback function:
 
 ```js
-listener.on("class", function(className) {
-  // listener callback bind `this` to the DOM element
-  if (className === "foo" and this.nodeName.toLowerCase() == "bar") {
+listener.on(event, callback)
+```
+
+- **event**: (String) The name of the event. See below for a complete list of events.
+- **callback**: (Function) A function to be invoked when the event occurs. The function will be passed certain argument depending on the event type. See the event list below for argument details.
+
+Here is a an example of binding a function to the event "class":
+
+```js
+listener.on("class", function(className, domElement) {
+  if (className === "foo" and element.nodeName.toLowerCase() == "bar") {
     // report the error
   }
 })
 ```
 
-Here is a complete list of events along with the arguments that are passed to their respective callback functions:
+Below is a complete list of events along with the arguments that are passed to their respective callback functions. For events that occur on a DOM element, the element is passed as the second argument, and it is also bound to the `this` context.
 
 - **beforeInspect** : domRoot
 - **element** : elementName, domElement
@@ -154,8 +162,6 @@ Here is a complete list of events along with the arguments that are passed to th
 - **class**: className, domElement
 - **attribute**: name, value, domElement
 - **afterInspect** : domRoot
-
-*(Note: for the `element`, `id`, `class`, and `attribute` events, the DOM element is bound to the `this` context.)*
 
 ### Reporting Errors
 
