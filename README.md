@@ -185,7 +185,7 @@ reporter.warn(
 )
 ```
 
-### A Example Rule
+### An Example Rule
 
 Imagine your team previously used a custom data attribute `data-foo-*`, but now the convention is to use `data-bar-*` instead. Here's a rule that would warn users when they're using the old convention:
 
