@@ -1,10 +1,10 @@
 /*!
- * HTML Inspector - v0.1.0
+ * HTML Inspector - v0.1.1
  *
  * Copyright (c) 2013 Philip Walton <http://philipwalton.com>
  * Released under the MIT license
  *
- * Date: 2013-06-10
+ * Date: 2013-06-11
  */
 
 ;(function(root, $, document) {
