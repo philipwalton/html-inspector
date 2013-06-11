@@ -270,7 +270,7 @@ HTML Inspector uses [Grunt](http://gruntjs.com) which runs on [Node](http://node
 
 To build your own verions of HTML Inspector, simply run the following command from the project's root director:
 
-```
+```sh
 grunt
 ```
 
@@ -282,13 +282,23 @@ You also don't need a custom build to add new rules. It's perfectly OK to add ne
 
 ## Running the Tests
 
-To run the Jasmine tests from the command line with Grunt and PhantomJS:
+To run the Jasmine tests from the command line you'll need to have node, Node and NPM installed as well as the Grunt command line tools. You'll also need to install the script dependencies with [Bower](https://github.com/bower/bower).
 
+If you don't have Node, NPM, and Grunt installed, refer to their documentation for installation instructions. Once they're installed, you can install the rest of the dependencies with the following commands:
+
+```sh
+# Install Node dependencies
+npm install
+
+# Install script dependencies
+bower install
 ```
+
+Once the dependencies are installed, you can run the Jasmine test via the command line:
+
+```sh
 grunt test
 ```
-
-To run the tests in the browser you'll need a web server running locally. Once the server is running, load the `spec-runner.html` file in the browser.
 
 ## Contributing
 
