@@ -6,11 +6,11 @@
     "jquery": ">1.7"
   },
   "ignore": [
-    "dist",
     "img",
     "spec",
     "src",
     ".*",
+    "bower.json",
     "CONTRIBUTING.md",
     "Gruntfile.js",
     "package.json"
