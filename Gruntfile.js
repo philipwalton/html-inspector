@@ -68,7 +68,7 @@ module.exports = function(grunt) {
       },
       convention: {
         src: "src/rules/convention/*.js",
-        dest: "dist/<%= pkg.name %>.validation.js"
+        dest: "dist/<%= pkg.name %>.convention.js"
       },
       "best-practices": {
         src: "src/rules/best-practices/*.js",

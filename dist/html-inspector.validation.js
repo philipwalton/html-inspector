@@ -1,107 +1,161 @@
-;(function() {
+HTMLInspector.rules.add("duplicate-ids", function(listener, reporter) {
 
-  // ============================================================
-  // There are several different BEM  naming conventions that
-  // I'm aware of. To make things easier, I refer to the
-  // methodologies by the name of projects that utilize them.
-  //
-  // suit: https://github.com/necolas/suit
-  // -------------------------------------
-  // BlockName
-  // BlockName--modifierName
-  // BlockName-elementName
-  // BlockName-elementName--modifierName
-  //
-  // inuit: http://inuitcss.com/
-  // ---------------------------
-  // block-name
-  // block-name--modifier-name
-  // block-name__element-name
-  // block-name__element-name--modifier-name
-  //
-  // yandex: http://bem.info/
-  // ------------------------
-  // block-name
-  // block-name__elemement-name
-  // block-name_modifier_name
-  // block-name__element-name_modifier_name
-  //
-  // ============================================================
+  var elements = []
 
-  var methodologies = {
-    "suit": {
-      modifier: /^([A-Z][a-zA-Z]*(?:\-[a-zA-Z]+)?)\-\-[a-zA-Z]+$/,
-      element: /^([A-Z][a-zA-Z]*)\-[a-zA-Z]+$/
-    },
-    "inuit": {
-      modifier: /^((?:[a-z]+\-)*[a-z]+(?:__(?:[a-z]+\-)*[a-z]+)?)\-\-(?:[a-z]+\-)*[a-z]+$/,
-      element: /^((?:[a-z]+\-)*[a-z]+)__(?:[a-z]+\-)*[a-z]+$/
-    },
-    "yandex": {
-      modifier: /^((?:[a-z]+\-)*[a-z]+(?:__(?:[a-z]+\-)*[a-z]+)?)_(?:[a-z]+_)*[a-z]+$/,
-      element: /^((?:[a-z]+\-)*[a-z]+)__(?:[a-z]+\-)*[a-z]+$/
-    }
-  }
-
-  function getMethodology() {
-    if (typeof config.methodology == "string") {
-      return methodologies[config.methodology]
-    }
-    return config.methodology
-  }
-
-  var config = {
-
-    methodology: "suit",
-
-    getBlockName: function(elementOrModifier) {
-      var block
-        , methodology = getMethodology()
-      if (methodology.modifier.test(elementOrModifier))
-        return block = RegExp.$1
-      if (methodology.element.test(elementOrModifier))
-        return block = RegExp.$1
-      return block || false
-    },
-
-    isElement: function(cls) {
-      return getMethodology().element.test(cls)
-    },
-
-    isModifier: function(cls) {
-      return getMethodology().modifier.test(cls)
-    }
-  }
-
-  HTMLInspector.rules.add(
-    "bem-conventions",
-    config,
-    function(listener, reporter, config) {
-      listener.on('class', function(name) {
-        if (config.isElement(name)) {
-          // check the ancestors for the block class
-          if (!$(this).parents().is("." + config.getBlockName(name))) {
-            reporter.warn(
-              "bem-conventions",
-              "The BEM element '" + name
-              + "' must be a descendent of '" + config.getBlockName(name)
-              + "'.",
-              this
-            )
-          }
-        }
-        if (config.isModifier(name)) {
-          if (!$(this).is("." + config.getBlockName(name))) {
-            reporter.warn(
-              "bem-conventions",
-              "The BEM modifier class '" + name
-              + "' was found without the unmodified class '" + config.getBlockName(name)
-              +  "'.",
-              this
-            )
-          }
-        }
-      }
-    )
+  listener.on("id", function(name) {
+    elements.push({id: name, context: this})
   })
-}())
+
+  listener.on("afterInspect", function() {
+
+    var duplicates = []
+      , element
+      , offenders
+
+    while (element = elements.shift()) {
+      // find other elements with the same ID
+      duplicates = elements.filter(function(el) {
+        return element.id === el.id
+      })
+      // remove elements with the same ID from the elements array
+      elements = elements.filter(function(el) {
+        return element.id !== el.id
+      })
+      // report duplicates
+      if (duplicates.length) {
+        offenders = [element.context].concat(duplicates.map(function(dup) {
+          return dup.context
+        }))
+        reporter.warn(
+          "duplicate-ids",
+          "The id '" + element.id + "' appears more than once in the document.",
+          offenders
+        )
+      }
+    }
+
+
+  })
+
+})
+
+HTMLInspector.rules.add("scoped-styles", function(listener, reporter) {
+
+  var elements = []
+
+  listener.on("element", function(name) {
+    var isOutsideHead
+      , isScoped
+    if (name == "style") {
+      isOutsideHead = !$(this).closest("head").length
+      isScoped = $(this).attr("scoped") != null
+      if (isOutsideHead && !isScoped) {
+        reporter.warn(
+          "scoped-styles",
+          "<style> elements outside of <head> must declare the 'scoped' attribute.",
+          this
+        )
+      }
+    }
+  })
+
+})
+
+HTMLInspector.rules.add(
+  "unique-elements",
+  {
+    elements: ["title", "main"]
+  },
+  function(listener, reporter) {
+
+    var map = {}
+      , elements = this.elements
+
+    // create the map where the keys are elements that must be unique
+    elements.forEach(function(item) {
+      map[item] = []
+    })
+
+    listener.on("element", function(name) {
+      if (elements.indexOf(name) >= 0) {
+        map[name].push(this)
+      }
+    })
+
+    listener.on("afterInspect", function() {
+      var offenders
+      elements.forEach(function(item) {
+        if (map[item].length > 1) {
+          reporter.warn(
+            "unique-elements",
+            "The <" + item + "> element may only appear once in the document.",
+            map[item]
+          )
+        }
+      })
+    }
+  )
+})
+
+HTMLInspector.rules.add("validate-attributes", function(listener, reporter) {
+
+  var validation = HTMLInspector.modules.validation
+
+  listener.on("element", function(name) {
+    var required = validation.getRequiredAttributesForElement(name)
+    required.forEach(function(attr) {
+      if ($(this).attr(attr) == null) {
+        reporter.warn(
+          "validate-attributes",
+          "The '" + attr + "' attribute is required for <"
+          + name + "> elements.",
+          this
+        )
+      }
+    }, this)
+  })
+
+  listener.on("attribute", function(name) {
+    var element = this.nodeName.toLowerCase()
+    if (validation.isAttributeObsoleteForElement(name, element)) {
+      reporter.warn(
+        "validate-attributes",
+        "The '" + name + "' attribute is no longer valid on the <"
+        + element + "> element and should not be used.",
+        this
+      )
+    }
+    else if (!validation.isAttributeValidForElement(name, element)) {
+      reporter.warn(
+        "validate-attributes",
+        "'" + name + "' is not a valid attribute of the <"
+        + element + "> element.",
+        this
+      )
+    }
+  })
+
+})
+
+HTMLInspector.rules.add("validate-elements", function(listener, reporter) {
+
+  var validation = HTMLInspector.modules.validation
+
+  listener.on("element", function(name) {
+    if (validation.isElementObsolete(name)) {
+      reporter.warn(
+        "validate-elements",
+        "The <" + name + "> element is obsolete and should not be used.",
+        this
+      )
+    }
+    else if (!validation.isElementValid(name)) {
+      reporter.warn(
+        "validate-elements",
+        "The <" + name + "> element is not a valid HTML element.",
+        this
+      )
+    }
+  })
+
+})

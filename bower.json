@@ -13,6 +13,6 @@
     ".*",
     "CONTRIBUTING.md",
     "Gruntfile.js",
-    "package.json",
-  ],
+    "package.json"
+  ]
 }

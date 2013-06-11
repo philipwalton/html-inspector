@@ -266,39 +266,58 @@ HTMLInspector.rules.extend("unused-classes", {
 
 ## Custom Builds
 
-HTML Inspector uses [Grunt](http://gruntjs.com) which runs on [Node](http://nodejs.org/) to build and minify its source files as well as to run the [Jasmine](http://pivotal.github.io/jasmine/) tests. If you don't have those installed, please refer to their websites for installation instructions.
+HTML Inspector comes with a number of pre-built options to use directly in your projects.
 
-To build your own verions of HTML Inspector, simply run the following command from the project's root director:
+- **html-inspector.js**: The full HTML Inspector code with all built-in rules prepackaged.
+- **html-inspector.core.js**: The core library without any added rules.
+- **html-inspector.validation.js**: A package containing only the validation rules
+- **html-inspector.best-practices.js**: A package containing only the best practice rules
+- **html-inspector.convention.js**: A package containing only the convention rules
+
+If the full version of HTML Inspector and all the built-in rules is too much, you can mix and match the core library with any combination of the packaged rule libraries as well as your own rules.
+
+The build options for each of these is as follows:
 
 ```sh
+# build everything
 grunt
+
+# build the core library
+grunt dist:core
+
+# build the validation ruleset
+grunt dist:validation
+
+# build the best-practices ruleset
+grunt dist:best-practices
+
+# build the convention ruleset
+grunt dist:convention
 ```
 
-Running `grunt` will concatenate and minify all the source files as well as all the rules in the `src/rules` directory. You can customize what rules go in your build by adding/removing them from the rules directory.
+To alter the custom builds, simply add or remove files from the directories inside of `src/rules`. But keep in mind that rules can be excluded both at build time and at runtime. In other words, you don't need a custom build to exclude certain rules. You also don't need a custom build to add new rules. It's perfectly OK to add new rules directly to the HTML source as separate files.
 
-Keep in mind that rules can be excluded both at build time and at runtime. In other words, you don't necessarily need a custom build to exclude certain rules.
-
-You also don't need a custom build to add new rules. It's perfectly OK to add new rules directly to the HTML source as separate files.
-
-## Running the Tests
-
-To run the Jasmine tests from the command line you'll need to have node, Node and NPM installed as well as the Grunt command line tools. You'll also need to install the script dependencies with [Bower](https://github.com/bower/bower).
+HTML Inspector uses [Grunt](http://gruntjs.com) which runs on [Node](http://nodejs.org/) to build and lint its source files as well as to run the [Jasmine](http://pivotal.github.io/jasmine/) tests.
 
 If you don't have Node, NPM, and Grunt installed, refer to their documentation for installation instructions. Once they're installed, you can install the rest of the dependencies with the following commands:
 
 ```sh
-# Install Node dependencies
+# Install Node packages
 npm install
 
 # Install script dependencies
 bower install
 ```
 
-Once the dependencies are installed, you can run the Jasmine test via the command line:
+## Running the Tests
+
+If Grunt and all the dependencies are installed, you can run the Jasmine tests with the following command.
 
 ```sh
 grunt test
 ```
+
+This creates a `spec-runner.html` file in the root directory and uses [PhantomJS](http://phantomjs.org/) to run the tests. If you prefer to run the tests in the browser, you can always fire up a local server and load `spec-runner.html` in the browser manually.
 
 ## Contributing
 
