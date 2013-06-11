@@ -154,7 +154,7 @@ listener.on("class", function(className, domElement) {
 })
 ```
 
-Below is a complete list of events along with the arguments that are passed to their respective callback functions. For events that occur on a DOM element, the element is passed as the second argument, and it is also bound to the `this` context.
+Below is a complete list of events along with the arguments that are passed to their respective callback functions. For events that occur on a DOM element, the element is passed as the final argument. It is also bound to the `this` context.
 
 - **beforeInspect** : domRoot
 - **element** : elementName, domElement
@@ -190,24 +190,67 @@ reporter.warn(
 Imagine your team previously used a custom data attribute `data-foo-*`, but now the convention is to use `data-bar-*` instead. Here's a rule that would warn users when they're using the old convention:
 
 ```js
-HTMLInspector.rules.add("switch-from-foo-to-bar", function(listener, reporter) {
-  listener.on('attribute', function(name, value, element) {
-    if (name.indexOf("data-foo-") === 0) {
-      reporter.warn(
-        "switch-from-foo-to-bar",
-        "'data-foo-*' attributes are deprecated. Use 'data-bar-*' instead.",
-        element
-      )
+HTMLInspector.rules.add(
+  "deprecated-data-prefixes",
+  {
+    deprecated: ["foo", "bar"]
+  },
+  function(listener, reporter, config) {
+
+    // register a handler for the `attribute` event
+    listener.on('attribute', function(name, value, element) {
+
+      var prefix = /data-([a-z]+)/.test(name) && RegExp.$1
+
+      // return if there's no data prefix
+      if (!prefix) return
+
+      // loop through each of the deprecated names from the
+      // config array and compare them to the prefix.
+      // Warn if they're the same
+      config.deprecated.forEach(function(item) {
+        if (item === prefix) {
+          reporter.warn(
+            "deprecated-data-prefixes",
+            "The 'data-" + item + "' prefix is deprecated.",
+            element
+          )
+        }
+      })
     }
-  })
+  )
 })
 ```
 
 ## Overriding Rule Configurations
 
-Individual rules may or may not do exactly what you need, which is why most rules come with a configurations object that users can customize. A rule's configuration can be changed to meet your needs via the `extend` method of the `HTMLInspector.rules` object. The `extend` method take two arguments, the rule's unique name, and an object whose properties will override the properties of the rule's default config object, which is specified when the rule is initially added.
+Individual rules may or may not do exactly what you need, which is why most rules come with a configurations object that users can customize. A rule's configuration can be changed to meet your needs via the `extend` method of the `HTMLInspector.rules` object.
 
-Here are a few examples:
+```js
+HTMLInspector.rules.extend(rule, overrides)
+```
+
+- **rule**: (String) The rule name identifier.
+- **overrides**: (Object | Function) An object (or function that returns an object) to be merged with the rule's config object. If `overrides` is a function, it will be passed the rule's config object as its first argument.
+
+Here are two examples overriding the "deprecated-data-prefixes" rule defined above. The first method passes an object and the second passes a function:
+
+```js
+// using an object
+HTMLInspector.rules.extend("deprecated-data-prefixes", {
+  deprecated: ["fizz", "buzz"]
+})
+
+// using a function
+HTMLInspector.rules.extend("deprecated-data-prefixes", function(config) {
+  return {
+    deprecated: config.deprecated.concat(["bazz"])
+  }
+})
+```
+
+Here are a few more examples. The following override the defaults of a few of the built-in rules.
+
 
 ```js
 // use the `inuit.css` BEM naming convention
