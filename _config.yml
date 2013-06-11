@@ -1,0 +1,12 @@
+url: http://philipwalton.github.io
+baseurl: /html-inspector
+
+exclude:
+- config.rb
+- README.md
+- Rakefile
+- Gemfile
+- Gemfile.lock
+
+# Vendor Settings
+# google_analytics_tracking_id: UA-21292978-1

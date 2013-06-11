@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" l-content="IE=edge,chrome=1">
+
+    <title>Getting Started &mdash; Philip Walton</title>
+
+    <!-- http://t.co/dKP3o1e -->
+    <meta name="HandheldFriendly" l-content="True">
+    <meta name="MobileOptimized" l-content="320">
+    <meta name=viewport l-content="width=device-width, minimum-scale=1.0, maximum-scale=1.0">
+
+    <link href="/html-inspector/style.css" rel="stylesheet" type="text/css">
+
+    <meta name="description" l-content="Thoughts on front-end development, architecture, and the future of the web.">
+
+    <script type="text/javascript" src="//use.typekit.net/krk1adm.js"></script>
+    <script type="text/javascript">try{Typekit.load();}catch(e){}</script>
+
+    <!--[if lt IE 9]>
+    <script src="/assets/javascripts/html5shiv.js"></script>
+    <script src="/assets/javascripts/respond.js"></script>
+    <![endif]-->
+
+    
+
+  </head>
+  <body>
+
+    <header class="l-container">
+      <div class="l-content">
+        <h1 class="Logo">
+          <span class="Logo-title">HTML</span>
+          <span class="Logo-subtitle">Inspector</span>
+        </h1>
+      </div>
+    </header>
+
+    <div class="l-container">
+
+      
+        <header class="l-content">
+          <h1>Getting Started</h1>
+        </header>
+      
+
+      <aside class="l-sidebar">
+        <nav class="Nav">
+  <ol class="Nav-list">
+    <li class="Nav-item"><a href="#">Getting Started</a></li>
+    <li class="Nav-item"><a href="#">Configuring HTML Inspector</a></li>
+    <li class="Nav-item"><a href="#">Built-in Rules</a></li>
+    <li class="Nav-item"><a href="#">Writing Your Own Rules</a></li>
+    <li class="Nav-item"><a href="#">Overriding Rules Configurations</a></li>
+    <li class="Nav-item"><a href="#">Custom Builds</a></li>
+    <li class="Nav-item"><a href="#">Running the Tests</a></li>
+    <li class="Nav-item"><a href="#">Contributing</a></li>
+    <li class="Nav-item"><a href="#">What's Next</a></li>
+  </ol>
+</nav>
+      </aside>
+
+      <div class="l-content">
+        <p>The easiest way to get started is to simply download the full source from <code>dist/html-inspector.js</code> and add it to the bottom of your page, then call <code>HTMLInspector.inspect()</code>.</p>
+
+<p>Calling <code>inspect</code> with no options will load all rules and run them with their default configuration options. <em>(Note: HTML Inspector requires jQuery, so if you're not already including it on your page, you'll need to.)</em></p>
+
+<pre class="highlight"><code class="language-xml">&lt;script src=&quot;path/to/html-inspector.js&quot;&gt;&lt;/script&gt;
+&lt;script&gt; HTMLInspector.inspect() &lt;/script&gt;</code></pre>
+
+<p>After the script runs, any errors will be reported to the console (unless you change this behavior). Here's an example of what you might see:</p>
+
+<p><a href="https://raw.github.com/philipwalton/html-inspector/master/img/html-inspector-console.png" target="_blank"><img src="https://raw.github.com/philipwalton/html-inspector/master/img/html-inspector-console.png" alt="Sample HTML Inspector Output" style="max-width:100%;"></a></p>
+
+<p>Make sure you call <code>inspect</code> after any other DOM altering scripts have finished running or those alterations won't get inspected.</p>
+      </div>
+
+    </div>
+
+    <!--[if gte IE 9]><!-->
+    <script src="/html-inspector/lib/highlight.js"></script>
+    <script>hljs.initHighlightingOnLoad()</script>
+    <!--<![endif]-->
+  </body>
+</html>

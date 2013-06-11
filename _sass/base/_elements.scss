@@ -1,0 +1,56 @@
+*, *:before, *:after {
+  @include box-sizing(border-box);
+}
+
+html {
+  color: $text-color;
+  font: 300 100%/1.5 proxima-nova, sans-serif;
+}
+
+a {
+  color: $accent-color;
+  text-decoration: none;
+  &:hover, &:active {
+    text-decoration: underline;
+  }
+}
+
+blockquote {
+  border-left: .5em solid $border-color;
+  margin: 1em 0;
+  padding-left: 1em;
+  font-style: italic;
+}
+
+pre {
+  background-color: $background-color;
+  padding: 1em 1.5em;
+
+  /*
+   * Improves readability of pre-formatted text in all browsers.
+   */
+  white-space: pre;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+ol, ul {
+  padding-left: 3em;
+}
+
+ul {
+  list-style-type: square;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+p, pre, blockquote, ol, ul, h1, h2, h3, h4 {
+  margin: 0 0 1rem;
+}
+
+h1 {
+  color: #909090;
+}

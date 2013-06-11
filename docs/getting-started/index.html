@@ -1,0 +1,19 @@
+---
+layout: page
+title: Getting Started
+---
+
+<p>The easiest way to get started is to simply download the full source from <code>dist/html-inspector.js</code> and add it to the bottom of your page, then call <code>HTMLInspector.inspect()</code>.</p>
+
+<p>Calling <code>inspect</code> with no options will load all rules and run them with their default configuration options. <em>(Note: HTML Inspector requires jQuery, so if you're not already including it on your page, you'll need to.)</em></p>
+
+{% highlightjs xml %}
+<script src="path/to/html-inspector.js"></script>
+<script> HTMLInspector.inspect() </script>
+{% endhighlightjs %}
+
+<p>After the script runs, any errors will be reported to the console (unless you change this behavior). Here's an example of what you might see:</p>
+
+<p><a href="https://raw.github.com/philipwalton/html-inspector/master/img/html-inspector-console.png" target="_blank"><img src="https://raw.github.com/philipwalton/html-inspector/master/img/html-inspector-console.png" alt="Sample HTML Inspector Output" style="max-width:100%;"></a></p>
+
+<p>Make sure you call <code>inspect</code> after any other DOM altering scripts have finished running or those alterations won't get inspected.</p>

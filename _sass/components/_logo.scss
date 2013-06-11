@@ -1,0 +1,32 @@
+.Logo {
+  position: relative;
+  margin: 0.666em 0 0.333em;
+  color: $accent-color;
+  font-size: 5.5em;
+  letter-spacing: 0.05em;
+  line-height: 1;
+  text-transform: uppercase;
+
+  &:before {
+    content: "{";
+    position: absolute;
+    top: 0;
+    left: -0.9em;
+    color: #e0e0e0;
+    font: 900 1.45em/1.1 monospace;
+  }
+}
+
+.Logo-title {
+  display: block;
+  margin: 0;
+  color: inherit;
+  font-weight: 800;
+}
+
+.Logo-subtitle {
+  display: block;
+  margin: -0.1em 0 0;
+  font-size: 0.6em;
+  font-weight: 400;
+}

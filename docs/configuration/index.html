@@ -1,0 +1,46 @@
+---
+layout: page
+title: Configuring HTML Inspector
+---
+
+<p>By default, HTML Inspector runs all added rules, starts traversing from the <code>&lt;html&gt;</code> element, and logs errors to the console when complete, but all of this can be customized.</p>
+
+<p>The <code>inspect</code> method takes a config object to allow you to change any of this behavior. Here are the config options:</p>
+
+<ul>
+<li>
+<strong>useRules</strong>: (Array) a list of rule names to run when inspecting</li>
+<li>
+<strong>domRoot</strong>: (selector | element | jQuery) the DOM element to start traversing from</li>
+<li>
+<strong>onComplete</strong>: (Function) the callback to be invoked when the inspection is finished. The function is passed an array of errors that were reported by individual rules.</li>
+</ul><p>Here's an example:</p>
+
+{% highlightjs js %}
+HTMLInspector.inspect({
+  useRules: ["some-rule-name", "some-other-rule-name"],
+  domRoot: "body",
+  onComplete: function(errors) {
+    errors.forEach(function(error) {
+      // report errors to external service...
+    }
+  }
+})
+{% endhighlightjs %}
+
+<p>Alternatively, if you only need to set a single configuration option, you don't need to pass an object, the <code>inspect</code> method will figure out what it is based on its type.</p>
+
+{% highlightjs js %}
+// only set the useRules options
+HTMLInspector.inspect(["some-rule-name", "some-other-rule-name"])
+
+// only set the domRoot
+HTMLInspector.inspect($("#foobar"))
+
+// only set the onComplete callback
+HTMLInspector.inspect(function(errors) {
+  errors.forEach(function(error) {
+    // report errors to external service...
+  }
+})
+{% endhighlightjs %}

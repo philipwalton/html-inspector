@@ -1,0 +1,19 @@
+$sidebar-width: 14em;
+
+.l-sidebar {
+  width: $sidebar-width;
+  float: left;
+  margin-right: -100%;
+  padding-right: 2.5em;
+}
+
+.l-content {
+  padding-left: $sidebar-width;
+}
+
+.l-container {
+  @extend %clearfix;
+  max-width: 60em;
+  margin: 0 auto;
+  padding: 0 2em;
+}
