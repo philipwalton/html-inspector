@@ -159,7 +159,17 @@ Here is a complete list of events along with the arguments that are passed to th
 
 ### Reporting Errors
 
-When you find something in the HTML that you to want warn about, you simply call the `warn` method on the `reporter` object. `warn` takes an object with three properties, `rule`, `message`, and `context`.
+When you find something in the HTML that you to want warn about, you simply call the `warn` method on the `reporter` object.
+
+```js
+reporter.warn(rule, message, context)
+```
+
+- **rule**: (String) The rule name identifier.
+- **message**: (String) The warning to report.
+- **context**: (mixed) The context in which the rule was broken. This is usually a DOM element or collection of DOM elements, but doesn't have to be. It can be anything that helps the user track down where the error occurred.
+
+Here's an example from the "validate-elements" rule:
 
 ```js
 reporter.warn(
@@ -230,7 +240,6 @@ grunt test
 ```
 
 To run the tests in the browser you'll need a web server running locally. Once the server is running, load the `spec-runner.html` file in the browser.
-
 
 ## Contributing
 
