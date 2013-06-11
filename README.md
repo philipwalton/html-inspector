@@ -321,7 +321,11 @@ This creates a `spec-runner.html` file in the root directory and uses [PhantomJS
 
 ## Contributing
 
-Please read [CONTRIBUTING.md](https://github.com/philipwalton/html-inspector/blob/master/CONTRIBUTING.md)
+I'm always open to feedback and suggestion for how to make HTML Inspector better. All feedback from bug reports to API design is quite welcome.
+
+If you're submitting a bug report, please search the issues to make sure there isn't one already filed.
+
+If you're submitting a pull request please read [CONTRIBUTING.md](https://github.com/philipwalton/html-inspector/blob/master/CONTRIBUTING.md) before submitting.
 
 ## What's Next
 
