@@ -19,6 +19,12 @@ For a more formal introduction, please refer to [this blog post](http://philipwa
 
 The easiest way to get started is to simply download the full source from `dist/html-inspector.js` and add it to the bottom of your page, then call `HTMLInspector.inspect()`.
 
+If you use [Bower](https://github.com/bower/bower) you can install HTML Inspector with the following command:
+
+```sh
+bower install html-inspector
+```
+
 Calling `inspect` with no options will load all rules and run them with their default configuration options. *(Note: HTML Inspector requires jQuery, so if you're not already including it on your page, you'll need to.)*
 
 ```html
