@@ -8,11 +8,12 @@
 6. [Custom Builds](#custom-builds)
 7. [Running the Tests](#running-the-tests)
 8. [Contributing](#contributing)
-9. [What's Next](#whats-next)
 
 HTML Inspector is a highly-customizable, code quality tool to help you (and your team) write better markup. It aims to find a balance between the uncompromisingly strict W3C validator and having absolutely no rules at all (the unfortunate reality for most of us).
 
 HTML Inspector is opinionated, but every rule is completely customizable, so you can take what you like and change what you don't. It's also easy to extend, allowing teams to write their own rules to enforce their chosen conventions.
+
+For a more formal introduction, please refer to [this blog post](http://philipwalton.com/articles/introducing-html-inspector/) which goes into more detail as to why HTML Inspector was created and why you should consider using it.
 
 ## Getting Started
 
@@ -326,13 +327,3 @@ I'm always open to feedback and suggestion for how to make HTML Inspector better
 If you're submitting a bug report, please search the issues to make sure there isn't one already filed.
 
 If you're submitting a pull request please read [CONTRIBUTING.md](https://github.com/philipwalton/html-inspector/blob/master/CONTRIBUTING.md) before submitting.
-
-## What's Next
-
-HTML Inspector is still new and has a lot of room to grow. I'm working on some new rules, and I'll definitely write some better documentation, but ultimately the project cannot be successful without community involvement.
-
-HTML Inspector can only be as useful as the conventions it aims to enforce. If you have conventions that have been working well for you or your team, please suggest them.
-
-Since not all rules are appropriate for general use, I also plan on setting up a repo solely for custom rules from which users can pick and choose.
-
-Keep checking back for updates or star/watch the repo to receive email notifications.
