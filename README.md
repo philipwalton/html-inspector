@@ -17,17 +17,18 @@ For a more formal introduction, please refer to [this blog post](http://philipwa
 
 ## Getting Started
 
-The easiest way to get started is to simply download the full source from `dist/html-inspector.js` and add it to the bottom of your page, then call `HTMLInspector.inspect()`.
-
-If you use [Bower](https://github.com/bower/bower) you can install HTML Inspector with the following command:
+The easiest way get started is to simply download the source and add it to your page. [Bower](https://github.com/bower/bower) users can install HTML Inspector and its dependencies (just jQuery) with the following command:
 
 ```sh
 bower install html-inspector
 ```
 
-Calling `inspect` with no options will load all rules and run them with their default configuration options. *(Note: HTML Inspector requires jQuery, so if you're not already including it on your page, you'll need to.)*
+Alternatively you can clone the repo and add the file at `dist/html-inspector.js` to your HTML *(and jQuery too if it's not already there)*.
+
+Once HTML Inspector is added, just run `HTMLInspector.inspect()` to see the results. Calling `inspect` with no options will load all rules and run them with their default configuration options.
 
 ```html
+<!-- Include jQuery if it's not already loaded -->
 <script src="path/to/html-inspector.js"></script>
 <script> HTMLInspector.inspect() </script>
 ```
@@ -151,9 +152,9 @@ listener.on(event, callback)
 ```
 
 - **event**: (String) The name of the event. See below for a complete list of events.
-- **callback**: (Function) A function to be invoked when the event occurs. The function will be passed certain argument depending on the event type. See the event list below for argument details.
+- **callback**: (Function) A function to be invoked when the event occurs. The function will be passed certain arguments depending on the event type. See the event list below for argument details.
 
-Here is a an example of binding a function to the event "class":
+Here is a an example of binding a function to the "class" event:
 
 ```js
 listener.on("class", function(className, domElement) {
