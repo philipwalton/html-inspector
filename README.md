@@ -67,14 +67,14 @@ HTMLInspector.inspect($("#foobar"))
 // only set the onComplete callback
 HTMLInspector.inspect(function(errors) {
   errors.forEach(function(error) {
-    // report errors to external service...
+    // report errors to an external service...
   }
 })
 ```
 
 ## Built-in Rules ##
 
-HTML Inspector ships with a base set of rules which fall into one of three main categories: validation, best-practices, and convention.
+HTML Inspector ships with a set of built-in rules which fall into one of three main categories: validation, best-practices, and convention.
 
 ### Validation
 
@@ -90,7 +90,7 @@ Here are the validation rules that ship with HTML Inspector. (Expect this list t
 
 - **Duplicate IDs**: Warn if non-unique IDs are found on the same page.
 
-- **Unique Elements**: Warn if unique elements that should be unique (like `<title>` and `<main>`) appear more than once in the document.
+- **Unique Elements**: Warn if elements that should be unique (like `<title>` and `<main>`) appear more than once in the document.
 
 - **Scoped Styles**: `<style>` elements that appear outside of the document `<head>` are required to have a scoped attribute.
 
@@ -108,17 +108,19 @@ Some markup may be perfectly valid but use practices that are commonly considere
 
 - **Unnecessary Elements**: Anytime you have a plain `<div>` or `<span>` element in the HTML with no class, ID or any other attribute, it's probably unnecessary or a mark of poor design.
 
-  Elements with no semantic meaning should only be used for presentation, but if the element has no attributes it means the styling is done through a rule like `.some-class > div { }` which is just asking for trouble. Again, more information can be found [here](http://philipwalton.com/articles/css-architecture/).
+  Elements with no semantic meaning should only be used for presentation. If the element has no attributes but is used for styling, it must be done through a rule like `.some-class > div { }` which is just asking for trouble. Again, more information can be found [here](http://philipwalton.com/articles/css-architecture/).
 
 ### Convention
 
-The real power of HTML Inspector lies in its ability to enforce your teams chosen conventions. If you've decided that all groups of links should be contained in a `<nav>` element, or all `<section>` elements must contain a heading, you can write those rules, and an error will be thrown when someone breaks them.
+The real power of HTML Inspector lies in its ability to enforce your team's chosen conventions. If you've decided that all groups of links should be contained in a `<nav>` element, or all `<section>` elements must contain a heading, you can write those rules, and an error will be thrown when someone breaks them.
 
 Because convention is usually specific to individual teams, there's only one built-in rule in this category, but hopefully it'll get you thinking about rules your team could use.
 
-- **BEM**: The increasingly popular BEM (block, element, modifier) methodology is a CSS naming convention that is very helpful for large projects. The problem is that using it correctly in the CSS is only half the battle. If it's not used correctly in the HTML it doesn't work either.
+- **BEM**: The increasingly popular [BEM](http://bem.info/) (block, element, modifier) methodology is a CSS naming convention that is very helpful for large projects. The problem is that using it correctly in the CSS is only half the battle. If it's not used correctly in the HTML it doesn't work either.
 
   This rule throws an error when an element class name is used but that element isn't a descendant of a block by the same name. It also errors when a modifier is used on a block or element without the unmodified class there too.
+
+  *(Note: there are a few different BEM naming conventions out there. HTML Inspector support the [three most common](https://github.com/philipwalton/html-inspector/blob/master/src/rules/convention/bem-conventions.js#L3-L29))*
 
 ## Writing Your Own Rules
 
@@ -136,7 +138,7 @@ HTMLInspector.rules.add(name, [config], func)
 
 ### Events
 
-The `listener` object can subscribe to events via the `on` method. Like with many other event binding libraries, `on` takes two arguments: the event name, and a callback function:
+The `listener` object can subscribe to events via the `on` method. Like with many other event binding libraries, `on` takes two parameters: the event name, and a callback function:
 
 ```js
 listener.on(event, callback)
@@ -149,19 +151,19 @@ Here is a an example of binding a function to the event "class":
 
 ```js
 listener.on("class", function(className, domElement) {
-  if (className === "foo" and element.nodeName.toLowerCase() == "bar") {
+  if (className == "foo" and element.nodeName.toLowerCase() == "bar") {
     // report the error
   }
 })
 ```
 
-Below is a complete list of events along with the arguments that are passed to their respective callback functions. For events that occur on a DOM element, the element is passed as the final argument. It is also bound to the `this` context.
+Below is a complete list of events along with the arguments that are passed to their respective handlers. For events that occur on a DOM element, that element is passed as the final argument. It is also bound to the `this` context.
 
 - **beforeInspect** : domRoot
 - **element** : elementName, domElement
 - **id**: idName, domElement
 - **class**: className, domElement
-- **attribute**: name, value, domElement
+- **attribute**: attrName, attrValue, domElement
 - **afterInspect** : domRoot
 
 ### Reporting Errors
@@ -176,7 +178,7 @@ reporter.warn(rule, message, context)
 - **message**: (String) The warning to report.
 - **context**: (mixed) The context in which the rule was broken. This is usually a DOM element or collection of DOM elements, but doesn't have to be. It can be anything that helps the user track down where the error occurred.
 
-Here's an example from the "validate-elements" rule:
+Here's an example from the [validate-elements](https://github.com/philipwalton/html-inspector/blob/master/src/rules/validation/validate-elements.js) rule:
 
 ```js
 reporter.warn(
@@ -188,7 +190,7 @@ reporter.warn(
 
 ### An Example Rule
 
-Imagine your team previously used a custom data attribute `data-foo-*`, but now the convention is to use `data-bar-*` instead. Here's a rule that would warn users when they're using the old convention:
+Imagine your team previously used the custom data attributes `data-foo-*` and `data-bar-*`, but now the convention is to use something else. Here's a rule that would warn users when they're using the old convention:
 
 ```js
 HTMLInspector.rules.add(
@@ -234,7 +236,7 @@ HTMLInspector.rules.extend(rule, overrides)
 - **rule**: (String) The rule name identifier.
 - **overrides**: (Object | Function) An object (or function that returns an object) to be merged with the rule's config object. If `overrides` is a function, it will be passed the rule's config object as its first argument.
 
-Here are two examples overriding the "deprecated-data-prefixes" rule defined above. The first method passes an object and the second passes a function:
+Here are two examples overriding the "deprecated-data-prefixes" rule defined above. The first example passes an object and the second passes a function:
 
 ```js
 // using an object
@@ -270,7 +272,7 @@ HTMLInspector.rules.extend("unused-classes", {
 HTML Inspector comes with a number of pre-built options to use directly in your projects.
 
 - **html-inspector.js**: The full HTML Inspector code with all built-in rules prepackaged.
-- **html-inspector.core.js**: The core library without any added rules.
+- **html-inspector.core.js**: The core library with none of the rules.
 - **html-inspector.validation.js**: A package containing only the validation rules
 - **html-inspector.best-practices.js**: A package containing only the best practice rules
 - **html-inspector.convention.js**: A package containing only the convention rules
@@ -322,7 +324,7 @@ This creates a `spec-runner.html` file in the root directory and uses [PhantomJS
 
 ## Contributing
 
-I'm always open to feedback and suggestion for how to make HTML Inspector better. All feedback from bug reports to API design is quite welcome.
+I'm always open to feedback and suggestions for how to make HTML Inspector better. All feedback from bug reports to API design is quite welcome.
 
 If you're submitting a bug report, please search the issues to make sure there isn't one already filed.
 
