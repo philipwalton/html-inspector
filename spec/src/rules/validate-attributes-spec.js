@@ -106,7 +106,7 @@ describe("validate-attributes", function() {
 
   })
 
-  it("doesn't double-warn when an element is both invalid and obsolete", function() {
+  it("doesn't double-warn when an attribute is both invalid and obsolete", function() {
 
     var $html = $(''
           + '<div align="center">'
@@ -122,6 +122,24 @@ describe("validate-attributes", function() {
     })
 
     expect(log.length).toBe(1)
+  })
+
+  it("doesn't warn about invalid attributes if the element containing the attribute is invalid", function() {
+
+    var $html = $(''
+          + '<div>'
+          + '  <foo bar></foo>'
+          + '  <fizz buzz="true"></fizz>'
+          + '</div>'
+        )
+
+    HTMLInspector.inspect({
+      useRules: ["validate-attributes"],
+      domRoot: $html,
+      onComplete: onComplete
+    })
+
+    expect(log.length).toBe(0)
   })
 
   it("doesn't warn when valid, non-obsolete elements are used", function() {
@@ -142,5 +160,6 @@ describe("validate-attributes", function() {
     expect(log.length).toBe(0)
 
   })
+
 
 })

@@ -4,7 +4,7 @@
  * Copyright (c) 2013 Philip Walton <http://philipwalton.com>
  * Released under the MIT license
  *
- * Date: 2013-06-11
+ * Date: 2013-06-13
  */
 
 ;(function(root, $, document) {
@@ -135,6 +135,10 @@ var HTMLInspector = (function() {
   function traverseDOM(root, listener) {
     var $root = $(root)
       , $dom = $root.add($root.find("*"))
+
+    // ignore SVG elements and their descendents until the SVG spec is added
+    $dom = $dom.not("svg, svg *")
+
     listener.trigger("beforeInspect", inspector.config.domRoot)
     $dom.each(function() {
       var el = this
@@ -970,7 +974,11 @@ HTMLInspector.modules.add("validation", function() {
   }
 
   function allowedAttributesForElement(element) {
-    return elementData[element].attributes.replace(/\*/g, "").split(/\s*;\s*/)
+    // return an empty array if the element is invalid
+    if (elementData[element])
+      return elementData[element].attributes.replace(/\*/g, "").split(/\s*;\s*/)
+    else
+      return []
   }
 
   //
@@ -1035,11 +1043,15 @@ HTMLInspector.modules.add("validation", function() {
     elementWhitelist: [],
 
     isElementValid: function(element) {
-      return elements.indexOf(element) >= 0
+      return isWhitelistedElement(element)
+        ? true
+        : elements.indexOf(element) >= 0
     },
 
     isElementObsolete: function(element) {
-      return obsoluteElements.indexOf(element) >= 0
+      return isWhitelistedElement(element)
+        ? false
+        : obsoluteElements.indexOf(element) >= 0
     },
 
     isAttributeValidForElement: function(attribute, element) {
@@ -1053,7 +1065,7 @@ HTMLInspector.modules.add("validation", function() {
     },
 
     isAttributeObsoleteForElement: function(attribute, element) {
-      // obsolete element can still be whitelisted
+      // attributes in the whitelist are never considered obsolete
       if (isWhitelistedAttribute(attribute)) return false
 
       return obsoleteAttributes.some(function(item) {
@@ -1065,6 +1077,9 @@ HTMLInspector.modules.add("validation", function() {
     },
 
     isAttributeRequiredForElement: function(attribute, element) {
+      // attributes in the whitelist are never considered required
+      if (isWhitelistedAttribute(attribute)) return false
+
       return requiredAttributes.some(function(item) {
         return element == item.element && item.attributes.indexOf(attribute) >= 0
       })
@@ -1425,6 +1440,10 @@ HTMLInspector.rules.add("validate-attributes", function(listener, reporter) {
 
   listener.on("attribute", function(name) {
     var element = this.nodeName.toLowerCase()
+
+    // don't validate the attributes of invalid elements
+    if (!validation.isElementValid(element)) return
+
     if (validation.isAttributeObsoleteForElement(name, element)) {
       reporter.warn(
         "validate-attributes",

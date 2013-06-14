@@ -717,7 +717,11 @@ HTMLInspector.modules.add("validation", function() {
   }
 
   function allowedAttributesForElement(element) {
-    return elementData[element].attributes.replace(/\*/g, "").split(/\s*;\s*/)
+    // return an empty array if the element is invalid
+    if (elementData[element])
+      return elementData[element].attributes.replace(/\*/g, "").split(/\s*;\s*/)
+    else
+      return []
   }
 
   //
@@ -782,11 +786,15 @@ HTMLInspector.modules.add("validation", function() {
     elementWhitelist: [],
 
     isElementValid: function(element) {
-      return elements.indexOf(element) >= 0
+      return isWhitelistedElement(element)
+        ? true
+        : elements.indexOf(element) >= 0
     },
 
     isElementObsolete: function(element) {
-      return obsoluteElements.indexOf(element) >= 0
+      return isWhitelistedElement(element)
+        ? false
+        : obsoluteElements.indexOf(element) >= 0
     },
 
     isAttributeValidForElement: function(attribute, element) {
@@ -800,7 +808,7 @@ HTMLInspector.modules.add("validation", function() {
     },
 
     isAttributeObsoleteForElement: function(attribute, element) {
-      // obsolete element can still be whitelisted
+      // attributes in the whitelist are never considered obsolete
       if (isWhitelistedAttribute(attribute)) return false
 
       return obsoleteAttributes.some(function(item) {
@@ -812,6 +820,9 @@ HTMLInspector.modules.add("validation", function() {
     },
 
     isAttributeRequiredForElement: function(attribute, element) {
+      // attributes in the whitelist are never considered required
+      if (isWhitelistedAttribute(attribute)) return false
+
       return requiredAttributes.some(function(item) {
         return element == item.element && item.attributes.indexOf(attribute) >= 0
       })

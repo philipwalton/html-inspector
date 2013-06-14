@@ -241,6 +241,26 @@ describe("HTMLInspector", function() {
       expect(events[events.length - 1]).toBe("afterInspect")
     })
 
+    it("ignores SVG elements and their children", function() {
+      var events = []
+      HTMLInspector.rules.add("traverse-test", function(listener, reporter) {
+        listener.on("element", function(name) {
+          if (name == "svg" || name == "path") {
+            events.push(name)
+          }
+        })
+      })
+      $svg = $html.clone().append(''
+        + '<svg viewBox="0 0 512 512" height="22" width="22">'
+        + '  <path d="0,0V100H100v-50H50z"></path>'
+        + '</svg>')
+
+      console.log($svg)
+
+      HTMLInspector.inspect($svg)
+      expect(events.length).toBe(0)
+    })
+
   })
 
 })
@@ -407,6 +427,13 @@ describe("css", function() {
 describe("validation", function() {
 
   var validation = HTMLInspector.modules.validation
+    , originalElementWhitelist = validation.elementWhitelist
+    , originalAttributeWhitelist = validation.attributeWhitelist
+
+  afterEach(function() {
+    validation.elementWhitelist = originalElementWhitelist
+    validation.attributeWhitelist = originalAttributeWhitelist
+  })
 
   it("can determine if an element is a valid HTML element", function() {
     expect(validation.isElementValid("p")).toBe(true)
@@ -456,6 +483,28 @@ describe("validation", function() {
     expect(validation.getRequiredAttributesForElement("div")).toEqual([])
   })
 
+  it("ignores elements that are whitelisted", function() {
+    validation.elementWhitelist = validation.elementWhitelist.concat(["foo", "bar", "font", "center"])
+    // valid elements
+    expect(validation.isElementValid("foo")).toBe(true)
+    expect(validation.isElementValid("bar")).toBe(true)
+    // obsolete elements
+    expect(validation.isElementObsolete("font")).toBe(false)
+    expect(validation.isElementObsolete("center")).toBe(false)
+  })
+
+  it("ignores attributes that are whitelisted", function() {
+    validation.attributeWhitelist = validation.attributeWhitelist.concat(["src", "placeholder", "align", /^bg[a-z]+$/])
+    // valid elements
+    expect(validation.isAttributeValidForElement("placeholder", "select")).toBe(true)
+    expect(validation.isAttributeValidForElement("ng-model", "div")).toBe(true)
+    // obsolete elements
+    expect(validation.isAttributeObsoleteForElement("align", "div")).toBe(false)
+    expect(validation.isAttributeObsoleteForElement("bgcolor", "body")).toBe(false)
+    // required attributes
+    expect(validation.isAttributeRequiredForElement("src", "img")).toBe(false)
+
+  })
 
 })
 
@@ -1342,7 +1391,7 @@ describe("validate-attributes", function() {
 
   })
 
-  it("doesn't double-warn when an element is both invalid and obsolete", function() {
+  it("doesn't double-warn when an attribute is both invalid and obsolete", function() {
 
     var $html = $(''
           + '<div align="center">'
@@ -1358,6 +1407,24 @@ describe("validate-attributes", function() {
     })
 
     expect(log.length).toBe(1)
+  })
+
+  it("doesn't warn about invalid attributes if the element containing the attribute is invalid", function() {
+
+    var $html = $(''
+          + '<div>'
+          + '  <foo bar></foo>'
+          + '  <fizz buzz="true"></fizz>'
+          + '</div>'
+        )
+
+    HTMLInspector.inspect({
+      useRules: ["validate-attributes"],
+      domRoot: $html,
+      onComplete: onComplete
+    })
+
+    expect(log.length).toBe(0)
   })
 
   it("doesn't warn when valid, non-obsolete elements are used", function() {
@@ -1378,6 +1445,7 @@ describe("validate-attributes", function() {
     expect(log.length).toBe(0)
 
   })
+
 
 })
 

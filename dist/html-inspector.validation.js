@@ -117,6 +117,10 @@ HTMLInspector.rules.add("validate-attributes", function(listener, reporter) {
 
   listener.on("attribute", function(name) {
     var element = this.nodeName.toLowerCase()
+
+    // don't validate the attributes of invalid elements
+    if (!validation.isElementValid(element)) return
+
     if (validation.isAttributeObsoleteForElement(name, element)) {
       reporter.warn(
         "validate-attributes",
