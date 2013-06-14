@@ -1,6 +1,6 @@
 {
   "name": "html-inspector",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "main": "dist/html-inspector.js",
   "dependencies": {
     "jquery": ">1.7"
