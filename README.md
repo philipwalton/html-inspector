@@ -17,7 +17,7 @@ For a more formal introduction, please refer to [this blog post](http://philipwa
 
 ## Getting Started
 
-The easiest way get started is to simply download the source and add it to your page. [Bower](https://github.com/bower/bower) users can install HTML Inspector and its dependencies (just jQuery) with the following command:
+The easiest way to get started is to simply download the source and add it to your page. [Bower](https://github.com/bower/bower) users can install HTML Inspector and its dependencies (just jQuery) with the following command:
 
 ```sh
 bower install html-inspector
