@@ -1,5 +1,9 @@
 == HEAD
 
+== 0.2.1 (June 13, 2013)
+
+* Fix an error in bower.json.
+
 == 0.2.0 (June 13, 2013)
 
 * Update the inspector to not traverse <svg> elements and their children until rules for them can be added.
