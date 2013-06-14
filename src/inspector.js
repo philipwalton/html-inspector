@@ -23,6 +23,10 @@ var HTMLInspector = (function() {
   function traverseDOM(root, listener) {
     var $root = $(root)
       , $dom = $root.add($root.find("*"))
+
+    // ignore SVG elements and their descendents until the SVG spec is added
+    $dom = $dom.not("svg, svg *")
+
     listener.trigger("beforeInspect", inspector.config.domRoot)
     $dom.each(function() {
       var el = this
