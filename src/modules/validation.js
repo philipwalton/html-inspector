@@ -396,6 +396,10 @@ HTMLInspector.modules.add("validation", function() {
       children: "flow",
       attributes: "globals; colspan; rowspan; headers"
     },
+    "template": {
+      children: "flow; metadata",
+      attributes: "globals"
+    },
     "textarea": {
       children: "text",
       attributes: "globals; autofocus; cols; dirname; disabled; form; maxlength; name; placeholder; readonly; required; rows; wrap"

@@ -4,7 +4,7 @@
  * Copyright (c) 2013 Philip Walton <http://philipwalton.com>
  * Released under the MIT license
  *
- * Date: 2013-06-13
+ * Date: 2013-06-14
  */
 
 ;(function(root, $, document) {
@@ -652,6 +652,10 @@ HTMLInspector.modules.add("validation", function() {
     "td": {
       children: "flow",
       attributes: "globals; colspan; rowspan; headers"
+    },
+    "template": {
+      children: "flow; metadata",
+      attributes: "globals"
     },
     "textarea": {
       children: "text",
