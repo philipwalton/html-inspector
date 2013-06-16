@@ -83,7 +83,12 @@ HTMLInspector.rules.add(
 HTMLInspector.rules.add(
   "unused-classes",
   {
-    whitelist: /^js\-|^supports\-|^language\-|^lang\-/
+    whitelist: [
+      /^js\-/,
+      /^supports\-/,
+      /^language\-/,
+      /^lang\-/
+    ]
   },
   function(listener, reporter, config) {
 
