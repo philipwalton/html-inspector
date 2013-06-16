@@ -51,12 +51,27 @@ describe("unused-classes", function() {
   it("allows for customization by altering the config object", function() {
 
     var $html = $(''
-          + '<div class="foo supports-flexbox">'
-          + '  <p class="js-alert bar">This is just a test</p>'
+          + '<div class="fizz supports-flexbox">'
+          + '  <p class="js-alert buzz">This is just a test</p>'
           + '</div>'
         )
 
-    HTMLInspector.rules.extend("unused-classes", {whitelist: /foo|bar/})
+    // the whitelist can be a single RegExp
+    HTMLInspector.rules.extend("unused-classes", {whitelist: /fizz|buzz/})
+
+    HTMLInspector.inspect({
+      useRules: ["unused-classes"],
+      domRoot: $html,
+      onComplete: onComplete
+    })
+
+    expect(log.length).toBe(2)
+    expect(log[0].message).toBe("The class 'supports-flexbox' is used in the HTML but not found in any stylesheet.")
+    expect(log[1].message).toBe("The class 'js-alert' is used in the HTML but not found in any stylesheet.")
+
+    log = []
+    // It can also be a list of strings or RegExps
+    HTMLInspector.rules.extend("unused-classes", {whitelist: ["fizz", /buz\w/]})
 
     HTMLInspector.inspect({
       useRules: ["unused-classes"],

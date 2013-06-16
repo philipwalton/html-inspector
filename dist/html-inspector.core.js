@@ -27,10 +27,14 @@ function unique(array) {
 
 
 /**
- * Given a string and a list of strings or Regular Expressions,
+ * Given a string and a RegExp or a list of strings or RegExps,
  * does the string match any of the items in the list?
  */
 function foundIn(needle, haystack) {
+  // if haystack is a RegExp and not an array, just compare againt it
+  if (isRegExp(haystack)) return haystack.test(needle)
+
+  // otherwise check each item in the list
   return haystack.some(function(item) {
     return isRegExp(item) ? item.test(needle) : needle === item
   })

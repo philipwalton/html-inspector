@@ -8,8 +8,8 @@ HTMLInspector.rules.add(
     var css = HTMLInspector.modules.css
       , classes = css.getClassSelectors()
 
-    listener.on('class', function(name) {
-      if (!config.whitelist.test(name) && classes.indexOf(name) == -1) {
+    listener.on("class", function(name) {
+      if (!foundIn(name, config.whitelist) && classes.indexOf(name) < 0) {
         reporter.warn(
           "unused-classes",
           "The class '"

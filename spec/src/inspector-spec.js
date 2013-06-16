@@ -252,10 +252,8 @@ describe("HTMLInspector", function() {
       })
       $svg = $html.clone().append(''
         + '<svg viewBox="0 0 512 512" height="22" width="22">'
-        + '  <path d="0,0V100H100v-50H50z"></path>'
+        + '  <path></path>'
         + '</svg>')
-
-      console.log($svg)
 
       HTMLInspector.inspect($svg)
       expect(events.length).toBe(0)
