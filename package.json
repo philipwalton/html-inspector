@@ -7,6 +7,9 @@
   },
   "version": "0.2.3",
   "license": "MIT",
+  "scripts": {
+    "test": "grunt test"
+  },
   "devDependencies": {
     "grunt": "~0.4.1",
     "grunt-contrib-concat": "*",
