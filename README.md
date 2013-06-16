@@ -1,5 +1,7 @@
 # HTML Inspector
 
+[![Build Status](https://secure.travis-ci.org/philipwalton/html-inspector.png)](http://travis-ci.org/philipwalton/html-inspector)
+
 1. [Getting Started](#getting-started)
 2. [Configuring HTML Inspector](#configuring-html-inspector)
 3. [Built-in Rules](#built-in-rules)
