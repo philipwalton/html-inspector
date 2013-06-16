@@ -1,5 +1,9 @@
 == HEAD
 
+== 0.2.3 (June 15, 2013)
+
+* Prevent scripts from warning in the script-placement rule if they have the `async` or `defer` attribute.
+
 == 0.2.2 (June 15, 2013)
 
 * Allow a single RegExp to be a rule's whitelist option: previously an array of Regular Expressions (or strings) was required.
@@ -15,4 +19,4 @@
 
 == 0.1.1 (June 10, 2013)
 
-* First public release
+* First public release.
