@@ -1,5 +1,9 @@
 == HEAD
 
+== 0.2.2 (June 15, 2013)
+
+* Allow a single RegExp to be a rule's whitelist option: previously an array of Regular Expressions (or strings) was required.
+
 == 0.2.1 (June 13, 2013)
 
 * Fix an error in bower.json.
