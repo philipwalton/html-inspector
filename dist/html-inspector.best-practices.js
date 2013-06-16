@@ -44,13 +44,18 @@ HTMLInspector.rules.add(
         if (el.nodeName.toLowerCase() != "script") break
       }
       elements.forEach(function(el) {
-        if (el.nodeName.toLowerCase() == "script" && !isWhitelisted(el)) {
-          reporter.warn(
-            "script-placement",
-            "<script> elements should appear right before "
-            + "the closing </body> tag for optimal performance.",
-            el
-          )
+        if (el.nodeName.toLowerCase() == "script") {
+          // scripts with the async or defer attributes are safe
+          if (el.async === true || el.defer === true) return
+          // at this point, if the script isn't whitelisted, throw an error
+          if (!isWhitelisted(el)) {
+            reporter.warn(
+              "script-placement",
+              "<script> elements should appear right before "
+              + "the closing </body> tag for optimal performance.",
+              el
+            )
+          }
         }
       })
     })

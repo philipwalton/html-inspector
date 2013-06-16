@@ -975,6 +975,26 @@ describe("script-placement", function() {
     expect(log.length).toBe(0)
   })
 
+  it("doesn't warn when the script uses either the async or defer attribute", function() {
+
+    var $html = $(''
+          + '<div>'
+          + '  <script id="script1" async>(function() { // script one }())</script>'
+          + '  <script id="script2" defer>(function() { // script two }())</script>'
+          + '  <header>Header content</header>'
+          + '  <main>Main content</main>'
+          + '  <footer>Footer content</header>'
+          + '</div>'
+        )
+    HTMLInspector.inspect({
+      useRules: ["script-placement"],
+      domRoot: $html,
+      onComplete: onComplete
+    })
+    expect(log.length).toBe(0)
+
+  })
+
   it("allows for customization by altering the config object", function() {
     var $html = $(''
           + '<div>'
