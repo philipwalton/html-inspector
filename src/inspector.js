@@ -85,6 +85,10 @@ var HTMLInspector = (function() {
       setup(config.useRules, listener, reporter)
       traverseDOM(config.domRoot, listener)
       config.onComplete(reporter.getWarnings())
+    },
+
+    setConfig: function(config) {
+      inspector.config = processConfig(config)
     }
 
   }
