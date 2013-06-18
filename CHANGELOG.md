@@ -1,4 +1,8 @@
-== HEAD
+== 0.3.0 (Unreleased)
+
+* Remove the dependency on jQuery
+* Add a validate-element-location rule that warns when elements appear as descendants of elements they're not allowed to descend from.
+* Add the ability to exclude DOM elements and subtrees from inspection.
 
 == 0.2.3 (June 15, 2013)
 
