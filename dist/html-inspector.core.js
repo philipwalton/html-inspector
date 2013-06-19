@@ -4,6 +4,27 @@ function toArray(arrayLike) {
   return arrayLike ? [].slice.call(arrayLike) : []
 }
 
+/**
+ * Get a sorted array of the elements attributes
+ */
+function getAttributes(element) {
+  var map = element.attributes
+    , len = map.length
+    , i = 0
+    , attr
+    , attrs = []
+
+  // return an empty array if there are no attributes
+  if (len === 0) return []
+
+  while (attr = map[i++]) {
+    attrs.push({name: attr.name, value: attr.value})
+  }
+  return attrs.sort(function(a, b) {
+    if (a.name === b.name) return 0
+    return a.name < b.name ? -1 : 1
+  })
+}
 
 /**
  * Determine if an object is a Regular Expression
@@ -137,6 +158,10 @@ var HTMLInspector = (function() {
     listener.trigger("beforeInspect", inspector.config.domRoot)
     $dom.each(function() {
       var el = this
+
+      // don't inspect text nodes
+      if (this.nodeType == 3) return
+
       listener.trigger("element", el, [el.nodeName.toLowerCase(), el])
       if (el.id) {
         listener.trigger("id", el, [el.id, el])
@@ -144,7 +169,7 @@ var HTMLInspector = (function() {
       toArray(el.classList).forEach(function(name) {
         listener.trigger("class", el, [name, el])
       })
-      toArray(el.attributes).forEach(function(attr) {
+      getAttributes(el).forEach(function(attr) {
         listener.trigger("attribute", el, [attr.name, attr.value, el])
       })
     })

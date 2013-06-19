@@ -30,6 +30,10 @@ var HTMLInspector = (function() {
     listener.trigger("beforeInspect", inspector.config.domRoot)
     $dom.each(function() {
       var el = this
+
+      // don't inspect text nodes
+      if (this.nodeType == 3) return
+
       listener.trigger("element", el, [el.nodeName.toLowerCase(), el])
       if (el.id) {
         listener.trigger("id", el, [el.id, el])
@@ -37,7 +41,7 @@ var HTMLInspector = (function() {
       toArray(el.classList).forEach(function(name) {
         listener.trigger("class", el, [name, el])
       })
-      toArray(el.attributes).forEach(function(attr) {
+      getAttributes(el).forEach(function(attr) {
         listener.trigger("attribute", el, [attr.name, attr.value, el])
       })
     })
