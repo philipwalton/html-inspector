@@ -1,7 +1,16 @@
 // Safe to assume arguments here
 var basePath = phantom.args[0],
-  inspectLocation = phantom.args[1],
-  configFile = phantom.args[2];
+  baseVersion = phantom.args[1],
+  inspectLocation = phantom.args[2],
+  configFile = phantom.args[3];
+
+var injectVersions = {
+  full: [''],
+  core: ['.core'],
+  convention: ['.core', '.convention'],
+  'best-practices': ['.core', '.best-practices'],
+  validation: ['.core', '.validation']
+};
 
 var page = require('webpage').create();
 
@@ -29,7 +38,9 @@ page.onLoadFinished = function(status) {
   }
 
   if(!hasDependencies.HTMLInspector) {
-    page.injectJs(basePath + '/dist/html-inspector.js');
+    injectVersions[baseVersion].forEach(function(version) {
+      page.injectJs(basePath + '/dist/html-inspector' + version + '.js');
+    });
   }
 
   if(configFile) {

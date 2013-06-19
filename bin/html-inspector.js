@@ -5,6 +5,8 @@ var fs = require('fs'),
   program = require('commander');
 
 var inspectLocation,
+  baseVersions = ['full', 'core', 'convention', 'best-practices', 'validation'],
+  baseVersion,
   configFile;
 
 var basePath = path.normalize(__dirname + path.sep + '..'),
@@ -14,9 +16,12 @@ program
   .version('0.0.1')
   .usage('[options] <file or url>')
   .option('-c, --config [file]', 'Configuration file')
+  .option('-b, --base [base]', 'Use HTML Inspector version (' + baseVersions.join(', ') + ')', 'full')
   .parse(process.argv);
 
-if(program.args.length !== 1) {
+baseVersion = program.base;
+
+if(program.args.length !== 1 || baseVersions.indexOf(baseVersion) === -1) {
   program.help()
 }
 
@@ -45,6 +50,6 @@ function run(cmd, args, callback) {
   });
 }
 
-run("phantomjs", [phantomRunner, basePath, inspectLocation, configFile], function(result) {
+run("phantomjs", [phantomRunner, basePath, baseVersion, inspectLocation, configFile], function(result) {
   console.log(result);
 });
