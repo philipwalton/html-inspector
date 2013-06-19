@@ -12,17 +12,17 @@ var basePath = path.normalize(__dirname + path.sep + '..'),
 
 program
   .version('0.0.1')
-  .option('-l, --local [file]', 'Inspect local file')
-  .option('-u, --url [url]', 'Inspect external url')
+  .usage('[options] <file or url>')
   .option('-c, --config [file]', 'Configuration file')
   .parse(process.argv);
 
-// Allow either a local file or a url
-if(program.local) {
-  inspectLocation = path.resolve(program.local);
-} else if(program.url) {
-  inspectLocation = program.url
+if(program.args.length !== 1) {
+  program.help()
 }
+
+// Try to resolve local file, otherwise assume and pass url
+var inputLocation = program.args[0],
+  inspectLocation = fs.exists(path.resolve(inputLocation)) ? path.resolve(inputLocation) : inputLocation;
 
 if(program.config) {
   configFile = path.resolve(program.config);
