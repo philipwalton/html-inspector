@@ -1,21 +1,6 @@
 describe("Listener", function() {
 
-  var Listener = getListenerConstructor()
-
-  function getListenerConstructor() {
-    var Listener
-      , originalRules = HTMLInspector.rules
-    HTMLInspector.rules.add("listener", function(listener) {
-      Listener = listener.constructor
-    })
-    HTMLInspector.inspect({
-      useRules: ["listener"],
-      domRoot: document.createElement("div")
-    })
-    HTMLInspector.rules = originalRules
-    return Listener
-  }
-
+  var Listener = HTMLInspector._constructors.Listener
 
   it("can add handlers to a specific event", function() {
     var listener = new Listener()

@@ -23,6 +23,7 @@ module.exports = function(grunt) {
         src: [
           "src/intro.js",
           "src/utils.js",
+          "src/callbacks.js",
           "src/listener.js",
           "src/reporter.js",
           "src/rules.js",
@@ -37,6 +38,7 @@ module.exports = function(grunt) {
       spec: {
         src: [
           "spec/src/inspector-spec.js",
+          "spec/src/callbacks-spec.js",
           "spec/src/listener-spec.js",
           "spec/src/reporter-spec.js",
           "spec/src/modules-intro.js",

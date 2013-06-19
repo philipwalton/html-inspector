@@ -89,9 +89,18 @@ var HTMLInspector = (function() {
       setup(config.useRules, listener, reporter)
       traverseDOM(config.domRoot, listener)
       config.onComplete(reporter.getWarnings())
+    },
+
+    // expose for testing only
+    _constructors: {
+      Listener: Listener,
+      Reporter: Reporter,
+      Callbacks: Callbacks
     }
 
   }
+
+
 
   return inspector
 

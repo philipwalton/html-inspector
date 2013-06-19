@@ -1,20 +1,6 @@
 describe("Reporter", function() {
 
-  var Reporter = getReporterConstructor()
-
-  function getReporterConstructor() {
-    var Reporter
-      , originalRules = HTMLInspector.rules
-    HTMLInspector.rules.add("reporter", function(reporter, reporter) {
-      Reporter = reporter.constructor
-    })
-    HTMLInspector.inspect({
-      useRules: ["reporter"],
-      domRoot: document.createElement("div")
-    })
-    HTMLInspector.rules = originalRules
-    return Reporter
-  }
+  var Reporter = HTMLInspector._constructors.Reporter
 
   it("can add an error to the report log", function() {
     var reporter = new Reporter()
