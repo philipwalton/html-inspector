@@ -30,7 +30,7 @@ HTMLInspector.modules.add("css", (function() {
 
   function getStyleSheets() {
     return toArray(document.styleSheets).filter(function(sheet) {
-      return $(sheet.ownerNode).is(css.styleSheets)
+      return matches(sheet.ownerNode, css.styleSheets)
     })
   }
 
