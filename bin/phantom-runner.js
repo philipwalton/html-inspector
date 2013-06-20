@@ -25,19 +25,11 @@ page.onLoadFinished = function(status) {
     phantom.exit();
   }
 
-  var hasDependencies = page.evaluate(function() {
-    var deps = {};
-    Array.prototype.forEach.call(arguments, function(dependency) {
-      deps[dependency] = typeof this[dependency] !== 'undefined';
-    });
-    return deps;
-  }, 'jQuery', 'HTMLInspector');
+  var hasInspectorScript = page.evaluate(function() {
+    return 'HTMLInspector' in this;
+  });
 
-  if(!hasDependencies.jQuery) {
-    page.injectJs(basePath + '/bower_components/jquery/jquery.js');
-  }
-
-  if(!hasDependencies.HTMLInspector) {
+  if(!hasInspectorScript) {
     injectVersions[baseVersion].forEach(function(version) {
       page.injectJs(basePath + '/dist/html-inspector' + version + '.js');
     });
