@@ -115,6 +115,14 @@ describe("HTMLInspector", function() {
     expect(log).toBe("func")
   })
 
+  it("ignores elements matching the `exclude` config option", function() {
+    expect(false).toBe(true)
+  })
+
+  it("ignores elements that match or descend from the `excludeSubTree` config option", function() {
+    expect(false).toBe(true)
+  })
+
   describe("DOM Traversal and Events", function() {
 
     var html = parseHTML(''
