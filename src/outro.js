@@ -1,4 +1,4 @@
 // expose HTMLInspector globally
 window.HTMLInspector = HTMLInspector
 
-}(this, jQuery, document))
+}(this, document))

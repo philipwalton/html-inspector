@@ -2,9 +2,6 @@
   "name": "html-inspector",
   "version": "0.2.3",
   "main": "dist/html-inspector.js",
-  "dependencies": {
-    "jquery": ">1.7"
-  },
   "ignore": [
     "img",
     "spec",

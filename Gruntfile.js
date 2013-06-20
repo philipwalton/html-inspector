@@ -37,6 +37,7 @@ module.exports = function(grunt) {
       },
       spec: {
         src: [
+          "spec/src/helpers.js",
           "spec/src/inspector-spec.js",
           "spec/src/callbacks-spec.js",
           "spec/src/listener-spec.js",
@@ -102,7 +103,7 @@ module.exports = function(grunt) {
     },
     jasmine: {
       options: {
-        vendor: grunt.file.readJSON(".bowerrc").directory + "/jquery/jquery.js",
+        // vendor: grunt.file.readJSON(".bowerrc").directory + "/jquery/jquery.js",
         specs: "spec/html-inspector-spec.js",
         styles: "spec/html-inspector-spec.css",
         outfile: "spec-runner.html",

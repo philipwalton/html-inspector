@@ -4,13 +4,20 @@
  * Copyright (c) 2013 Philip Walton <http://philipwalton.com>
  * Released under the MIT license
  *
- * Date: 2013-06-18
+ * Date: 2013-06-19
  */
 
-;(function(root, $, document) {
+;(function(root, document) {
 
+  "use strict";
+
+var slice = Array.prototype.slice
+
+/**
+ * Convert an array like object to an array
+ */
 function toArray(arrayLike) {
-  return arrayLike ? [].slice.call(arrayLike) : []
+  return arrayLike.length ? slice.call(arrayLike) : []
 }
 
 /**
@@ -55,6 +62,19 @@ function unique(array) {
   return uniq
 }
 
+/**
+ * Extend a given object with all the properties in passed-in object(s).
+ */
+function extend(obj) {
+  slice.call(arguments, 1).forEach(function(source) {
+    if (source) {
+      for (var prop in source) {
+        obj[prop] = source[prop]
+      }
+    }
+  })
+  return obj
+}
 
 /**
  * Given a string and a RegExp or a list of strings or RegExps,
@@ -90,7 +110,7 @@ function matchesSelector(element, selector) {
       return element[method](selector)
   }
   throw new Error("You are using a browser that doesn't not support"
-    + "element.matches() or element.matchesSelector()")
+    + " element.matches() or element.matchesSelector()")
 }
 
 /**
@@ -100,7 +120,7 @@ function matchesSelector(element, selector) {
  * The test object can be a DOM element, a string selector, an array of
  * DOM elements, or an array of string selectors.
  *
- * Returns true if the elemenet matches any part of the test
+ * Returns true if the element matches any part of the test
  */
 function matches(element, test) {
   // if test is a string or DOM element convert it to an array,
@@ -118,6 +138,17 @@ function matches(element, test) {
     else
       return element === item
   })
+}
+
+/**
+ * Returns an array of the element's parent elements
+ */
+function parents(element) {
+  var list = []
+  while (element.parentNode && element.parentNode.nodeType == 1) {
+    list.push(element = element.parentNode)
+  }
+  return list
 }
 
 function Callbacks() {
@@ -191,7 +222,7 @@ Rules.prototype.add = function(name, config, fn) {
 Rules.prototype.extend = function(name, options) {
   if (typeof options == "function")
     options = options.call(this[name].config, this[name].config)
-  $.extend(this[name].config, options)
+  extend(this[name].config, options)
 }
 
 function Modules() {}
@@ -203,7 +234,7 @@ Modules.prototype.add = function(name, module) {
 Modules.prototype.extend = function(name, options) {
   if (typeof options == "function")
     options = options.call(this[name], this[name])
-  $.extend(this[name], options)
+  extend(this[name], options)
 }
 
 var HTMLInspector = (function() {
@@ -228,41 +259,35 @@ var HTMLInspector = (function() {
     })
   }
 
-  function traverseDOM(root, listener) {
-    var $root = $(root)
-      , $dom = $root.add($root.find("*"))
+  function traverseDOM(node, listener) {
+    // only deal with element nodes
+    if (node.nodeType != 1) return
 
-    // ignore SVG elements and their descendents until the SVG spec is added
-    $dom = $dom.not("svg, svg *")
+    // ignore SVG elements and their descendants until the SVG spec is added
+    if (node.nodeName.toLowerCase() == "svg") return
 
-    listener.trigger("beforeInspect", inspector.config.domRoot)
-    $dom.each(function() {
-      var el = this
-
-      // don't inspect text nodes
-      if (this.nodeType == 3) return
-
-      listener.trigger("element", el, [el.nodeName.toLowerCase(), el])
-      if (el.id) {
-        listener.trigger("id", el, [el.id, el])
-      }
-      toArray(el.classList).forEach(function(name) {
-        listener.trigger("class", el, [name, el])
-      })
-      getAttributes(el).forEach(function(attr) {
-        listener.trigger("attribute", el, [attr.name, attr.value, el])
-      })
+    // trigger events for this element
+    listener.trigger("element", node, [node.nodeName.toLowerCase(), node])
+    if (node.id) {
+      listener.trigger("id", node, [node.id, node])
+    }
+    toArray(node.classList).forEach(function(name) {
+      listener.trigger("class", node, [name, node])
     })
-    listener.trigger("afterInspect", inspector.config.domRoot)
+    getAttributes(node).forEach(function(attr) {
+      listener.trigger("attribute", node, [attr.name, attr.value, node])
+    })
+
+    // recurse through the tree
+    toArray(node.childNodes).forEach(function(node) {
+      traverseDOM(node, listener)
+    })
   }
 
   function processConfig(config) {
     // allow config to be individual properties of the defaults object
     if (config) {
-      if (typeof config == "string"
-        || config.nodeType == 1
-        || config instanceof $)
-      {
+      if (typeof config == "string" || config.nodeType == 1) {
         config = { domRoot: config }
       } else if (Array.isArray(config)) {
         config = { useRules: config }
@@ -271,7 +296,7 @@ var HTMLInspector = (function() {
       }
     }
     // merge config with the defaults
-    return $.extend({}, inspector.config, config)
+    return extend({}, inspector.config, config)
   }
 
   var inspector = {
@@ -291,11 +316,21 @@ var HTMLInspector = (function() {
     modules: new Modules(),
 
     inspect: function(config) {
-      var listener = new Listener()
+      var domRoot
+        , listener = new Listener()
         , reporter = new Reporter()
+
       config = processConfig(config)
+      domRoot = typeof config.domRoot == "string"
+        ? document.querySelector(config.domRoot)
+        : config.domRoot
+
       setup(config.useRules, listener, reporter)
-      traverseDOM(config.domRoot, listener)
+
+      listener.trigger("beforeInspect", domRoot)
+      traverseDOM(domRoot, listener)
+      listener.trigger("afterInspect", domRoot)
+
       config.onComplete(reporter.getWarnings())
     },
 
@@ -313,6 +348,7 @@ var HTMLInspector = (function() {
   return inspector
 
 }())
+
 
 HTMLInspector.modules.add("css", (function() {
 
@@ -1246,10 +1282,10 @@ HTMLInspector.rules.add(
 
     function isWhitelisted(el) {
       if (!whitelist) return false
-      if (typeof whitelist == "string") return $(el).is(whitelist)
+      if (typeof whitelist == "string") return matches(el, whitelist)
       if (Array.isArray(whitelist)) {
         return whitelist.length && whitelist.some(function(item) {
-          return $(el).is(item)
+          return matches(el, item)
         })
       }
       return false
@@ -1418,7 +1454,10 @@ HTMLInspector.rules.add(
       listener.on('class', function(name) {
         if (config.isElement(name)) {
           // check the ancestors for the block class
-          if (!$(this).parents().is("." + config.getBlockName(name))) {
+          var ancestorIsBlock = parents(this).some(function(el) {
+            return matches(el, "." + config.getBlockName(name))
+          })
+          if (!ancestorIsBlock) {
             reporter.warn(
               "bem-conventions",
               "The BEM element '" + name
@@ -1429,7 +1468,7 @@ HTMLInspector.rules.add(
           }
         }
         if (config.isModifier(name)) {
-          if (!$(this).is("." + config.getBlockName(name))) {
+          if (!matches(this, "." + config.getBlockName(name))) {
             reporter.warn(
               "bem-conventions",
               "The BEM modifier class '" + name
@@ -1491,11 +1530,11 @@ HTMLInspector.rules.add("scoped-styles", function(listener, reporter) {
 
   listener.on("element", function(name) {
     var isOutsideHead
-      , isScoped
+      , isNotScoped
     if (name == "style") {
-      isOutsideHead = !$(this).closest("head").length
-      isScoped = $(this).attr("scoped") != null
-      if (isOutsideHead && !isScoped) {
+      isOutsideHead = !matches(document.querySelector("head"), parents(this))
+      isNotScoped = !this.hasAttribute("scoped")
+      if (isOutsideHead && isNotScoped) {
         reporter.warn(
           "scoped-styles",
           "<style> elements outside of <head> must declare the 'scoped' attribute.",
@@ -1550,7 +1589,7 @@ HTMLInspector.rules.add("validate-attributes", function(listener, reporter) {
   listener.on("element", function(name) {
     var required = validation.getRequiredAttributesForElement(name)
     required.forEach(function(attr) {
-      if ($(this).attr(attr) == null) {
+      if (!this.hasAttribute(attr)) {
         reporter.warn(
           "validate-attributes",
           "The '" + attr + "' attribute is required for <"
@@ -1613,4 +1652,4 @@ HTMLInspector.rules.add("validate-elements", function(listener, reporter) {
 // expose HTMLInspector globally
 window.HTMLInspector = HTMLInspector
 
-}(this, jQuery, document))
+}(this, document))

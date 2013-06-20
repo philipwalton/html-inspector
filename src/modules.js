@@ -7,5 +7,5 @@ Modules.prototype.add = function(name, module) {
 Modules.prototype.extend = function(name, options) {
   if (typeof options == "function")
     options = options.call(this[name], this[name])
-  $.extend(this[name], options)
+  extend(this[name], options)
 }

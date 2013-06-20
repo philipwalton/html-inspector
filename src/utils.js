@@ -1,8 +1,10 @@
+var slice = Array.prototype.slice
+
 /**
  * Convert an array like object to an array
  */
 function toArray(arrayLike) {
-  return arrayLike ? [].slice.call(arrayLike) : []
+  return arrayLike.length ? slice.call(arrayLike) : []
 }
 
 /**
@@ -47,6 +49,19 @@ function unique(array) {
   return uniq
 }
 
+/**
+ * Extend a given object with all the properties in passed-in object(s).
+ */
+function extend(obj) {
+  slice.call(arguments, 1).forEach(function(source) {
+    if (source) {
+      for (var prop in source) {
+        obj[prop] = source[prop]
+      }
+    }
+  })
+  return obj
+}
 
 /**
  * Given a string and a RegExp or a list of strings or RegExps,
@@ -82,7 +97,7 @@ function matchesSelector(element, selector) {
       return element[method](selector)
   }
   throw new Error("You are using a browser that doesn't not support"
-    + "element.matches() or element.matchesSelector()")
+    + " element.matches() or element.matchesSelector()")
 }
 
 /**
@@ -92,7 +107,7 @@ function matchesSelector(element, selector) {
  * The test object can be a DOM element, a string selector, an array of
  * DOM elements, or an array of string selectors.
  *
- * Returns true if the elemenet matches any part of the test
+ * Returns true if the element matches any part of the test
  */
 function matches(element, test) {
   // if test is a string or DOM element convert it to an array,
@@ -110,4 +125,15 @@ function matches(element, test) {
     else
       return element === item
   })
+}
+
+/**
+ * Returns an array of the element's parent elements
+ */
+function parents(element) {
+  var list = []
+  while (element.parentNode && element.parentNode.nodeType == 1) {
+    list.push(element = element.parentNode)
+  }
+  return list
 }
