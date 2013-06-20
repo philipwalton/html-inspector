@@ -8,7 +8,9 @@ var slice = Array.prototype.slice
  * Convert an array like object to an array
  */
 function toArray(arrayLike) {
-  return arrayLike.length ? slice.call(arrayLike) : []
+  return arrayLike && arrayLike.length
+    ? slice.call(arrayLike)
+    : []
 }
 
 /**
