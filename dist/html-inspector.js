@@ -4,7 +4,7 @@
  * Copyright (c) 2013 Philip Walton <http://philipwalton.com>
  * Released under the MIT license
  *
- * Date: 2013-06-19
+ * Date: 2013-06-20
  */
 
 ;(function(root, document) {
@@ -123,8 +123,12 @@ function matchesSelector(element, selector) {
  * Returns true if the element matches any part of the test
  */
 function matches(element, test) {
+  // test can be null, but if it is, it never matches
+  if (test == null) {
+    return false
+  }
   // if test is a string or DOM element convert it to an array,
-  if (typeof test == "string" || test.nodeType) {
+  else if (typeof test == "string" || test.nodeType) {
     test = [test]
   }
   // if it has a length property call toArray in case it's array-like
@@ -259,29 +263,31 @@ var HTMLInspector = (function() {
     })
   }
 
-  function traverseDOM(node, listener) {
+  function traverseDOM(node, listener, options) {
+
     // only deal with element nodes
     if (node.nodeType != 1) return
 
-    // ignore SVG elements and their descendants until the SVG spec is added
-    if (node.nodeName.toLowerCase() == "svg") return
-
-    // trigger events for this element
-    listener.trigger("element", node, [node.nodeName.toLowerCase(), node])
-    if (node.id) {
-      listener.trigger("id", node, [node.id, node])
+    // trigger events for this element unless it's been excluded
+    if (!matches(node, options.exclude) && !matches(node, options.excludeSubTree)) {
+      listener.trigger("element", node, [node.nodeName.toLowerCase(), node])
+      if (node.id) {
+        listener.trigger("id", node, [node.id, node])
+      }
+      toArray(node.classList).forEach(function(name) {
+        listener.trigger("class", node, [name, node])
+      })
+      getAttributes(node).forEach(function(attr) {
+        listener.trigger("attribute", node, [attr.name, attr.value, node])
+      })
     }
-    toArray(node.classList).forEach(function(name) {
-      listener.trigger("class", node, [name, node])
-    })
-    getAttributes(node).forEach(function(attr) {
-      listener.trigger("attribute", node, [attr.name, attr.value, node])
-    })
 
-    // recurse through the tree
-    toArray(node.childNodes).forEach(function(node) {
-      traverseDOM(node, listener)
-    })
+    // recurse through the subtree unless it's been excluded
+    if (!matches(node, options.excludeSubTree)) {
+      toArray(node.childNodes).forEach(function(node) {
+        traverseDOM(node, listener, options)
+      })
+    }
   }
 
   function processConfig(config) {
@@ -308,7 +314,9 @@ var HTMLInspector = (function() {
         errors.forEach(function(error) {
           console.warn(error.message, error.context)
         })
-      }
+      },
+      exclude: null,
+      excludeSubTree: ["svg"]
     },
 
     rules: new Rules(),
@@ -328,7 +336,7 @@ var HTMLInspector = (function() {
       setup(config.useRules, listener, reporter)
 
       listener.trigger("beforeInspect", domRoot)
-      traverseDOM(domRoot, listener)
+      traverseDOM(domRoot, listener, config)
       listener.trigger("afterInspect", domRoot)
 
       config.onComplete(reporter.getWarnings())
