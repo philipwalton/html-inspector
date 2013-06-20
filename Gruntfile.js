@@ -55,6 +55,7 @@ module.exports = function(grunt) {
         src: [
           "src/intro.js",
           "src/utils.js",
+          "src/callbacks.js",
           "src/listener.js",
           "src/reporter.js",
           "src/rules.js",
