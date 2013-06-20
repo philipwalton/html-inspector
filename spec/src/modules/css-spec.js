@@ -25,17 +25,24 @@ describe("css", function() {
 
   it("can include both <link> and <style> elements", function() {
     var extraClasses = classes.concat(["style", "fizz", "buzz"]).sort()
-    // first remove any style tags browser modules might be putting in
-    $("style").remove()
-    $("head").append(""
-      + "<style id='style'>"
-      + ".style .foo, .style .bar { visiblility: visible }"
-      + ".style .fizz, .style .buzz { visiblility: visible }"
-      + "</style>"
-    )
+      , head = document.querySelector("head")
+      , styles = parseHTML(""
+          + "<style id='style'>"
+          + "  .style .foo, .style .bar { visiblility: visible }"
+          + "  .style .fizz, .style .buzz { visiblility: visible }"
+          + "</style>"
+        )
+
+    // first remove any style tags taht browser plugins might be putting in
+    Array.prototype.slice.call(document.querySelectorAll("style")).forEach(function(el) {
+      el.parentNode.removeChild(el)
+    })
+
+    head.appendChild(styles)
+
     css.styleSheets = "link[href$='-spec.css'], style"
     expect(css.getClassSelectors()).toEqual(extraClasses)
-    $("#style").remove()
+    head.removeChild(styles)
   })
 
 })

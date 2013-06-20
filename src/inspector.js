@@ -20,37 +20,35 @@ var HTMLInspector = (function() {
     })
   }
 
-  function traverseDOM(root, listener) {
-    var $root = $(root)
-      , $dom = $root.add($root.find("*"))
+  function traverseDOM(node, listener) {
+    // only deal with element nodes
+    if (node.nodeType != 1) return
 
-    // ignore SVG elements and their descendents until the SVG spec is added
-    $dom = $dom.not("svg, svg *")
+    // ignore SVG elements and their descendants until the SVG spec is added
+    if (node.nodeName.toLowerCase() == "svg") return
 
-    listener.trigger("beforeInspect", inspector.config.domRoot)
-    $dom.each(function() {
-      var el = this
-      listener.trigger("element", el, [el.nodeName.toLowerCase(), el])
-      if (el.id) {
-        listener.trigger("id", el, [el.id, el])
-      }
-      toArray(el.classList).forEach(function(name) {
-        listener.trigger("class", el, [name, el])
-      })
-      toArray(el.attributes).forEach(function(attr) {
-        listener.trigger("attribute", el, [attr.name, attr.value, el])
-      })
+    // trigger events for this element
+    listener.trigger("element", node, [node.nodeName.toLowerCase(), node])
+    if (node.id) {
+      listener.trigger("id", node, [node.id, node])
+    }
+    toArray(node.classList).forEach(function(name) {
+      listener.trigger("class", node, [name, node])
     })
-    listener.trigger("afterInspect", inspector.config.domRoot)
+    getAttributes(node).forEach(function(attr) {
+      listener.trigger("attribute", node, [attr.name, attr.value, node])
+    })
+
+    // recurse through the tree
+    toArray(node.childNodes).forEach(function(node) {
+      traverseDOM(node, listener)
+    })
   }
 
   function processConfig(config) {
     // allow config to be individual properties of the defaults object
     if (config) {
-      if (typeof config == "string"
-        || config.nodeType == 1
-        || config instanceof $)
-      {
+      if (typeof config == "string" || config.nodeType == 1) {
         config = { domRoot: config }
       } else if (Array.isArray(config)) {
         config = { useRules: config }
@@ -59,7 +57,7 @@ var HTMLInspector = (function() {
       }
     }
     // merge config with the defaults
-    return $.extend({}, inspector.config, config)
+    return extend({}, inspector.config, config)
   }
 
   var inspector = {
@@ -79,19 +77,38 @@ var HTMLInspector = (function() {
     modules: new Modules(),
 
     inspect: function(config) {
-      var listener = new Listener()
+      var domRoot
+        , listener = new Listener()
         , reporter = new Reporter()
+
       config = processConfig(config)
+      domRoot = typeof config.domRoot == "string"
+        ? document.querySelector(config.domRoot)
+        : config.domRoot
+
       setup(config.useRules, listener, reporter)
-      traverseDOM(config.domRoot, listener)
+
+      listener.trigger("beforeInspect", domRoot)
+      traverseDOM(domRoot, listener)
+      listener.trigger("afterInspect", domRoot)
+
       config.onComplete(reporter.getWarnings())
     },
 
     setConfig: function(config) {
       inspector.config = processConfig(config)
+    },
+
+    // expose for testing only
+    _constructors: {
+      Listener: Listener,
+      Reporter: Reporter,
+      Callbacks: Callbacks
     }
 
   }
+
+
 
   return inspector
 

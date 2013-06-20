@@ -103,7 +103,7 @@ describe("bem-conventions", function() {
   })
 
   it("warns when a BEM element class is used when not the descendent of a block", function() {
-    var $html = $(''
+    var html = parseHTML(''
           + '<div class="BlockOne SomeOtherBlock">'
           + '  <p class="BlockTwo-element">Foo</p>'
           + '  <p>Bar <em class="BlockThree-elementName">three</em></p>'
@@ -111,18 +111,18 @@ describe("bem-conventions", function() {
         )
     HTMLInspector.inspect({
       useRules: ["bem-conventions"],
-      domRoot: $html,
+      domRoot: html,
       onComplete: onComplete
     })
     expect(log.length).toBe(2)
     expect(log[0].message).toBe("The BEM element 'BlockTwo-element' must be a descendent of 'BlockTwo'.")
     expect(log[1].message).toBe("The BEM element 'BlockThree-elementName' must be a descendent of 'BlockThree'.")
-    expect(log[0].context).toBe($html.find(".BlockTwo-element")[0])
-    expect(log[1].context).toBe($html.find(".BlockThree-elementName")[0])
+    expect(log[0].context).toBe(html.querySelector(".BlockTwo-element"))
+    expect(log[1].context).toBe(html.querySelector(".BlockThree-elementName"))
   })
 
   it("doesn't warn when a BEM element class is used as the descendent of a block", function() {
-    var $html = $(''
+    var html = parseHTML(''
           + '<div class="BlockThree BlockTwo SomeOtherBlock">'
           + '  <p class="BlockTwo-element">Foo</p>'
           + '  <p>Bar <em class="BlockThree-elementName">three</em></p>'
@@ -130,14 +130,14 @@ describe("bem-conventions", function() {
         )
     HTMLInspector.inspect({
       useRules: ["bem-conventions"],
-      domRoot: $html,
+      domRoot: html,
       onComplete: onComplete
     })
     expect(log.length).toBe(0)
   })
 
   it("warns when a BEM modifier class is used without the unmodified block or element class", function() {
-    var $html = $(''
+    var html = parseHTML(''
           + '<div class="BlockOne--active">'
           + '  <p class="BlockTwo--validName BlockThree SomeOtherBlock">Foo</p>'
           + '  <p class="Block-element--modified">Bar</p>'
@@ -145,20 +145,20 @@ describe("bem-conventions", function() {
         )
     HTMLInspector.inspect({
       useRules: ["bem-conventions"],
-      domRoot: $html,
+      domRoot: html,
       onComplete: onComplete
     })
     expect(log.length).toBe(3)
     expect(log[0].message).toBe("The BEM modifier class 'BlockOne--active' was found without the unmodified class 'BlockOne'.")
-    expect(log[0].context).toBe($html[0])
+    expect(log[0].context).toBe(html)
     expect(log[1].message).toBe("The BEM modifier class 'BlockTwo--validName' was found without the unmodified class 'BlockTwo'.")
-    expect(log[1].context).toBe($html.find(".BlockTwo--validName")[0])
+    expect(log[1].context).toBe(html.querySelector(".BlockTwo--validName"))
     expect(log[2].message).toBe("The BEM modifier class 'Block-element--modified' was found without the unmodified class 'Block-element'.")
-    expect(log[2].context).toBe($html.find(".Block-element--modified")[0])
+    expect(log[2].context).toBe(html.querySelector(".Block-element--modified"))
   })
 
   it("doesn't warn when a BEM modifier is used along with the unmodified block or element class", function() {
-    var $html = $(''
+    var html = parseHTML(''
           + '<div class="BlockOne BlockOne--active">'
           + '  <p class="BlockTwo BlockTwo--validName SomeOtherBlock">Foo</p>'
           + '  <p>Bar</p>'
@@ -166,14 +166,14 @@ describe("bem-conventions", function() {
         )
     HTMLInspector.inspect({
       useRules: ["bem-conventions"],
-      domRoot: $html,
+      domRoot: html,
       onComplete: onComplete
     })
     expect(log.length).toBe(0)
   })
 
   it("allows for customization by altering the config object", function() {
-    var $html = $(''
+    var html = parseHTML(''
           + '<div class="block-one">'
           + '  <p class="block-two---valid-name">Foo</p>'
           + '  <p class="block-three___element-name">Bar</p>'
@@ -187,7 +187,7 @@ describe("bem-conventions", function() {
     })
     HTMLInspector.inspect({
       useRules: ["bem-conventions"],
-      domRoot: $html,
+      domRoot: html,
       onComplete: onComplete
     })
     expect(log.length).toBe(2)

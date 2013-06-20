@@ -10,7 +10,7 @@ describe("unique-elements", function() {
   }
 
   it("warns when single-use elements appear on the page more than once", function() {
-    var $html = $(''
+    var html = parseHTML(''
           + '<div>'
           + '  <div>'
           + '    <title>Foobar</title>'
@@ -28,18 +28,18 @@ describe("unique-elements", function() {
         )
     HTMLInspector.inspect({
       useRules: ["unique-elements"],
-      domRoot: $html,
+      domRoot: html,
       onComplete: onComplete
     })
     expect(log.length).toBe(2)
     expect(log[0].message).toBe("The <title> element may only appear once in the document.")
     expect(log[1].message).toBe("The <main> element may only appear once in the document.")
-    expect(log[0].context).toEqual([$html.find("title")[0], $html.find("title")[1]])
-    expect(log[1].context).toEqual([$html.find("main")[0], $html.find("main")[1]])
+    expect(log[0].context).toEqual([html.querySelector("title"), html.querySelectorAll("title")[1]])
+    expect(log[1].context).toEqual([html.querySelector("main"), html.querySelectorAll("main")[1]])
   })
 
   it("doesn't warn when single-use elements appear on the page only once", function() {
-    var $html = $(''
+    var html = parseHTML(''
           + '<html>'
           + '  <head>'
           + '    <title>Foobar</title>'
@@ -53,14 +53,14 @@ describe("unique-elements", function() {
         )
     HTMLInspector.inspect({
       useRules: ["unique-elements"],
-      domRoot: $html,
+      domRoot: html,
       onComplete: onComplete
     })
     expect(log.length).toBe(0)
   })
 
   it("allows for customization by altering the config object", function() {
-    var $html = $(''
+    var html = parseHTML(''
           + '<div>'
           + '  <div>'
           + '    <title>Foobar</title>'
@@ -81,13 +81,13 @@ describe("unique-elements", function() {
     })
     HTMLInspector.inspect({
       useRules: ["unique-elements"],
-      domRoot: $html,
+      domRoot: html,
       onComplete: onComplete
     })
     expect(log.length).toBe(2)
     expect(log[0].message).toBe("The <header> element may only appear once in the document.")
     expect(log[1].message).toBe("The <footer> element may only appear once in the document.")
-    expect(log[0].context).toEqual([$html.find("header")[0], $html.find("header")[1]])
-    expect(log[1].context).toEqual([$html.find("footer")[0], $html.find("footer")[1]])
+    expect(log[0].context).toEqual([html.querySelector("header"), html.querySelectorAll("header")[1]])
+    expect(log[1].context).toEqual([html.querySelector("footer"), html.querySelectorAll("footer")[1]])
   })
 })

@@ -10,10 +10,10 @@ HTMLInspector.rules.add(
 
     function isWhitelisted(el) {
       if (!whitelist) return false
-      if (typeof whitelist == "string") return $(el).is(whitelist)
+      if (typeof whitelist == "string") return matches(el, whitelist)
       if (Array.isArray(whitelist)) {
         return whitelist.length && whitelist.some(function(item) {
-          return $(el).is(item)
+          return matches(el, item)
         })
       }
       return false

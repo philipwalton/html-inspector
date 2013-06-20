@@ -30,7 +30,7 @@ var styleSheets = (function(config) {
 
   function getStyleSheets() {
     return toArray(document.styleSheets).filter(function(sheet) {
-      return $(sheet.ownerNode).is(styleSheets.filter)
+      return matches(sheet.ownerNode, styleSheets.filter)
     })
   }
 

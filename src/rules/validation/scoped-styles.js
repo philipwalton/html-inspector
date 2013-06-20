@@ -4,11 +4,11 @@ HTMLInspector.rules.add("scoped-styles", function(listener, reporter) {
 
   listener.on("element", function(name) {
     var isOutsideHead
-      , isScoped
+      , isNotScoped
     if (name == "style") {
-      isOutsideHead = !$(this).closest("head").length
-      isScoped = $(this).attr("scoped") != null
-      if (isOutsideHead && !isScoped) {
+      isOutsideHead = !matches(document.querySelector("head"), parents(this))
+      isNotScoped = !this.hasAttribute("scoped")
+      if (isOutsideHead && isNotScoped) {
         reporter.warn(
           "scoped-styles",
           "<style> elements outside of <head> must declare the 'scoped' attribute.",

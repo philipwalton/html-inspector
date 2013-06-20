@@ -64,6 +64,11 @@ describe("HTMLInspector", function() {
   it("accepts a variety of options for the config paramter", function() {
     var log = []
       , div = document.createElement("div")
+      , dom
+
+    // create the dom object
+    (dom = document.createElement("p")).innerHTML = "foobar"
+
     HTMLInspector.rules.add("dom", function(listener, reporter) {
       listener.on("element", function(name) {
         log.push(this)
@@ -75,7 +80,7 @@ describe("HTMLInspector", function() {
     // if it's an object, assume it's the full config object
     HTMLInspector.inspect({
       useRules: ["dom"],
-      domRoot: "<p>foobar</p>",
+      domRoot: dom,
       onComplete: function(errors) {
         log.push("done")
       }
@@ -87,19 +92,12 @@ describe("HTMLInspector", function() {
     HTMLInspector.inspect(["dom"])
     expect(log[0]).not.toBe("rules")
     log = []
-    // if it's a string, assume it's a selector or HTML representing domRoot
+    // if it's a string, assume it's a selector
     HTMLInspector.inspect("body")
-    expect(log[1]).toBe($("body")[0])
-    log = []
-    HTMLInspector.inspect("<p>foobar</p>")
-    expect(log[1].innerHTML).toBe("foobar")
+    expect(log[1]).toBe(document.body)
     log = []
     // if it's a DOM element, assume it's the domRoot
     HTMLInspector.inspect(div)
-    expect(log[1]).toBe(div)
-    log = []
-    // if it's jQuery, assume it's the domRoot
-    HTMLInspector.inspect($(div))
     expect(log[1]).toBe(div)
     log = []
     // if it's a function, assume it's complete
@@ -111,7 +109,7 @@ describe("HTMLInspector", function() {
 
   describe("DOM Traversal and Events", function() {
 
-    var $html = $(''
+    var html = parseHTML(''
           + '<section class="section">'
           + '  <h1 id="heading" class="multiple classes">Heading</h1>'
           + '  <p class="first">One</p>'
@@ -135,7 +133,7 @@ describe("HTMLInspector", function() {
       HTMLInspector.inspect()
       expect(events[0]).toBe("html")
       events = []
-      HTMLInspector.inspect({ domRoot: $html })
+      HTMLInspector.inspect({ domRoot: html })
       expect(events[0]).toBe("section")
     })
 
@@ -149,7 +147,7 @@ describe("HTMLInspector", function() {
           events.push("element")
         })
       })
-      HTMLInspector.inspect($html)
+      HTMLInspector.inspect(html)
       expect(events.length).toBeGreaterThan(2)
       expect(events[0]).toBe("beforeInspect")
       expect(events[1]).toBe("element")
@@ -162,7 +160,7 @@ describe("HTMLInspector", function() {
           events.push(name)
         })
       })
-      HTMLInspector.inspect($html)
+      HTMLInspector.inspect(html)
       expect(events.length).toBe(9)
       expect(events[0]).toBe("section")
       expect(events[1]).toBe("h1")
@@ -182,7 +180,7 @@ describe("HTMLInspector", function() {
           events.push(name)
         })
       })
-      HTMLInspector.inspect($html)
+      HTMLInspector.inspect(html)
       expect(events.length).toBe(2)
       expect(events[0]).toBe("heading")
       expect(events[1]).toBe("emphasis")
@@ -195,7 +193,7 @@ describe("HTMLInspector", function() {
           events.push(name)
         })
       })
-      HTMLInspector.inspect($html)
+      HTMLInspector.inspect(html)
       expect(events.length).toBe(5)
       expect(events[0]).toBe("section")
       expect(events[1]).toBe("multiple")
@@ -211,19 +209,19 @@ describe("HTMLInspector", function() {
           events.push({name:name, value:value})
         })
       })
-      HTMLInspector.inspect($html)
+      HTMLInspector.inspect(html)
       expect(events.length).toBe(11)
       expect(events[0]).toEqual({name:"class", value:"section"})
-      expect(events[1]).toEqual({name:"id", value:"heading"})
-      expect(events[2]).toEqual({name:"class", value:"multiple classes"})
+      expect(events[1]).toEqual({name:"class", value:"multiple classes"})
+      expect(events[2]).toEqual({name:"id", value:"heading"})
       expect(events[3]).toEqual({name:"class", value:"first"})
       expect(events[4]).toEqual({name:"href", value:"#"})
       expect(events[5]).toEqual({name:"data-foo", value:"bar"})
       expect(events[6]).toEqual({name:"onclick", value:"somefunc()"})
       expect(events[7]).toEqual({name:"style", value:"display: inline;"})
       expect(events[8]).toEqual({name:"class", value:"stuff"})
-      expect(events[9]).toEqual({name:"id", value:"emphasis"})
-      expect(events[10]).toEqual({name:"data-bar", value:"foo"})
+      expect(events[9]).toEqual({name:"data-bar", value:"foo"})
+      expect(events[10]).toEqual({name:"id", value:"emphasis"})
     })
 
     it("triggers `afterInspect` after the DOM traversal", function() {
@@ -236,27 +234,26 @@ describe("HTMLInspector", function() {
           events.push("element")
         })
       })
-      HTMLInspector.inspect($html)
+      HTMLInspector.inspect(html)
       expect(events.length).toBeGreaterThan(2)
       expect(events[events.length - 1]).toBe("afterInspect")
     })
 
     it("ignores SVG elements and their children", function() {
       var events = []
+        , div = document.createElement("div")
       HTMLInspector.rules.add("traverse-test", function(listener, reporter) {
         listener.on("element", function(name) {
-          if (name == "svg" || name == "path") {
-            events.push(name)
-          }
+          events.push(name)
         })
       })
-      $svg = $html.clone().append(''
+      div.innerHTML = ""
         + '<svg viewBox="0 0 512 512" height="22" width="22">'
         + '  <path></path>'
-        + '</svg>')
-
-      HTMLInspector.inspect($svg)
-      expect(events.length).toBe(0)
+        + '</svg>'
+      HTMLInspector.inspect(div)
+      expect(events.length).toBe(1)
+      expect(events[0]).toBe("div")
     })
 
   })
