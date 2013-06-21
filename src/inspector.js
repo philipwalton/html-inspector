@@ -62,6 +62,25 @@ var HTMLInspector = (function() {
     return extend({}, inspector.config, config)
   }
 
+  /**
+   * cross-origin iframe elements throw errors when being
+   * logged to the console.
+   * This function removes them from the context before
+   * logging them to the console.
+   */
+  function filterCrossOrigin(elements) {
+    // convert elements to an array if it's not already
+    if (!Array.isArray(elements)) elements = [elements]
+    elements = elements.map(function(el) {
+      if (el.nodeName.toLowerCase() == "iframe" && isCrossOrigin(el.src))
+        return "(can't display iframe with cross-origin source)"
+      else
+        return el
+    })
+    return elements.length === 1 ? elements[0] : elements
+  }
+
+
   var inspector = {
 
     config: {
@@ -71,7 +90,7 @@ var HTMLInspector = (function() {
       excludeSubTree: ["svg"],
       onComplete: function(errors) {
         errors.forEach(function(error) {
-          console.warn(error.message, error.context)
+          console.warn(error.message, filterCrossOrigin(error.context))
         })
       }
     },
@@ -107,6 +126,7 @@ var HTMLInspector = (function() {
       unique: unique,
       extend: extend,
       foundIn: foundIn,
+      isCrossOrigin: isCrossOrigin,
       matchesSelector: matchesSelector,
       matches: matches,
       parents: parents

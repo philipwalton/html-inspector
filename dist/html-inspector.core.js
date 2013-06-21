@@ -87,6 +87,19 @@ function foundIn(needle, haystack) {
 }
 
 /**
+ * Tests whether a fully-qualified URL is cross-origin
+ * Same origin URLs must have the same protocol, host, and port
+ */
+function isCrossOrigin(url) {
+  var reURL = /^(?:(https?:)\/\/)?((?:[0-9a-z\.\-]+)(?::(?:\d+))?)/
+    , matches = reURL.exec(url)
+    , protocol = matches[1]
+    , host = matches[2]
+  return !(protocol == location.protocol && host == location.host)
+}
+
+
+/**
  * Detects the browser's native matches() implementation
  * and calls that. Error if not found.
  */
@@ -301,6 +314,25 @@ var HTMLInspector = (function() {
     return extend({}, inspector.config, config)
   }
 
+  /**
+   * cross-origin iframe elements throw errors when being
+   * logged to the console.
+   * This function removes them from the context before
+   * logging them to the console.
+   */
+  function filterCrossOrigin(elements) {
+    // convert elements to an array if it's not already
+    if (!Array.isArray(elements)) elements = [elements]
+    elements = elements.map(function(el) {
+      if (el.nodeName.toLowerCase() == "iframe" && isCrossOrigin(el.src))
+        return "(can't display iframe with cross-origin source)"
+      else
+        return el
+    })
+    return elements.length === 1 ? elements[0] : elements
+  }
+
+
   var inspector = {
 
     config: {
@@ -310,7 +342,7 @@ var HTMLInspector = (function() {
       excludeSubTree: ["svg"],
       onComplete: function(errors) {
         errors.forEach(function(error) {
-          console.warn(error.message, error.context)
+          console.warn(error.message, filterCrossOrigin(error.context))
         })
       }
     },
@@ -346,6 +378,7 @@ var HTMLInspector = (function() {
       unique: unique,
       extend: extend,
       foundIn: foundIn,
+      isCrossOrigin: isCrossOrigin,
       matchesSelector: matchesSelector,
       matches: matches,
       parents: parents
@@ -363,7 +396,6 @@ var HTMLInspector = (function() {
   return inspector
 
 }())
-
 
 HTMLInspector.modules.add("css", (function() {
 

@@ -87,6 +87,18 @@ describe("Utils", function() {
     })
   })
 
+  describe("isCrossOrigin", function() {
+    var isCrossOrigin = HTMLInspector.utils.isCrossOrigin
+    it("returns true if the URL is cross-origin (port, protocol, or host don't match)", function() {
+      expect(isCrossOrigin("https://google.com")).toBe(true)
+      expect(isCrossOrigin("https://localhost/foobar")).toBe(true)
+      expect(isCrossOrigin("http://localhost:12345/fizzbuzz.html")).toBe(true)
+      // ignore this when running on PhantomJS
+      if (location.protocol != "file:")
+        expect(isCrossOrigin(location.href)).toBe(false)
+    })
+  })
+
   describe("matchesSelector", function() {
     var matchesSelector = HTMLInspector.utils.matchesSelector
     it("returns true if a DOM element matches a particular selector", function() {
