@@ -40,8 +40,6 @@ describe("script-placement", function() {
       onComplete: onComplete
     })
 
-    console.log(body)
-
     expect(log.length).toBe(1)
     expect(log[0].message).toBe("<script> elements should appear right before the closing </body> tag for optimal performance.")
     expect(log[0].context).toBe(body.querySelector("#script1"))
