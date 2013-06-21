@@ -67,13 +67,13 @@ var HTMLInspector = (function() {
     config: {
       useRules: null,
       domRoot: "html",
+      exclude: null,
+      excludeSubTree: ["svg"],
       onComplete: function(errors) {
         errors.forEach(function(error) {
           console.warn(error.message, error.context)
         })
-      },
-      exclude: null,
-      excludeSubTree: ["svg"]
+      }
     },
 
     rules: new Rules(),

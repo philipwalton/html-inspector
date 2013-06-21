@@ -19,18 +19,17 @@ For a more formal introduction, please refer to [this blog post](http://philipwa
 
 ## Getting Started
 
-The easiest way to get started is to simply download the source and add it to your page. [Bower](https://github.com/bower/bower) users can install HTML Inspector and its dependencies (just jQuery) with the following command:
+The easiest way to get started is to simply download the source and add it to your page. [Bower](https://github.com/bower/bower) users can install HTML Inspector with the following command:
 
 ```sh
 bower install html-inspector
 ```
 
-Alternatively you can clone the repo and add the file at `dist/html-inspector.js` to your HTML *(and jQuery too if it's not already there)*.
+Alternatively you can clone the repo and add the file at `dist/html-inspector.js` to your HTML.
 
 Once HTML Inspector is added, just run `HTMLInspector.inspect()` to see the results. Calling `inspect` with no options will load all rules and run them with their default configuration options.
 
 ```html
-<!-- Include jQuery if it's not already loaded -->
 <script src="path/to/html-inspector.js"></script>
 <script> HTMLInspector.inspect() </script>
 ```
@@ -38,7 +37,7 @@ After the script runs, any errors will be reported to the console (unless you ch
 
 ![Sample HTML Inspector Output](https://raw.github.com/philipwalton/html-inspector/master/img/html-inspector-console.png)
 
-Make sure you call `inspect` after any other DOM altering scripts have finished running or those alterations won't get inspected.
+**Make sure you call `inspect` after any other DOM altering scripts have finished running or those alterations won't get inspected.**
 
 ## Configuring HTML Inspector
 
@@ -47,15 +46,35 @@ By default, HTML Inspector runs all added rules, starts traversing from the `<ht
 The `inspect` method takes a config object to allow you to change any of this behavior. Here are the config options:
 
 - **useRules**: (Array) a list of rule names to run when inspecting
-- **domRoot**: (selector | element | jQuery) the DOM element to start traversing from
+- **domRoot**: (selector | element) the DOM element to start traversing from
+- **exclude**: (selector | element | Array) any DOM element that matches the selector, element, or list of selectors/elements will be excluded from traversal. It's descendants, however, will still be traversed.
+- **excludeSubTree**: (selector } element | Array) any DOM element that matches the selector, element, or list of selectors/elements will be excluded from traversal, as well as all of its descendants.
 - **onComplete**: (Function) the callback to be invoked when the inspection is finished. The function is passed an array of errors that were reported by individual rules.
 
-Here's an example:
+Here are the default configuration values:
+
+```js
+config: {
+  useRules: null,
+  domRoot: "html",
+  exclude: null,
+  excludeSubTree: ["svg"],
+  onComplete: function(errors) {
+    errors.forEach(function(error) {
+      console.warn(error.message, error.context)
+    })
+  }
+}
+```
+
+Here is how you might override the default configurations:
 
 ```js
 HTMLInspector.inspect({
   useRules: ["some-rule-name", "some-other-rule-name"],
   domRoot: "body",
+  exclude: "iframe",
+  excludeSubTree: ["svg", "template"],
   onComplete: function(errors) {
     errors.forEach(function(error) {
       // report errors to external service...
@@ -64,14 +83,14 @@ HTMLInspector.inspect({
 })
 ```
 
-Alternatively, if you only need to set a single configuration option, you don't need to pass an object, the `inspect` method will figure out what it is based on its type.
+For convenience, some of the config options may be passed as single arguments. If `.inspect()` receives an argument that is an array it is assume to be the `useRules` option, if it's an string or DOM element it's assumed to be the `domeRoot` option, and if its a function it's assumed to be the `onComplete` callback.
 
 ```js
 // only set the useRules options
 HTMLInspector.inspect(["some-rule-name", "some-other-rule-name"])
 
 // only set the domRoot
-HTMLInspector.inspect($("#foobar"))
+HTMLInspector.inspect("#content")
 
 // only set the onComplete callback
 HTMLInspector.inspect(function(errors) {
