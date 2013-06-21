@@ -17,7 +17,7 @@ var slice = Array.prototype.slice
  * Convert an array like object to an array
  */
 function toArray(arrayLike) {
-  return arrayLike && arrayLike.length
+  return arrayLike && (arrayLike.length)
     ? slice.call(arrayLike)
     : []
 }
@@ -86,6 +86,9 @@ function foundIn(needle, haystack) {
   // if haystack is a RegExp and not an array, just compare againt it
   if (isRegExp(haystack)) return haystack.test(needle)
 
+  // if haystack is a String, just compare against it
+  if (typeof haystack == "string") return needle == haystack
+
   // otherwise check each item in the list
   return haystack.some(function(item) {
     return isRegExp(item) ? item.test(needle) : needle === item
@@ -120,7 +123,7 @@ function matchesSelector(element, selector) {
  * Accepts a DOM element and an object to test against
  *
  * The test object can be a DOM element, a string selector, an array of
- * DOM elements, or an array of string selectors.
+ * DOM elements or string selectors.
  *
  * Returns true if the element matches any part of the test
  */
@@ -349,11 +352,21 @@ var HTMLInspector = (function() {
       Listener: Listener,
       Reporter: Reporter,
       Callbacks: Callbacks
+    },
+
+    _utils: {
+      toArray: toArray,
+      getAttributes: getAttributes,
+      isRegExp: isRegExp,
+      unique: unique,
+      extend: extend,
+      foundIn: foundIn,
+      matchesSelector: matchesSelector,
+      matches: matches,
+      parents: parents
     }
 
   }
-
-
 
   return inspector
 

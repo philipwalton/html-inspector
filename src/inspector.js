@@ -104,11 +104,21 @@ var HTMLInspector = (function() {
       Listener: Listener,
       Reporter: Reporter,
       Callbacks: Callbacks
+    },
+
+    _utils: {
+      toArray: toArray,
+      getAttributes: getAttributes,
+      isRegExp: isRegExp,
+      unique: unique,
+      extend: extend,
+      foundIn: foundIn,
+      matchesSelector: matchesSelector,
+      matches: matches,
+      parents: parents
     }
 
   }
-
-
 
   return inspector
 

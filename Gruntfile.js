@@ -42,6 +42,7 @@ module.exports = function(grunt) {
           "spec/src/callbacks-spec.js",
           "spec/src/listener-spec.js",
           "spec/src/reporter-spec.js",
+          "spec/src/utils-spec.js",
           "spec/src/modules-intro.js",
           "spec/src/modules/*.js",
           "spec/src/modules-outro.js",
