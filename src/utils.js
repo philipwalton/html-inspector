@@ -112,8 +112,12 @@ function matchesSelector(element, selector) {
  * Returns true if the element matches any part of the test
  */
 function matches(element, test) {
+  // test can be null, but if it is, it never matches
+  if (test == null) {
+    return false
+  }
   // if test is a string or DOM element convert it to an array,
-  if (typeof test == "string" || test.nodeType) {
+  else if (typeof test == "string" || test.nodeType) {
     test = [test]
   }
   // if it has a length property call toArray in case it's array-like
