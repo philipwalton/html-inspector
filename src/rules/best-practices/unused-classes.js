@@ -12,6 +12,7 @@ HTMLInspector.rules.add(
 
     var css = HTMLInspector.modules.css
       , classes = css.getClassSelectors()
+      , foundIn = this.utils.foundIn
 
     listener.on("class", function(name) {
       if (!foundIn(name, config.whitelist) && classes.indexOf(name) < 0) {

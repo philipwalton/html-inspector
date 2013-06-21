@@ -42,6 +42,8 @@ HTMLInspector.rules.add("duplicate-ids", function(listener, reporter) {
 HTMLInspector.rules.add("scoped-styles", function(listener, reporter) {
 
   var elements = []
+    , matches = this.utils.matches
+    , parents = this.utils.parents
 
   listener.on("element", function(name) {
     var isOutsideHead
@@ -66,10 +68,10 @@ HTMLInspector.rules.add(
   {
     elements: ["title", "main"]
   },
-  function(listener, reporter) {
+  function(listener, reporter, config) {
 
     var map = {}
-      , elements = this.elements
+      , elements = config.elements
 
     // create the map where the keys are elements that must be unique
     elements.forEach(function(item) {

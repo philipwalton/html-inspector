@@ -77,6 +77,10 @@
     "bem-conventions",
     config,
     function(listener, reporter, config) {
+
+      var parents = this.utils.parents
+        , matches = this.utils.matches
+
       listener.on('class', function(name) {
         if (config.isElement(name)) {
           // check the ancestors for the block class

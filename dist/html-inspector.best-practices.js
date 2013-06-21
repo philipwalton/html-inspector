@@ -17,10 +17,11 @@ HTMLInspector.rules.add(
   {
     whitelist: []
   },
-  function(listener, reporter) {
+  function(listener, reporter, config) {
 
     var elements = []
-      , whitelist = this.whitelist
+      , whitelist = config.whitelist
+      , matches = this.utils.matches
 
     function isWhitelisted(el) {
       if (!whitelist) return false
@@ -99,6 +100,7 @@ HTMLInspector.rules.add(
 
     var css = HTMLInspector.modules.css
       , classes = css.getClassSelectors()
+      , foundIn = this.utils.foundIn
 
     listener.on("class", function(name) {
       if (!foundIn(name, config.whitelist) && classes.indexOf(name) < 0) {

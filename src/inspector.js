@@ -11,7 +11,7 @@ var HTMLInspector = (function() {
     useRules.forEach(function(rule) {
       if (inspector.rules[rule]) {
         inspector.rules[rule].fn.call(
-          inspector.rules[rule].config,
+          inspector,
           listener,
           reporter,
           inspector.rules[rule].config
@@ -99,14 +99,8 @@ var HTMLInspector = (function() {
       config.onComplete(reporter.getWarnings())
     },
 
-    // expose for testing only
-    _constructors: {
-      Listener: Listener,
-      Reporter: Reporter,
-      Callbacks: Callbacks
-    },
-
-    _utils: {
+    // expose the utility functions for use in rules
+    utils: {
       toArray: toArray,
       getAttributes: getAttributes,
       isRegExp: isRegExp,
@@ -116,6 +110,13 @@ var HTMLInspector = (function() {
       matchesSelector: matchesSelector,
       matches: matches,
       parents: parents
+    },
+
+    // expose for testing only
+    _constructors: {
+      Listener: Listener,
+      Reporter: Reporter,
+      Callbacks: Callbacks
     }
 
   }

@@ -259,7 +259,7 @@ var HTMLInspector = (function() {
     useRules.forEach(function(rule) {
       if (inspector.rules[rule]) {
         inspector.rules[rule].fn.call(
-          inspector.rules[rule].config,
+          inspector,
           listener,
           reporter,
           inspector.rules[rule].config
@@ -347,14 +347,8 @@ var HTMLInspector = (function() {
       config.onComplete(reporter.getWarnings())
     },
 
-    // expose for testing only
-    _constructors: {
-      Listener: Listener,
-      Reporter: Reporter,
-      Callbacks: Callbacks
-    },
-
-    _utils: {
+    // expose the utility functions for use in rules
+    utils: {
       toArray: toArray,
       getAttributes: getAttributes,
       isRegExp: isRegExp,
@@ -364,6 +358,13 @@ var HTMLInspector = (function() {
       matchesSelector: matchesSelector,
       matches: matches,
       parents: parents
+    },
+
+    // expose for testing only
+    _constructors: {
+      Listener: Listener,
+      Reporter: Reporter,
+      Callbacks: Callbacks
     }
 
   }
@@ -1298,10 +1299,11 @@ HTMLInspector.rules.add(
   {
     whitelist: []
   },
-  function(listener, reporter) {
+  function(listener, reporter, config) {
 
     var elements = []
-      , whitelist = this.whitelist
+      , whitelist = config.whitelist
+      , matches = this.utils.matches
 
     function isWhitelisted(el) {
       if (!whitelist) return false
@@ -1380,6 +1382,7 @@ HTMLInspector.rules.add(
 
     var css = HTMLInspector.modules.css
       , classes = css.getClassSelectors()
+      , foundIn = this.utils.foundIn
 
     listener.on("class", function(name) {
       if (!foundIn(name, config.whitelist) && classes.indexOf(name) < 0) {
@@ -1474,6 +1477,10 @@ HTMLInspector.rules.add(
     "bem-conventions",
     config,
     function(listener, reporter, config) {
+
+      var parents = this.utils.parents
+        , matches = this.utils.matches
+
       listener.on('class', function(name) {
         if (config.isElement(name)) {
           // check the ancestors for the block class
@@ -1550,6 +1557,8 @@ HTMLInspector.rules.add("duplicate-ids", function(listener, reporter) {
 HTMLInspector.rules.add("scoped-styles", function(listener, reporter) {
 
   var elements = []
+    , matches = this.utils.matches
+    , parents = this.utils.parents
 
   listener.on("element", function(name) {
     var isOutsideHead
@@ -1574,10 +1583,10 @@ HTMLInspector.rules.add(
   {
     elements: ["title", "main"]
   },
-  function(listener, reporter) {
+  function(listener, reporter, config) {
 
     var map = {}
-      , elements = this.elements
+      , elements = config.elements
 
     // create the map where the keys are elements that must be unique
     elements.forEach(function(item) {

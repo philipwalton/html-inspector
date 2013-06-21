@@ -3,10 +3,10 @@ HTMLInspector.rules.add(
   {
     elements: ["title", "main"]
   },
-  function(listener, reporter) {
+  function(listener, reporter, config) {
 
     var map = {}
-      , elements = this.elements
+      , elements = config.elements
 
     // create the map where the keys are elements that must be unique
     elements.forEach(function(item) {

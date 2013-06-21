@@ -1,9 +1,7 @@
 describe("Utils", function() {
 
-  var utils = HTMLInspector._utils
-
   describe("toArray", function() {
-    var toArray = utils.toArray
+    var toArray = HTMLInspector.utils.toArray
     it("consumes an array-like object and returns it as an array", function() {
       var args
       (function(a, b, c) {
@@ -34,7 +32,7 @@ describe("Utils", function() {
   })
 
   describe("getAttributes", function() {
-    var getAttributes = utils.getAttributes
+    var getAttributes = HTMLInspector.utils.getAttributes
     it("returns an array of the element attributes, sorted alphabetically by class name", function() {
       var div = document.createElement("div")
       div.setAttribute("foo", "FOO")
@@ -49,7 +47,7 @@ describe("Utils", function() {
   })
 
   describe("isRegExp", function() {
-    var isRegExp = utils.isRegExp
+    var isRegExp = HTMLInspector.utils.isRegExp
     it("returns true if the passed object is a Regular Expression", function() {
       expect(isRegExp(/foo/ig)).toBe(true)
       expect(isRegExp(new RegExp("foo", "g"))).toBe(true)
@@ -59,7 +57,7 @@ describe("Utils", function() {
   })
 
   describe("unique", function() {
-    var unique = utils.unique
+    var unique = HTMLInspector.utils.unique
     it("consume an array and return a new array with no duplicate values", function() {
       expect(unique([1,2,2,3,1,4,5,4,5,6,5])).toEqual([1,2,3,4,5,6])
       expect(unique(["foo", "bar", "bar", "bar", "baz", "fo"])).toEqual(["bar", "baz", "fo", "foo"])
@@ -67,7 +65,7 @@ describe("Utils", function() {
   })
 
   describe("extend", function() {
-    var extend = utils.extend
+    var extend = HTMLInspector.utils.extend
     it("extends a given object with all the properties in passed-in object(s)", function() {
       expect(extend({a:1, b:2}, {a:"a"})).toEqual({a:"a", b:2})
       expect(extend({a:1, b:2}, {a:null, c:"c"}, {b:undefined})).toEqual({a:null, b:undefined, c:"c"})
@@ -76,7 +74,7 @@ describe("Utils", function() {
 
 
   describe("foundIn", function() {
-    var foundIn = utils.foundIn
+    var foundIn = HTMLInspector.utils.foundIn
     it("matches a string against a string, RegExp, or list of strings/RegeExps", function() {
       expect(foundIn("foo", "foo")).toBe(true)
       expect(foundIn("foo", /^fo\w/)).toBe(true)
@@ -90,7 +88,7 @@ describe("Utils", function() {
   })
 
   describe("matchesSelector", function() {
-    var matchesSelector = utils.matchesSelector
+    var matchesSelector = HTMLInspector.utils.matchesSelector
     it("returns true if a DOM element matches a particular selector", function() {
       var div = document.createElement("div")
       div.setAttribute("foo", "FOO")
@@ -108,7 +106,7 @@ describe("Utils", function() {
   })
 
   describe("matches", function() {
-    var matches = utils.matches
+    var matches = HTMLInspector.utils.matches
     it("returns true if a DOM element matches any of the elements or selectors in the test object", function() {
 
       var div = document.createElement("div")
@@ -130,7 +128,7 @@ describe("Utils", function() {
   })
 
   describe("parents", function() {
-    var parents = utils.parents
+    var parents = HTMLInspector.utils.parents
     it("returns an array of all the parent elements of the passed DOM element", function() {
       var rents
         , div = document.createElement("div")

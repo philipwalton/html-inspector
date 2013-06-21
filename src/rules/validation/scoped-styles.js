@@ -1,6 +1,8 @@
 HTMLInspector.rules.add("scoped-styles", function(listener, reporter) {
 
   var elements = []
+    , matches = this.utils.matches
+    , parents = this.utils.parents
 
   listener.on("element", function(name) {
     var isOutsideHead

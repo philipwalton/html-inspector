@@ -105,13 +105,22 @@ module.exports = function(grunt) {
     },
     jasmine: {
       options: {
-        // vendor: grunt.file.readJSON(".bowerrc").directory + "/jquery/jquery.js",
         specs: "spec/html-inspector-spec.js",
         styles: "spec/html-inspector-spec.css",
         outfile: "spec-runner.html",
         keepRunner: true
       },
-      src: ["dist/html-inspector.js"]
+      dist: {
+        src: ["dist/html-inspector.js"]
+      },
+      builds: {
+        src: [
+          "dist/html-inspector.core.js",
+          "dist/html-inspector.validation.js",
+          "dist/html-inspector.best-practices.js",
+          "dist/html-inspector.convention.js"
+        ]
+      }
     }
   });
 
@@ -125,5 +134,8 @@ module.exports = function(grunt) {
   grunt.registerTask("default", ["concat", "jshint"]);
 
   grunt.registerTask("test", ["concat", "jshint", "jasmine"]);
+  grunt.registerTask("test:dist", ["concat", "jshint", "jasmine:dist"]);
+  grunt.registerTask("test:builds", ["concat", "jshint", "jasmine:builds"]);
+
 
 };

@@ -3,10 +3,11 @@ HTMLInspector.rules.add(
   {
     whitelist: []
   },
-  function(listener, reporter) {
+  function(listener, reporter, config) {
 
     var elements = []
-      , whitelist = this.whitelist
+      , whitelist = config.whitelist
+      , matches = this.utils.matches
 
     function isWhitelisted(el) {
       if (!whitelist) return false
