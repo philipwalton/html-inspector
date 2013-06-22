@@ -4,7 +4,7 @@
  * Copyright (c) 2013 Philip Walton <http://philipwalton.com>
  * Released under the MIT license
  *
- * Date: 2013-06-21
+ * Date: 2013-06-22
  */
 
 ;(function(root, document) {
@@ -1186,40 +1186,6 @@ HTMLInspector.modules.add("validation", function() {
       return []
   }
 
-  //
-  // WARNING: There are issues with this, do not use!
-  //
-  // function allowedChildrenGivenElementLocation(element) {
-  //   var children = elementData[elementName(element)]
-  //         .children
-  //         .replace(/\*/g, "")
-  //         .split(/\s*;\s*/)
-  //   return children.reduce(function(list, child) {
-  //     // for complicated cases, child may be a function that accepts
-  //     // and element and returns a list of acceptable children
-  //     if (typeof child === "function") {
-  //       return list.concat(child(element))
-  //     }
-  //     // elements with a content model of "transparent" essentially
-  //     // inherit the content model of their parent, so inspect that
-  //     else if (child === "transparent" && element.parentNode) {
-  //       return list.concat(allowedChildrenForElement(element.parentNode))
-  //     }
-  //     // if a category is returned, add all elements in that
-  //     // cateogry to the list
-  //     else if (elementCategories[child]) {
-  //       return list.concat(elementsForCategory(child))
-  //     }
-  //     // if just an element is returned, add it to the list
-  //     else if (isElementValid(child)) {
-  //       return list.concat([child])
-  //     }
-  //     // still here? just return the list
-  //     return list
-  //   }, [])
-  // }
-  //
-
   function elementsForCategory(category) {
     return elementCategories[category].split(/\s*;\s*/)
   }
@@ -1295,16 +1261,33 @@ HTMLInspector.modules.add("validation", function() {
         return item.element == element
       })
       return (filtered[0] && filtered[0].attributes) || []
-    }
+    },
 
-    //
-    // WARNING: there are issues with this at the moment, do not use!
-    //
-    // isElementValidLocation: function(element) {
-    //   if (!element.parentNode) return true
-    //   var allowedChildren = allowedChildrenGivenElementLocation(element.parentNode)
-    //   return allowedChildren.indexOf(elementName(element)) >= 0
-    // }
+    isChildDisallowedInParent: function(child, parent) {
+      var children = elementData[parent].children
+        , contentModel = []
+
+      // ignore children properties that contain an asterisk
+      children = children.indexOf("*") > -1 ? [] : children.split(/\s*\;\s*/)
+
+      // be on the safe side and return falsy unless we have real children
+      if (!children.length) return false
+
+      // replace content categories with their elements
+      children.forEach(function(item) {
+        if (elementCategories[item]) {
+          contentModel = contentModel.concat(elementCategories[item].split(/\s*\;\s*/))
+        } else {
+          contentModel.push(item)
+        }
+      })
+
+      // if the child element is explicitely allowed return falsy
+      if (contentModel.indexOf(child) > -1) return false
+
+      // Still here? return true
+      return true
+    }
 
   }
 
@@ -1686,6 +1669,29 @@ HTMLInspector.rules.add("validate-attributes", function(listener, reporter) {
         this
       )
     }
+  })
+
+})
+
+HTMLInspector.rules.add("validate-element-location", function(listener, reporter) {
+
+  var validation = HTMLInspector.modules.validation
+
+  listener.on("element", function(name) {
+    // skip elements without a DOM element for a parent
+    if (!(this.parentNode && this.parentNode.nodeType == 1)) return
+
+    var child = name
+      , parent = this.parentNode.nodeName.toLowerCase()
+
+    if (validation.isChildDisallowedInParent(child, parent)) {
+      reporter.warn(
+        "validate-element-location",
+        "The <" + child + "> element cannot be a child of the <" + parent + "> element.",
+        this
+      )
+    }
+
   })
 
 })
