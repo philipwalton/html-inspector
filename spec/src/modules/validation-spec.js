@@ -57,6 +57,17 @@ describe("validation", function() {
     expect(validation.getRequiredAttributesForElement("div")).toEqual([])
   })
 
+  it("can determine if a child elememnt is allowed inside it's parent", function() {
+    expect(validation.isChildDisallowedInParent("div", "ul")).toBe(true)
+    expect(validation.isChildDisallowedInParent("div", "span")).toBe(true)
+    expect(validation.isChildDisallowedInParent("section", "em")).toBe(true)
+    expect(validation.isChildDisallowedInParent("title", "body")).toBe(true)
+    expect(validation.isChildDisallowedInParent("strong", "p")).toBe(false)
+    expect(validation.isChildDisallowedInParent("li", "ol")).toBe(false)
+    expect(validation.isChildDisallowedInParent("fieldset", "form")).toBe(false)
+    expect(validation.isChildDisallowedInParent("td", "tr")).toBe(false)
+  })
+
   it("ignores elements that are whitelisted", function() {
     validation.elementWhitelist = validation.elementWhitelist.concat(["foo", "bar", "font", "center"])
     // valid elements
