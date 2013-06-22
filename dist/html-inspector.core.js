@@ -278,7 +278,7 @@ var HTMLInspector = (function() {
     if (node.nodeType != 1) return
 
     // trigger events for this element unless it's been excluded
-    if (!matches(node, options.exclude) && !matches(node, options.excludeSubTree)) {
+    if (!matches(node, options.exclude)) {
       listener.trigger("element", node, [node.nodeName.toLowerCase(), node])
       if (node.id) {
         listener.trigger("id", node, [node.id, node])
@@ -338,8 +338,8 @@ var HTMLInspector = (function() {
     config: {
       useRules: null,
       domRoot: "html",
-      exclude: null,
-      excludeSubTree: ["svg"],
+      exclude: "svg",
+      excludeSubTree: ["svg", "iframe"],
       onComplete: function(errors) {
         errors.forEach(function(error) {
           console.warn(error.message, filterCrossOrigin(error.context))

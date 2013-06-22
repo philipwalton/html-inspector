@@ -4,7 +4,7 @@
  * Copyright (c) 2013 Philip Walton <http://philipwalton.com>
  * Released under the MIT license
  *
- * Date: 2013-06-21
+ * Date: 2013-06-22
  */
 
 ;(function(root, document) {
@@ -287,7 +287,7 @@ var HTMLInspector = (function() {
     if (node.nodeType != 1) return
 
     // trigger events for this element unless it's been excluded
-    if (!matches(node, options.exclude) && !matches(node, options.excludeSubTree)) {
+    if (!matches(node, options.exclude)) {
       listener.trigger("element", node, [node.nodeName.toLowerCase(), node])
       if (node.id) {
         listener.trigger("id", node, [node.id, node])
@@ -347,8 +347,8 @@ var HTMLInspector = (function() {
     config: {
       useRules: null,
       domRoot: "html",
-      exclude: null,
-      excludeSubTree: ["svg"],
+      exclude: "svg",
+      excludeSubTree: ["svg", "iframe"],
       onComplete: function(errors) {
         errors.forEach(function(error) {
           console.warn(error.message, filterCrossOrigin(error.context))

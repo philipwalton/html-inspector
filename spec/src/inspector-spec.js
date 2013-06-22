@@ -140,7 +140,7 @@ describe("HTMLInspector", function() {
     expect(events).toEqual(["section", "h1", "p", "p", "a", "p", "p", "em"])
   })
 
-  it("ignores elements that match or descend from the `excludeSubTree` config option", function() {
+  it("ignores elements that descend from the `excludeSubTree` config option", function() {
     var events = []
     HTMLInspector.rules.add("traverse-test", function(listener, reporter) {
       listener.on("element", function(name) {
@@ -151,13 +151,13 @@ describe("HTMLInspector", function() {
       domRoot: html,
       excludeSubTree: "p"
     })
-    expect(events).toEqual(["section", "h1", "blockquote"])
+    expect(events).toEqual(["section", "h1", "p", "p", "blockquote", "p", "p"])
     events = []
     HTMLInspector.inspect({
       domRoot: html,
       excludeSubTree: [html.querySelector("p:not(.first)"), html.querySelector("blockquote")]
     })
-    expect(events).toEqual(["section", "h1", "p"])
+    expect(events).toEqual(["section", "h1", "p", "p", "blockquote"])
   })
 
   it("inspects the HTML starting from the specified domRoot", function() {

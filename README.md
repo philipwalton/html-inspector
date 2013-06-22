@@ -57,8 +57,8 @@ Here are the default configuration values:
 config: {
   useRules: null,
   domRoot: "html",
-  exclude: null,
-  excludeSubTree: ["svg"],
+  exclude: "svg",
+  excludeSubTree: ["svg", "iframe"],
   onComplete: function(errors) {
     errors.forEach(function(error) {
       console.warn(error.message, error.context)
