@@ -47,8 +47,8 @@ The `inspect` method takes a config object to allow you to change any of this be
 
 - **useRules**: (Array) a list of rule names to run when inspecting
 - **domRoot**: (selector | element) the DOM element to start traversing from
-- **exclude**: (selector | element | Array) any DOM element that matches the selector, element, or list of selectors/elements will be excluded from traversal. It's descendants, however, will still be traversed.
-- **excludeSubTree**: (selector } element | Array) any DOM element that matches the selector, element, or list of selectors/elements will be excluded from traversal, as well as all of its descendants.
+- **exclude**: (selector | element | Array) any DOM element that matches the selector, element, or list of selectors/elements will be excluded from traversal (note: its descendants will still be traversed).
+- **excludeSubTree**: (selector } element | Array) the descendants of any DOM element that matches the selector, element, or list of selectors/elements will be excluded from traversal.
 - **onComplete**: (Function) the callback to be invoked when the inspection is finished. The function is passed an array of errors that were reported by individual rules.
 
 Here are the default configuration values:
@@ -113,6 +113,8 @@ As a result HTML Inspector should not be seen as a replacement for validation. I
 Here are the validation rules that ship with HTML Inspector. (Expect this list to get more comprehensive in the future.)
 
 - **Validate Elements**: Inspect each element in the DOM and reports any elements that are invalid or obsolete. This will catch simple things like misspelled tags (`<il>` instead of `<li>`), and it will inform you of deprecated tags (like `<center>`, `<font>`, and more recently `<hgroup>`). Any element you don't want to be warned about can be whitelisted.
+
+- **Validate Element Location**: Make sure that elements don't appear as children of parents they're not allowed to descend from. The most common occurrence is block/sectioning elements descending from inline/phrasing elements.
 
 - **Validate Attributes**: Like validating elements, this rule will let you know if you're using attributes that don't belong on a particular element or perhaps don't belong on any element. If your project uses custom attributes (like `ng-*` in AngularJS) they can be whitelisted.
 
