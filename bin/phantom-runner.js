@@ -4,6 +4,9 @@ var basePath = phantom.args[0],
   inspectLocation = phantom.args[2],
   configFile = phantom.args[3]
 
+var system = require('system'),
+  page = require('webpage').create()
+
 var injectVersions = {
   full: [''],
   core: ['.core'],
@@ -12,16 +15,12 @@ var injectVersions = {
   validation: ['.core', '.validation']
 }
 
-var page = require('webpage').create()
-
-page.onConsoleMessage = function(msg) {
-  console.log(msg)
-}
+page.onAlert = system.stdout.write
 
 page.onLoadFinished = function(status) {
 
   if(status !== 'success') {
-    console.log('Unable to open', location)
+    system.stdout.write('Unable to open location "' + inspectLocation + '"')
     phantom.exit()
   }
 
@@ -39,8 +38,14 @@ page.onLoadFinished = function(status) {
     page.injectJs(configFile)
   }
 
+  page.injectJs(basePath + '/bin/phantom-bridge.js')
+
   page.evaluate(function() {
-    HTMLInspector.inspect()
+    HTMLInspector.inspect({
+      onComplete: function onComplete(errors) {
+        sendMessage('htmlinspector.complete', errors)
+      }
+    })
   })
   phantom.exit()
 }
