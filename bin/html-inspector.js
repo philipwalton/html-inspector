@@ -18,7 +18,7 @@ var basePath = path.normalize(__dirname + path.sep + '..'),
 program
   .version('0.0.1')
   .usage('[options] <file or url>')
-  .option('-c, --config [file]', 'Configuration file')
+  .option('-c, --config [file]', 'Configuration file (./html-inspector-config.js)', './html-inspector-config.js')
   .option('-b, --base [base]', 'Use HTML Inspector version (' + baseVersions.join(', ') + ')', 'full')
   .option('-r, --reporter [reporter]', 'Reporter (' + reporters.join(', ') + ')', 'console.simple')
   .parse(process.argv)
