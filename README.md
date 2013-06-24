@@ -114,7 +114,7 @@ Here are the validation rules that ship with HTML Inspector. (Expect this list t
 
 - **Validate Elements**: Inspect each element in the DOM and reports any elements that are invalid or obsolete. This will catch simple things like misspelled tags (`<il>` instead of `<li>`), and it will inform you of deprecated tags (like `<center>`, `<font>`, and more recently `<hgroup>`). Any element you don't want to be warned about can be whitelisted.
 
-- **Validate Element Location**: Make sure that elements don't appear as children of parents they're not allowed to descend from. The most common occurrence is block/sectioning elements descending from inline/phrasing elements.
+- **Validate Element Location**: Make sure that elements don't appear as children of parents they're not allowed to descend from. An example of this is a block element like `<div>` appearing as the child of an inline elements like `<span>`.
 
 - **Validate Attributes**: Like validating elements, this rule will let you know if you're using attributes that don't belong on a particular element or perhaps don't belong on any element. If your project uses custom attributes (like `ng-*` in AngularJS) they can be whitelisted.
 
