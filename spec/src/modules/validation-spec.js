@@ -58,14 +58,14 @@ describe("validation", function() {
   })
 
   it("can determine if a child elememnt is allowed inside it's parent", function() {
-    expect(validation.isChildDisallowedInParent("div", "ul")).toBe(true)
-    expect(validation.isChildDisallowedInParent("div", "span")).toBe(true)
-    expect(validation.isChildDisallowedInParent("section", "em")).toBe(true)
-    expect(validation.isChildDisallowedInParent("title", "body")).toBe(true)
-    expect(validation.isChildDisallowedInParent("strong", "p")).toBe(false)
-    expect(validation.isChildDisallowedInParent("li", "ol")).toBe(false)
-    expect(validation.isChildDisallowedInParent("fieldset", "form")).toBe(false)
-    expect(validation.isChildDisallowedInParent("td", "tr")).toBe(false)
+    expect(validation.isChildAllowedInParent("div", "ul")).toBe(false)
+    expect(validation.isChildAllowedInParent("div", "span")).toBe(false)
+    expect(validation.isChildAllowedInParent("section", "em")).toBe(false)
+    expect(validation.isChildAllowedInParent("title", "body")).toBe(false)
+    expect(validation.isChildAllowedInParent("strong", "p")).toBe(true)
+    expect(validation.isChildAllowedInParent("li", "ol")).toBe(true)
+    expect(validation.isChildAllowedInParent("fieldset", "form")).toBe(true)
+    expect(validation.isChildAllowedInParent("td", "tr")).toBe(true)
   })
 
   it("ignores elements that are whitelisted", function() {

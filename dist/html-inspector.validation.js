@@ -39,30 +39,6 @@ HTMLInspector.rules.add("duplicate-ids", function(listener, reporter) {
 
 })
 
-HTMLInspector.rules.add("scoped-styles", function(listener, reporter) {
-
-  var elements = []
-    , matches = this.utils.matches
-    , parents = this.utils.parents
-
-  listener.on("element", function(name) {
-    var isOutsideHead
-      , isNotScoped
-    if (name == "style") {
-      isOutsideHead = !matches(document.querySelector("head"), parents(this))
-      isNotScoped = !this.hasAttribute("scoped")
-      if (isOutsideHead && isNotScoped) {
-        reporter.warn(
-          "scoped-styles",
-          "<style> elements outside of <head> must declare the 'scoped' attribute.",
-          this
-        )
-      }
-    }
-  })
-
-})
-
 HTMLInspector.rules.add(
   "unique-elements",
   {
@@ -145,7 +121,16 @@ HTMLInspector.rules.add("validate-attributes", function(listener, reporter) {
 
 HTMLInspector.rules.add("validate-element-location", function(listener, reporter) {
 
-  var validation = HTMLInspector.modules.validation
+  var validation = this.modules.validation
+    , matches = this.utils.matches
+    , parents = this.utils.parents
+    , warned = [] // store already-warned elements to prevent double warning
+
+
+  // =============================================================================
+  // Elements with clear-cut location rules are tested here.
+  // More complicated cases are tested below
+  // =============================================================================
 
   listener.on("element", function(name) {
     // skip elements without a DOM element for a parent
@@ -154,14 +139,50 @@ HTMLInspector.rules.add("validate-element-location", function(listener, reporter
     var child = name
       , parent = this.parentNode.nodeName.toLowerCase()
 
-    if (validation.isChildDisallowedInParent(child, parent)) {
+    if (!validation.isChildAllowedInParent(child, parent)) {
+      warned.push(this)
       reporter.warn(
         "validate-element-location",
         "The <" + child + "> element cannot be a child of the <" + parent + "> element.",
         this
       )
     }
+  })
 
+  // ======================================================================== //
+  // Make sure <style> elements inside <body> have the 'scoped' attribute     //
+  // ======================================================================== //
+
+  listener.on("element", function(name) {
+    // don't double warn if the style elements already has a location warning
+    if (warned.indexOf(this) > -1) return
+
+    if (matches(this, "body style:not([scoped])")) {
+      reporter.warn(
+        "validate-element-location",
+        "<style> elements inside <body> must contain the 'scoped' attribute.",
+        this
+      )
+    }
+  })
+
+  // ======================================================================== //
+  // Make sure <meta> and <link> elements inside <body> have the 'itemprop'   //
+  // attribute                                                                //
+  // ======================================================================== //
+
+  listener.on("element", function(name) {
+    // don't double warn if the style elements already has a location warning
+    if (warned.indexOf(this) > -1) return
+
+    if (matches(this, "body meta:not([itemprop]), body link:not([itemprop])")) {
+      reporter.warn(
+        "validate-element-location",
+        "<" + name + "> elements inside <body> must contain the"
+        + " 'itemprop' attribute.",
+        this
+      )
+    }
   })
 
 })

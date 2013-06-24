@@ -49,9 +49,7 @@ describe("validate-element-location", function() {
     expect(log[5].context).toBe(html.querySelector("em > p"))
   })
 
-
   it("doesn't warn when elements appear as children of parents they're allowed to be within", function() {
-
     var html = parseHTML(''
           + '<div>'
           + '  <h1>This is a <strong>Heading!</strong> shit</h1>'
@@ -62,15 +60,76 @@ describe("validate-element-location", function() {
           + '  </section>'
           + '</div>'
         )
+    HTMLInspector.inspect({
+      useRules: ["validate-element-location"],
+      domRoot: html,
+      onComplete: onComplete
+    })
+    expect(log.length).toBe(0)
+  })
+
+  it("warns when <style> elements inside body do not declare the scoped attribute", function() {
+    var html = document.createElement("body")
+    html.innerHTML = '<section><style> .foo { } </style></section>'
 
     HTMLInspector.inspect({
       useRules: ["validate-element-location"],
       domRoot: html,
       onComplete: onComplete
     })
+    expect(log.length).toBe(1)
+    expect(log[0].message).toBe("<style> elements inside <body> must contain the 'scoped' attribute.")
+    expect(log[0].context).toBe(html.querySelector("style"))
+  })
 
+  it("doesn't warns when <style> elements are inside the head", function() {
+    var html = parseHTML(''
+          + '<html>'
+          + '  <head>'
+          + '    <style scoped> .foo { } </style>'
+          + '  </head>'
+          + '  <body></body>'
+          + '</html>'
+        )
+    HTMLInspector.inspect({
+      useRules: ["scoped-styles"],
+      domRoot: html,
+      onComplete: onComplete
+    })
     expect(log.length).toBe(0)
+  })
 
+  it("warns when <link> and <meta> elements inside body do not declare the itemprop attribute", function() {
+    var html = document.createElement("body")
+    html.innerHTML = '<meta charset="utf-8"><link rel="imports" href="component.html">'
+    HTMLInspector.inspect({
+      useRules: ["validate-element-location"],
+      domRoot: html,
+      onComplete: onComplete
+    })
+    expect(log.length).toBe(2)
+    expect(log[0].message).toBe("<meta> elements inside <body> must contain the 'itemprop' attribute.")
+    expect(log[0].context).toBe(html.querySelector("meta"))
+    expect(log[1].message).toBe("<link> elements inside <body> must contain the 'itemprop' attribute.")
+    expect(log[1].context).toBe(html.querySelector("link"))
+  })
+
+  it("doesn't warns when <link> and <meta> elements are inside the head", function() {
+    var html = parseHTML(''
+          + '<html>'
+          + '  <head>'
+          + '    <meta charset="utf-8">'
+          + '    <link rel="imports" href="component.html">'
+          + '  </head>'
+          + '  <body></body>'
+          + '</html>'
+        )
+    HTMLInspector.inspect({
+      useRules: ["validate-element-location"],
+      domRoot: html,
+      onComplete: onComplete
+    })
+    expect(log.length).toBe(0)
   })
 
 })

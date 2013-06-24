@@ -122,8 +122,6 @@ Here are the validation rules that ship with HTML Inspector. (Expect this list t
 
 - **Unique Elements**: Warn if elements that should be unique (like `<title>` and `<main>`) appear more than once in the document.
 
-- **Scoped Styles**: `<style>` elements that appear outside of the document `<head>` are required to have a scoped attribute.
-
 ### Best Practices
 
 Some markup may be perfectly valid but use practices that are commonly considered to be poor or outdated. The following rules check for these types of things. (Note that everything in this list is subjective and optional.)
