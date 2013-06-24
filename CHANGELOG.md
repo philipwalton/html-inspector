@@ -1,4 +1,4 @@
-== 0.3.0 (Unreleased)
+== 0.3.0 (June 23, 2013)
 
 * Remove the dependency on jQuery
 * Add a validate-element-location rule that warns when elements appear as descendants of elements they're not allowed to descend from.
