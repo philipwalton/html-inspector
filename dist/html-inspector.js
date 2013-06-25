@@ -4,7 +4,7 @@
  * Copyright (c) 2013 Philip Walton <http://philipwalton.com>
  * Released under the MIT license
  *
- * Date: 2013-06-23
+ * Date: 2013-06-24
  */
 
 ;(function(root, document) {
@@ -1718,9 +1718,10 @@ HTMLInspector.rules.add("validate-element-location", function(listener, reporter
     }
   })
 
-  // ======================================================================== //
-  // Make sure <style> elements inside <body> have the 'scoped' attribute     //
-  // ======================================================================== //
+  // ========================================================================
+  // Make sure <style> elements inside <body> have the 'scoped' attribute.
+  // They must also be the first element child of their parent.
+  // ========================================================================
 
   listener.on("element", function(name) {
     // don't double warn if the style elements already has a location warning
@@ -1733,6 +1734,14 @@ HTMLInspector.rules.add("validate-element-location", function(listener, reporter
         this
       )
     }
+    else if (matches(this, "body style[scoped]:not(:first-child)")) {
+      reporter.warn(
+        "validate-element-location",
+        "Scoped <style> elements must be the first child of their parent element.",
+        this
+      )
+    }
+
   })
 
   // ======================================================================== //

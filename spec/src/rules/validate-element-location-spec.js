@@ -92,7 +92,32 @@ describe("validate-element-location", function() {
           + '</html>'
         )
     HTMLInspector.inspect({
-      useRules: ["scoped-styles"],
+      useRules: ["validate-element-location"],
+      domRoot: html,
+      onComplete: onComplete
+    })
+    expect(log.length).toBe(0)
+  })
+
+  it("warns when <style> elements inside body declare the scoped attribute but are not the first child of their parent", function() {
+    var html = document.createElement("body")
+    html.innerHTML = '<section><span>alert</span><style scoped> .foo { } </style></section>'
+
+    HTMLInspector.inspect({
+      useRules: ["validate-element-location"],
+      domRoot: html,
+      onComplete: onComplete
+    })
+    expect(log.length).toBe(1)
+    expect(log[0].message).toBe("Scoped <style> elements must be the first child of their parent element.")
+    expect(log[0].context).toBe(html.querySelector("style"))
+  })
+
+  it("doesn't warns when <style scoped> elements are the first child of their parent", function() {
+    var html = document.createElement("body")
+    html.innerHTML = '<section><style scoped> .foo { } </style></section>'
+    HTMLInspector.inspect({
+      useRules: ["validate-element-location"],
       domRoot: html,
       onComplete: onComplete
     })
