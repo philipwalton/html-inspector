@@ -356,6 +356,10 @@ var HTMLInspector = (function() {
       }
     },
 
+    setConfig: function(config) {
+      inspector.config = processConfig(config)
+    },
+
     rules: new Rules(),
 
     modules: new Modules(),
@@ -405,6 +409,7 @@ var HTMLInspector = (function() {
   return inspector
 
 }())
+
 
 HTMLInspector.modules.add("css", (function() {
 

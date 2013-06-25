@@ -134,7 +134,7 @@ var HTMLInspector = (function() {
       matchesSelector: matchesSelector,
       matches: matches,
       parents: parents
-    }
+    },
 
     // expose for testing only
     _constructors: {
