@@ -95,6 +95,10 @@ var HTMLInspector = (function() {
       }
     },
 
+    setConfig: function(config) {
+      inspector.config = processConfig(config)
+    },
+
     rules: new Rules(),
 
     modules: new Modules(),
@@ -130,7 +134,7 @@ var HTMLInspector = (function() {
       matchesSelector: matchesSelector,
       matches: matches,
       parents: parents
-    },
+    }
 
     // expose for testing only
     _constructors: {
