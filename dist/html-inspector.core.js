@@ -88,7 +88,8 @@ function foundIn(needle, haystack) {
 
 /**
  * Tests whether a fully-qualified URL is cross-origin
- * Same origin URLs must have the same protocol, host, and port
+ * Same origin URLs must have the same protocol and host
+ * (note: host include hostname and port)
  */
 function isCrossOrigin(url) {
   var reURL = /^(?:(https?:)\/\/)?((?:[0-9a-z\.\-]+)(?::(?:\d+))?)/
@@ -386,13 +387,6 @@ var HTMLInspector = (function() {
       matchesSelector: matchesSelector,
       matches: matches,
       parents: parents
-    },
-
-    // expose for testing only
-    _constructors: {
-      Listener: Listener,
-      Reporter: Reporter,
-      Callbacks: Callbacks
     }
 
   }

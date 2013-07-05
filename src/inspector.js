@@ -134,15 +134,16 @@ var HTMLInspector = (function() {
       matchesSelector: matchesSelector,
       matches: matches,
       parents: parents
-    },
+    }
 
-    // expose for testing only
+    /* test-block */
+    ,
     _constructors: {
       Listener: Listener,
       Reporter: Reporter,
       Callbacks: Callbacks
     }
-
+    /* end-test-block */
   }
 
   return inspector

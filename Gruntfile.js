@@ -92,7 +92,7 @@ module.exports = function(grunt) {
     watch: {
       scripts: {
         files: ["src/**/*.js"],
-        tasks: ["concat:dist", "jshint:dist"]
+        tasks: ["concat:dist", "test-blocks:dist", "jshint:dist"]
       },
       spec: {
         files: ["spec/src/**/*.js"],
@@ -121,21 +121,44 @@ module.exports = function(grunt) {
           "dist/html-inspector.convention.js"
         ]
       }
+    },
+    "test-blocks": {
+      options: {
+        pattern: /[\t ]*\/\* test-block \*\/[\s\S]*?\/\* end-test-block \*\/[\t ]*\n?/
+      },
+      dist: {
+        files: "dist/*.js"
+      }
     }
-  });
+  })
+
+  grunt.registerMultiTask('test-blocks', 'Strip code blocks that are only used for testing.', function() {
+    var files = grunt.file.expand(this.data.files)
+      , pattern = this.options().pattern
+    files.forEach(function(file) {
+      var contents = grunt.file.read(file)
+      if (pattern.test(contents)) {
+        // strip test blocks from the file
+        contents = contents.replace(pattern, "")
+        grunt.file.write(file, contents)
+        // Print a success message.
+        grunt.log.writeln("Removed test blocks from " + file)
+      }
+    })
+  })
 
   // These plugins provide necessary tasks.
-  grunt.loadNpmTasks("grunt-contrib-concat");
-  grunt.loadNpmTasks("grunt-contrib-jshint");
-  grunt.loadNpmTasks("grunt-contrib-watch");
-  grunt.loadNpmTasks('grunt-contrib-jasmine');
+  grunt.loadNpmTasks("grunt-contrib-concat")
+  grunt.loadNpmTasks("grunt-contrib-jshint")
+  grunt.loadNpmTasks("grunt-contrib-watch")
+  grunt.loadNpmTasks('grunt-contrib-jasmine')
 
   // Default task.
-  grunt.registerTask("default", ["concat", "jshint"]);
+  grunt.registerTask("default", ["concat", "test-blocks", "jshint"])
 
-  grunt.registerTask("test", ["concat", "jshint", "jasmine"]);
-  grunt.registerTask("test:dist", ["concat", "jshint", "jasmine:dist"]);
-  grunt.registerTask("test:builds", ["concat", "jshint", "jasmine:builds"]);
+  grunt.registerTask("test", ["concat", "jshint", "jasmine"])
+  grunt.registerTask("test:dist", ["concat", "jshint", "jasmine:dist"])
+  grunt.registerTask("test:builds", ["concat", "jshint", "jasmine:builds"])
 
 
-};
+}
