@@ -92,7 +92,7 @@ module.exports = function(grunt) {
     watch: {
       scripts: {
         files: ["src/**/*.js"],
-        tasks: ["concat:dist", "test-blocks:dist", "jshint:dist"]
+        tasks: ["concat:dist", "strip-test-code:dist", "jshint:dist"]
       },
       spec: {
         files: ["spec/src/**/*.js"],
@@ -122,7 +122,7 @@ module.exports = function(grunt) {
         ]
       }
     },
-    "test-blocks": {
+    "strip-test-code": {
       options: {
         pattern: /[\t ]*\/\* test-block \*\/[\s\S]*?\/\* end-test-block \*\/[\t ]*\n?/
       },
@@ -132,7 +132,7 @@ module.exports = function(grunt) {
     }
   })
 
-  grunt.registerMultiTask('test-blocks', 'Strip code blocks that are only used for testing.', function() {
+  grunt.registerMultiTask("strip-test-code", "Strip code blocks that are only used for testing.", function() {
     var files = grunt.file.expand(this.data.files)
       , pattern = this.options().pattern
     files.forEach(function(file) {
@@ -141,7 +141,7 @@ module.exports = function(grunt) {
         // strip test blocks from the file
         contents = contents.replace(pattern, "")
         grunt.file.write(file, contents)
-        // Print a success message.
+        // print a success message.
         grunt.log.writeln("Removed test blocks from " + file)
       }
     })
@@ -151,14 +151,13 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks("grunt-contrib-concat")
   grunt.loadNpmTasks("grunt-contrib-jshint")
   grunt.loadNpmTasks("grunt-contrib-watch")
-  grunt.loadNpmTasks('grunt-contrib-jasmine')
+  grunt.loadNpmTasks("grunt-contrib-jasmine")
 
   // Default task.
-  grunt.registerTask("default", ["concat", "test-blocks", "jshint"])
+  grunt.registerTask("default", ["concat", "strip-test-code", "jshint"])
 
   grunt.registerTask("test", ["concat", "jshint", "jasmine"])
   grunt.registerTask("test:dist", ["concat", "jshint", "jasmine:dist"])
   grunt.registerTask("test:builds", ["concat", "jshint", "jasmine:builds"])
-
 
 }
