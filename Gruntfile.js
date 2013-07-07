@@ -106,7 +106,7 @@ module.exports = function(grunt) {
     jasmine: {
       options: {
         specs: "spec/html-inspector-spec.js",
-        styles: "spec/html-inspector-spec.css",
+        styles: ["spec/html-inspector-spec.css", "spec/importer-spec.css"],
         outfile: "spec-runner.html",
         keepRunner: true
       },
@@ -124,7 +124,7 @@ module.exports = function(grunt) {
     },
     "strip-test-code": {
       options: {
-        pattern: /[\t ]*\/\* test-block \*\/[\s\S]*?\/\* end-test-block \*\/[\t ]*\n?/
+        pattern: /[\t ]*\/\* test-code \*\/[\s\S]*?\/\* end-test-code \*\/[\t ]*\n?/g
       },
       dist: {
         files: "dist/*.js"

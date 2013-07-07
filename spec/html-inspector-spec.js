@@ -629,7 +629,7 @@ describe("css", function() {
 
   var css = HTMLInspector.modules.css
     , originalStyleSheets = css.styleSheets
-    , classes = ["alpha", "bar", "bravo", "charlie", "delta", "echo", "foo"]
+    , classes = ["alpha", "bar", "bravo", "charlie", "delta", "echo", "foo", "importee", "importer"]
 
   afterEach(function() {
     css.styleSheets = originalStyleSheets

@@ -136,14 +136,14 @@ var HTMLInspector = (function() {
       parents: parents
     }
 
-    /* test-block */
+    /* test-code */
     ,
     _constructors: {
       Listener: Listener,
       Reporter: Reporter,
       Callbacks: Callbacks
     }
-    /* end-test-block */
+    /* end-test-code */
   }
 
   return inspector

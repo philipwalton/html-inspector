@@ -406,10 +406,13 @@ HTMLInspector.modules.add("css", (function() {
   function getClassesFromRuleList(rulelist) {
     return rulelist.reduce(function(classes, rule) {
       var matches
-      if (rule.cssRules) {
+      if (rule.styleSheet) { // from @import rules
+        return classes.concat(getClassesFromStyleSheets([rule.styleSheet]))
+      }
+      else if (rule.cssRules) { // from @media rules (or other conditionals)
         return classes.concat(getClassesFromRuleList(toArray(rule.cssRules)))
       }
-      if (rule.selectorText) {
+      else if (rule.selectorText) {
         matches = rule.selectorText.match(reClassSelector) || []
         return classes.concat(matches.map(function(cls) { return cls.slice(1) } ))
       }

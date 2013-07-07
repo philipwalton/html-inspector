@@ -1,0 +1,5 @@
+@import url("importee-spec.css");
+
+.importer {
+  display: block;
+}
