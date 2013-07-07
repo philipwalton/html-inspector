@@ -1,3 +1,8 @@
+== 0.4.0 (Unreleased)
+
+* Add a basic command line interface.
+* Fix a bug where @import statements weren't being accounted for when travsersing the stylesheets.
+
 == 0.3.0 (June 23, 2013)
 
 * Remove the dependency on jQuery
