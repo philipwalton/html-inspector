@@ -81,7 +81,9 @@ module.exports = function(grunt) {
       }
     },
     jshint: {
-      options: grunt.file.readJSON(".jshintrc"),
+      options: {
+        jshintrc: ".jshintrc",
+      },
       dist: {
         src: "<%= concat.dist.dest %>"
       },
@@ -122,29 +124,12 @@ module.exports = function(grunt) {
         ]
       }
     },
-    "strip-test-code": {
-      options: {
-        pattern: /[\t ]*\/\* test-code \*\/[\s\S]*?\/\* end-test-code \*\/[\t ]*\n?/g
-      },
+    strip_code: {
+      options: {},
       dist: {
-        files: "dist/*.js"
+        src: "dist/*.js"
       }
     }
-  })
-
-  grunt.registerMultiTask("strip-test-code", "Strip code blocks that are only used for testing.", function() {
-    var files = grunt.file.expand(this.data.files)
-      , pattern = this.options().pattern
-    files.forEach(function(file) {
-      var contents = grunt.file.read(file)
-      if (pattern.test(contents)) {
-        // strip test blocks from the file
-        contents = contents.replace(pattern, "")
-        grunt.file.write(file, contents)
-        // print a success message.
-        grunt.log.writeln("Removed test blocks from " + file)
-      }
-    })
   })
 
   // These plugins provide necessary tasks.
@@ -152,9 +137,10 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks("grunt-contrib-jshint")
   grunt.loadNpmTasks("grunt-contrib-watch")
   grunt.loadNpmTasks("grunt-contrib-jasmine")
+  grunt.loadNpmTasks("grunt-strip-code")
 
   // Default task.
-  grunt.registerTask("default", ["concat", "strip-test-code", "jshint"])
+  grunt.registerTask("default", ["concat", "strip_code", "jshint"])
 
   grunt.registerTask("test", ["concat", "jshint", "jasmine"])
   grunt.registerTask("test:dist", ["concat", "jshint", "jasmine:dist"])

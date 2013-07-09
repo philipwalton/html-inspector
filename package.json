@@ -10,6 +10,10 @@
   "scripts": {
     "test": "grunt test"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/philipwalton/html-inspector/"
+  },
   "bin": {
     "htmlinspector": "bin/html-inspector"
   },
@@ -22,9 +26,8 @@
     "grunt-contrib-uglify": "*",
     "grunt-contrib-watch": "*",
     "grunt-contrib-jshint": "~0.1.1",
-    "grunt-contrib-nodeunit": "~0.1.2",
-    "grunt-contrib-compass": "*",
+    "grunt-contrib-jasmine": "~0.4.2",
     "grunt-shell": "~0.2.2",
-    "grunt-contrib-jasmine": "~0.4.2"
+    "grunt-strip-code": "~0.1.0"
   }
 }
