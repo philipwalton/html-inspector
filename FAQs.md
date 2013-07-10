@@ -1,10 +1,10 @@
 # FAQs
 
-1. [How is HTML Inspector different than the W3C Validator?](#)
-2. [Can HTML Inspector detect unclosed tags?](#)
-3. [How can I get HTML Inspector to stop warning me about unused Modernizr classes?](#how-can-i-get-html-inspector-to-stop-warning-me-about-unused-modernizr-classes)
-4. [I use Disqus and I'm getting warnings about obsolete attributes on the `<iframe>` element. How can I prevent those?](#i-use-disqus-and-im-getting-warnings-about-obsolete-attributes-on-the-iframe-element-how-can-i-prevent-those)
-5. [Is there a browser extension or bookmarklet for HTML Inspector?](#)
+- [How is HTML Inspector different than the W3C Validator?](#how-is-html-inspector-different-than-the-w3c-validator)
+- [Can HTML Inspector detect unclosed tags?](#can-html-inspector-detect-unclosed-tags)
+- [How can I get HTML Inspector to stop warning me about unused Modernizr classes?](#how-can-i-get-html-inspector-to-stop-warning-me-about-unused-modernizr-classes)
+- [I use Disqus and I'm getting warnings about obsolete attributes on the `<iframe>` element. How can I prevent those?](#i-use-disqus-and-im-getting-warnings-about-obsolete-attributes-on-the-iframe-element-how-can-i-prevent-those)
+- [Is there a browser extension or bookmarklet for HTML Inspector?](#is-there-a-browser-extension-or-bookmarklet-for-html-inspector)
 
 #### How is HTML Inspector different than the W3C Validator?
 
