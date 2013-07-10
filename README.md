@@ -8,9 +8,10 @@
 4. [Writing Your Own Rules](#writing-your-own-rules)
 5. [Overriding Rules Configurations](#overriding-rule-configurations)
 6. [Custom Builds](#custom-builds)
-7. [Running the Tests](#running-the-tests)
-8. [Contributing](#contributing)
-9. [FAQs](#faqs)
+7. [Browser Support](#browser-support)
+8. [Running the Tests](#running-the-tests)
+9. [Contributing](#contributing)
+10. [FAQs](#faqs)
 
 HTML Inspector is a highly-customizable, code quality tool to help you (and your team) write better markup. It aims to find a balance between the uncompromisingly strict W3C validator and having absolutely no rules at all (the unfortunate reality for most of us).
 
@@ -339,6 +340,19 @@ npm install
 
 # Install script dependencies
 bower install
+```
+
+## Browser Support
+
+HTML Inspector has been tested and known to work in the latest versions of all modern browsers including Chrome, Firefox, Safari, Opera, and Internet Explorer. It will not work in older browsers that do not support ES5 methods, the CSS Object Model, or `console.warn()`. Since HTML Inspector is primarily a development tool, it is not intended to work in browsers that aren't typically used for development and don't support modern Web standards.
+
+If you need to test your site in older versions of IE and don't want to see JavaScript errors, simply wrap all your HTML Inspector code inside a conditional comment, so it is ignored by IE9 and below. Here is an example:
+
+```html
+<!--[if gt IE 9]><!-->
+  <script src="path/to/html-inspector.js"></script>
+  <script>HTMLInspector.inspect()</script>
+<!--<![endif]-->
 ```
 
 ## Running the Tests
