@@ -1,4 +1,4 @@
-== 0.4.0 (Unreleased)
+== 0.4.0 (July 10, 2013)
 
 * Add a basic command line interface.
 * Fix a bug where @import statements weren't being accounted for when travsersing the stylesheets.
