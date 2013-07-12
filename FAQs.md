@@ -76,7 +76,7 @@ However, if you're interested in creating your own bookmarklet, **@hirayama-evol
       document.documentElement;
     var script = document.createElement('script');
     script.type = 'text/javascript';
-    script.src = 'https://rawgithub.com/philipwalton/html-inspector/master/dist/html-inspector.js';
+    script.src = 'http://cdnjs.cloudflare.com/ajax/libs/html-inspector/0.4.0/html-inspector.js';
     script.onload = function(){
       w.HTMLInspector.inspect();
     };

@@ -21,15 +21,21 @@ For a more formal introduction, please refer to [this blog post](http://philipwa
 
 ## Getting Started
 
-The easiest way to get started is to simply download the source and add it to your page. [Bower](https://github.com/bower/bower) users can install HTML Inspector with the following command:
+The easiest way to try out HTML Inspector is to link to the source file hosted on [CDNJS](http://cdnjs.com/):
+
+```html
+<script src="http://cdnjs.cloudflare.com/ajax/libs/html-inspector/0.4.0/html-inspector.js"></script>
+```
+
+Alternatively, [Bower](https://github.com/bower/bower) users can install HTML Inspector with the following command:
 
 ```sh
 bower install html-inspector
 ```
 
-Alternatively you can clone the repo and add the file at `dist/html-inspector.js` to your HTML.
+If you clone the Github repo, just use the file at `dist/html-inspector.js`.
 
-Once HTML Inspector is added, just run `HTMLInspector.inspect()` to see the results. Calling `inspect` with no options will load all rules and run them with their default configuration options.
+Once HTML Inspector is added, you can run `HTMLInspector.inspect()` to see the results. Calling `inspect` with no options will load all rules and run them with their default configuration options.
 
 ```html
 <script src="path/to/html-inspector.js"></script>
