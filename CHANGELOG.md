@@ -1,3 +1,7 @@
+== 0.4.1 (July 10, 2013)
+
+* Update bower.json to the correct version.
+
 == 0.4.0 (July 10, 2013)
 
 * Add a basic command line interface.
