@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Mocha Tests</title>
+    <link id="mocha-css" href="../node_modules/mocha/mocha.css" rel="stylesheet" />
+    <link href="browser.css" rel="stylesheet" />
+    <script id="script-placement-test" src="../spec/src/helpers.js"></script>
+  </head>
+  <body>
+      <div id="mocha"></div>
+      <script src="../node_modules/mocha/mocha.js"></script>
+      <script src="../node_modules/chai/chai.js"></script>
+      <script>
+        mocha.ui('bdd')
+        expect = chai.expect
+      </script>
+
+      <script src="../dist/inspector.js"></script>
+      <script src="browser.js"></script>
+      <script>
+        if (window.mochaPhantomJS) {
+          mochaPhantomJS.run()
+        } else {
+          mocha.run()
+        }
+      </script>
+  </body>
+</html>

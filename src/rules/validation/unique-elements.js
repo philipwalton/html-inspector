@@ -1,9 +1,12 @@
-HTMLInspector.rules.add(
-  "unique-elements",
-  {
+module.exports = {
+
+  name: "unique-elements",
+
+  config: {
     elements: ["title", "main"]
   },
-  function(listener, reporter, config) {
+
+  func: function(listener, reporter, config) {
 
     var map = {}
       , elements = config.elements
@@ -30,6 +33,6 @@ HTMLInspector.rules.add(
           )
         }
       })
-    }
-  )
-})
+    })
+  }
+}

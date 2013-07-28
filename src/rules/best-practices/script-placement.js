@@ -1,9 +1,12 @@
-HTMLInspector.rules.add(
-  "script-placement",
-  {
+module.exports = {
+
+  name: "script-placement",
+
+  config: {
     whitelist: []
   },
-  function(listener, reporter, config) {
+
+  func: function(listener, reporter, config) {
 
     var elements = []
       , whitelist = config.whitelist
@@ -47,4 +50,4 @@ HTMLInspector.rules.add(
       })
     })
   }
-)
+}

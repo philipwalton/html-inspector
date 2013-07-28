@@ -160,3 +160,18 @@ function parents(element) {
   }
   return list
 }
+
+
+module.exports = {
+  slice: slice,
+  toArray: toArray,
+  getAttributes: getAttributes,
+  isRegExp: isRegExp,
+  unique: unique,
+  extend: extend,
+  foundIn: foundIn,
+  isCrossOrigin: isCrossOrigin,
+  matchesSelector: matchesSelector,
+  matches: matches,
+  parents: parents
+}

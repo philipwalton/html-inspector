@@ -13,3 +13,5 @@ Reporter.prototype.warn = function(rule, message, context) {
 Reporter.prototype.getWarnings = function() {
   return this._errors
 }
+
+module.exports = Reporter

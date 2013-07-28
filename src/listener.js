@@ -1,3 +1,5 @@
+var Callbacks = require("./callbacks")
+
 function Listener() {
   this._events = {}
 }
@@ -14,3 +16,5 @@ Listener.prototype.off = function(event, fn) {
 Listener.prototype.trigger = function(event, context, args) {
   this._events[event] && this._events[event].fire(context, args)
 }
+
+module.exports = Listener

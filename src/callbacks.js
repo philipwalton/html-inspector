@@ -17,3 +17,5 @@ Callbacks.prototype.fire = function(context, args) {
     handler.apply(context, args)
   })
 }
+
+module.exports = Callbacks

@@ -1,6 +1,8 @@
-HTMLInspector.rules.add(
-  "unused-classes",
-  {
+module.exports = {
+
+  name: "unused-classes",
+
+  config: {
     whitelist: [
       /^js\-/,
       /^supports\-/,
@@ -8,7 +10,8 @@ HTMLInspector.rules.add(
       /^lang\-/
     ]
   },
-  function(listener, reporter, config) {
+
+  func: function(listener, reporter, config) {
 
     var css = HTMLInspector.modules.css
       , classes = css.getClassSelectors()
@@ -24,6 +27,6 @@ HTMLInspector.rules.add(
           this
         )
       }
-    }
-  )
-})
+    })
+  }
+}

@@ -1,0 +1,41 @@
+<html>
+  <head>
+    <title>Test Page</title>
+    <style>foo { }</style>
+
+  </head>
+  <body ondblclick="alert('foo')">
+
+    <span><meta name="foobar"></span>
+    <span><link type="imports" href="foobar.html"></span>
+
+    <style scoped>foo { }</style>
+
+    <span><h1>This is a <p>Heading!</p> shit</h1></span>
+
+    <span>
+      <ul>
+        <li>foo</li>
+      </ul>
+    </span>
+
+    <ul>
+      <span><li>Foo</li></span>
+      <li>Bar</li>
+    </ul>
+
+    <p>This is a <title>title</title> element</p>
+
+    <em><p>emphasize!</p></em>
+
+    <!-- <script src="dist/html-inspector.js"></script> -->
+
+    <script src="dist/html-inspector.js"></script>
+    <!-- <script src="dist/html-inspector.validation.js"></script> -->
+
+    <script>
+      HTMLInspector.inspect()
+    </script>
+
+  </body>
+</html>
