@@ -96,7 +96,7 @@ module.exports = function(grunt) {
       // },
       test: {
         files: ["test/browser/**/*.js"],
-        tasks: ["jshint:test", "concat:browser"]
+        tasks: ["jshint:test", "concat:test"]
       },
       src: {
         files: ["src/**/*.js"],
@@ -145,7 +145,7 @@ module.exports = function(grunt) {
 
   grunt.registerTask("test", ["test:node", "test:browser"])
   grunt.registerTask("test:node", ["mochacli"])
-  grunt.registerTask("test:browser", ["default", "concat:browser", "mocha_phantomjs"])
+  grunt.registerTask("test:browser", ["default", "concat:test", "mocha_phantomjs"])
 
   // grunt.registerTask("test", ["concat", "jshint", "jasmine"])
   // grunt.registerTask("test:dist", ["concat", "jshint", "jasmine:dist"])
