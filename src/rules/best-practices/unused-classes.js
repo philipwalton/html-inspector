@@ -15,7 +15,7 @@ module.exports = {
 
     var css = HTMLInspector.modules.css
       , classes = css.getClassSelectors()
-      , foundIn = this.utils.foundIn
+      , foundIn = require("../../utils/string-matcher")
 
     listener.on("class", function(name) {
       if (!foundIn(name, config.whitelist) && classes.indexOf(name) < 0) {

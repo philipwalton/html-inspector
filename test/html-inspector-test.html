@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Mocha Tests</title>
+    <link id="mocha-css" href="../node_modules/mocha/mocha.css" rel="stylesheet" />
+    <link href="html-inspector-test.css" rel="stylesheet" />
+    <script id="script-placement-test">
+      function parseHTML(string) {
+        var container = document.createElement("div")
+        container.innerHTML = string
+        return container.firstChild
+      }
+    </script>
+  </head>
+  <body>
+      <div id="mocha"></div>
+      <script src="../node_modules/mocha/mocha.js"></script>
+      <script src="../node_modules/chai/chai.js"></script>
+      <script src="../node_modules/sinon/lib/sinon.js"></script>
+      <script src="../node_modules/sinon/lib/sinon/spy.js"></script>
+      <script src="../node_modules/sinon/lib/sinon/stub.js"></script>
+      <script>
+        mocha.ui('bdd')
+        expect = chai.expect
+      </script>
+
+      <script src="../dist/html-inspector.js"></script>
+      <script src="html-inspector-test.js"></script>
+      <script>
+        if (window.mochaPhantomJS) {
+          mochaPhantomJS.run()
+        } else {
+          mocha.run()
+        }
+      </script>
+  </body>
+</html>

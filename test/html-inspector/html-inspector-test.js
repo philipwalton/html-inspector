@@ -288,6 +288,49 @@ describe("HTMLInspector", function() {
       expect(events[0]).to.equal("div")
     })
 
+    it("logs warnings to the console by default when onComplete isn't overriden", function() {
+      // stub out console.warn
+      sinon.stub(console, "warn")
+
+      HTMLInspector.rules.add("console-warn-test", function(listener, reporter) {
+        listener.on("element", function(name) {
+          reporter.warn("console-warn-test", "Element found", this)
+        })
+      })
+
+      HTMLInspector.inspect(html)
+      expect(console.warn.callCount).to.equal(9)
+      expect(console.warn.getCall(0).args[0]).to.equal("Element found")
+      expect(console.warn.getCall(0).args[1]).to.equal(html)
+
+      console.warn.restore()
+    })
+
+    it("does not console.warn cross-domain iframe elements", function() {
+      var div = document.createElement("div")
+        , iframe1 = document.createElement("iframe")
+        , iframe2 = document.createElement("iframe")
+
+      iframe1.src = "http://example.com"
+      iframe2.src = "foobar.html"
+      div.appendChild(iframe1)
+      div.appendChild(iframe2)
+
+      // stub out console.warn
+      sinon.stub(console, "warn")
+
+      HTMLInspector.rules.add("cross-domain-test", function(listener, reporter) {
+        listener.on("element", function(name) {
+          reporter.warn("cross-domain-test", "This is a cross-origin iframe", this)
+        })
+      })
+      HTMLInspector.inspect(div)
+      expect(console.warn.callCount).to.equal(3)
+      expect(console.warn.getCall(1).args[1]).to.equal("(can't display iframe with cross-origin source)")
+      expect(console.warn.getCall(2).args[1]).to.equal(iframe2)
+      console.warn.restore()
+    })
+
   })
 
 })

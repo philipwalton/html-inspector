@@ -1,5 +1,4 @@
-var utils = require("../utils")
-  , foundIn = utils.foundIn
+var foundIn = require("../utils/string-matcher")
 
 // ============================================================
 // A data map of all valid HTML elements, their attributes

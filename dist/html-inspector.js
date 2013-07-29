@@ -9,6 +9,304 @@
 
 (function(e){if("function"==typeof bootstrap)bootstrap("htmlinspector",e);else if("object"==typeof exports)module.exports=e();else if("function"==typeof define&&define.amd)define(e);else if("undefined"!=typeof ses){if(!ses.ok())return;ses.makeHTMLInspector=e}else"undefined"!=typeof window?window.HTMLInspector=e():global.HTMLInspector=e()})(function(){var define,ses,bootstrap,module,exports;
 return (function(e,t,n){function i(n,s){if(!t[n]){if(!e[n]){var o=typeof require=="function"&&require;if(!s&&o)return o(n,!0);if(r)return r(n,!0);throw new Error("Cannot find module '"+n+"'")}var u=t[n]={exports:{}};e[n][0].call(u.exports,function(t){var r=e[n][1][t];return i(r?r:t)},u,u.exports)}return t[n].exports}var r=typeof require=="function"&&require;for(var s=0;s<n.length;s++)i(n[s]);return i})({1:[function(require,module,exports){
+var forEach = require('./forEach');
+var makeIterator = require('../function/makeIterator_');
+
+    /**
+     * Array filter
+     */
+    function filter(arr, callback, thisObj) {
+        callback = makeIterator(callback, thisObj);
+        var results = [];
+        if (arr == null) {
+            return results;
+        }
+
+        var i = -1, len = arr.length, value;
+        while (++i < len) {
+            value = arr[i];
+            if (callback(value, i, arr)) {
+                results.push(value);
+            }
+        }
+
+        return results;
+    }
+
+    module.exports = filter;
+
+
+
+},{"../function/makeIterator_":5,"./forEach":2}],2:[function(require,module,exports){
+
+
+    /**
+     * Array forEach
+     */
+    function forEach(arr, callback, thisObj) {
+        if (arr == null) {
+            return;
+        }
+        var i = -1,
+            len = arr.length;
+        while (++i < len) {
+            // we iterate over sparse items since there is no way to make it
+            // work properly on IE 7-8. see #64
+            if ( callback.call(thisObj, arr[i], i, arr) === false ) {
+                break;
+            }
+        }
+    }
+
+    module.exports = forEach;
+
+
+
+},{}],3:[function(require,module,exports){
+
+
+    /**
+     * Array.indexOf
+     */
+    function indexOf(arr, item, fromIndex) {
+        fromIndex = fromIndex || 0;
+        if (arr == null) {
+            return -1;
+        }
+
+        var len = arr.length,
+            i = fromIndex < 0 ? len + fromIndex : fromIndex;
+        while (i < len) {
+            // we iterate over sparse items since there is no way to make it
+            // work properly on IE 7-8. see #64
+            if (arr[i] === item) {
+                return i;
+            }
+
+            i++;
+        }
+
+        return -1;
+    }
+
+    module.exports = indexOf;
+
+
+},{}],4:[function(require,module,exports){
+var indexOf = require('./indexOf');
+var filter = require('./filter');
+
+    /**
+     * @return {array} Array of unique items
+     */
+    function unique(arr){
+        return filter(arr, isUnique);
+    }
+
+    function isUnique(item, i, arr){
+        return indexOf(arr, item, i+1) === -1;
+    }
+
+    module.exports = unique;
+
+
+
+},{"./filter":1,"./indexOf":3}],5:[function(require,module,exports){
+var prop = require('./prop');
+var deepMatches = require('../object/deepMatches');
+
+    /**
+     * Converts argument into a valid iterator.
+     * Used internally on most array/object/collection methods that receives a
+     * callback/iterator providing a shortcut syntax.
+     */
+    function makeIterator(src, thisObj){
+        switch(typeof src) {
+            case 'object':
+                // typeof null == "object"
+                return (src != null)? function(val, key, target){
+                    return deepMatches(val, src);
+                } : src;
+            case 'string':
+            case 'number':
+                return prop(src);
+            case 'function':
+                if (typeof thisObj === 'undefined') {
+                    return src;
+                } else {
+                    return function(val, i, arr){
+                        return src.call(thisObj, val, i, arr);
+                    };
+                }
+            default:
+                return src;
+        }
+    }
+
+    module.exports = makeIterator;
+
+
+
+},{"../object/deepMatches":12,"./prop":6}],6:[function(require,module,exports){
+
+
+    /**
+     * Returns a function that gets a property of the passed object
+     */
+    function prop(name){
+        return function(obj){
+            return obj[name];
+        };
+    }
+
+    module.exports = prop;
+
+
+
+},{}],7:[function(require,module,exports){
+var isKind = require('./isKind');
+    /**
+     */
+    var isArray = Array.isArray || function (val) {
+        return isKind(val, 'Array');
+    };
+    module.exports = isArray;
+
+
+},{"./isKind":8}],8:[function(require,module,exports){
+var kindOf = require('./kindOf');
+    /**
+     * Check if value is from a specific "kind".
+     */
+    function isKind(val, kind){
+        return kindOf(val) === kind;
+    }
+    module.exports = isKind;
+
+
+},{"./kindOf":10}],9:[function(require,module,exports){
+var isKind = require('./isKind');
+    /**
+     */
+    function isRegExp(val) {
+        return isKind(val, 'RegExp');
+    }
+    module.exports = isRegExp;
+
+
+},{"./isKind":8}],10:[function(require,module,exports){
+
+
+    var _rKind = /^\[object (.*)\]$/,
+        _toString = Object.prototype.toString,
+        UNDEF;
+
+    /**
+     * Gets the "kind" of value. (e.g. "String", "Number", etc)
+     */
+    function kindOf(val) {
+        if (val === null) {
+            return 'Null';
+        } else if (val === UNDEF) {
+            return 'Undefined';
+        } else {
+            return _rKind.exec( _toString.call(val) )[1];
+        }
+    }
+    module.exports = kindOf;
+
+
+},{}],11:[function(require,module,exports){
+var kindOf = require('./kindOf');
+
+    var _win = this;
+
+    /**
+     * Convert array-like object into array
+     */
+    function toArray(val){
+        var ret = [],
+            kind = kindOf(val),
+            n;
+
+        if (val != null) {
+            if ( val.length == null || kind === 'String' || kind === 'Function' || kind === 'RegExp' || val === _win ) {
+                //string, regexp, function have .length but user probably just want
+                //to wrap value into an array..
+                ret[ret.length] = val;
+            } else {
+                //window returns true on isObject in IE7 and may have length
+                //property. `typeof NodeList` returns `function` on Safari so
+                //we can't use it (#58)
+                n = val.length;
+                while (n--) {
+                    ret[n] = val[n];
+                }
+            }
+        }
+        return ret;
+    }
+    module.exports = toArray;
+
+
+},{"./kindOf":10}],12:[function(require,module,exports){
+var forOwn = require('./forOwn');
+var isArray = require('../lang/isArray');
+
+    function containsMatch(array, pattern) {
+        var i = -1, length = array.length;
+        while (++i < length) {
+            if (deepMatches(array[i], pattern)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    function matchArray(target, pattern) {
+        var i = -1, patternLength = pattern.length;
+        while (++i < patternLength) {
+            if (!containsMatch(target, pattern[i])) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    function matchObject(target, pattern) {
+        var result = true;
+        forOwn(pattern, function(val, key) {
+            if (!deepMatches(target[key], val)) {
+                // Return false to break out of forOwn early
+                return (result = false);
+            }
+        });
+
+        return result;
+    }
+
+    /**
+     * Recursively check if the objects match.
+     */
+    function deepMatches(target, pattern){
+        if (target && typeof target === 'object') {
+            if (isArray(target) && isArray(pattern)) {
+                return matchArray(target, pattern);
+            } else {
+                return matchObject(target, pattern);
+            }
+        } else {
+            return target === pattern;
+        }
+    }
+
+    module.exports = deepMatches;
+
+
+
+},{"../lang/isArray":7,"./forOwn":14}],13:[function(require,module,exports){
 
 
     var _hasDontEnumBug,
@@ -72,7 +370,7 @@ return (function(e,t,n){function i(n,s){if(!t[n]){if(!e[n]){var o=typeof require
 
 
 
-},{}],2:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 var hasOwn = require('./hasOwn');
 var forIn = require('./forIn');
 
@@ -93,7 +391,7 @@ var forIn = require('./forIn');
 
 
 
-},{"./forIn":1,"./hasOwn":3}],3:[function(require,module,exports){
+},{"./forIn":13,"./hasOwn":15}],15:[function(require,module,exports){
 
 
     /**
@@ -107,7 +405,7 @@ var forIn = require('./forIn');
 
 
 
-},{}],4:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 var forOwn = require('./forOwn');
 
     /**
@@ -137,7 +435,7 @@ var forOwn = require('./forOwn');
     module.exports = mixIn;
 
 
-},{"./forOwn":2}],5:[function(require,module,exports){
+},{"./forOwn":14}],17:[function(require,module,exports){
 function Callbacks() {
   this.handlers = []
 }
@@ -160,27 +458,22 @@ Callbacks.prototype.fire = function(context, args) {
 
 module.exports = Callbacks
 
-},{}],6:[function(require,module,exports){
-var Callbacks = require("./callbacks")
-  , Listener = require("./listener")
+},{}],18:[function(require,module,exports){
+var Listener = require("./listener")
   , Modules = require("./modules")
   , Reporter = require("./reporter")
   , Rules = require("./rules")
 
-  // TODO: this is ugly, refactor
-  , utils = require("./utils")
-  , slice = utils.slice
-  , toArray = utils.toArray
-  , getAttributes = utils.getAttributes
-  , isRegExp = utils.isRegExp
-  , unique = utils.unique
-  , extend = utils.extend
-  , foundIn = utils.foundIn
-  , isCrossOrigin = utils.isCrossOrigin
-  , matchesSelector = utils.matchesSelector
-  , matches = utils.matches
-  , parents = utils.parents
+  , toArray = require("mout/lang/toArray")
+  , isRegExp = require("mout/lang/isRegExp")
+  , unique = require("mout/array/unique")
+  , mixIn = require("mout/object/mixIn")
 
+  , matches = require("./utils/dom/matches")
+  , getAttributes = require("./utils/dom/get-attributes")
+
+  // used to parse URLs
+  , link = document.createElement("a")
 
 /**
  * Set (or reset) all data back to its original value
@@ -207,6 +500,8 @@ function traverseDOM(node, listener, options) {
   // only deal with element nodes
   if (node.nodeType != 1) return
 
+  var attrs = getAttributes(node)
+
   // trigger events for this element unless it's been excluded
   if (!matches(node, options.exclude)) {
     listener.trigger("element", node, [node.nodeName.toLowerCase(), node])
@@ -216,8 +511,8 @@ function traverseDOM(node, listener, options) {
     toArray(node.classList).forEach(function(name) {
       listener.trigger("class", node, [name, node])
     })
-    getAttributes(node).forEach(function(attr) {
-      listener.trigger("attribute", node, [attr.name, attr.value, node])
+    Object.keys(attrs).sort().forEach(function(name) {
+      listener.trigger("attribute", node, [name, attrs[name], node])
     })
   }
 
@@ -241,7 +536,17 @@ function processConfig(config) {
     }
   }
   // merge config with the defaults
-  return extend({}, HTMLInspector.config, config)
+  return mixIn({}, HTMLInspector.config, config)
+}
+
+/**
+ * Tests whether a URL is cross-origin
+ * Same origin URLs must have the same protocol and host
+ * (note: host include hostname and port)
+ */
+function isCrossOrigin(url) {
+  link.href = url
+  return !(link.protocol == location.protocol && link.host == location.host)
 }
 
 /**
@@ -254,7 +559,11 @@ function filterCrossOrigin(elements) {
   // convert elements to an array if it's not already
   if (!Array.isArray(elements)) elements = [elements]
   elements = elements.map(function(el) {
-    if (el.nodeName.toLowerCase() == "iframe" && isCrossOrigin(el.src))
+    if (el
+      && el.nodeName
+      && el.nodeName.toLowerCase() == "iframe"
+      && isCrossOrigin(el.src)
+    )
       return "(can't display iframe with cross-origin source)"
     else
       return el
@@ -290,7 +599,7 @@ var HTMLInspector = {
         config = { onComplete: config }
       }
     }
-    extend(this.config, this.defaults, config)
+    mixIn(this.config, this.defaults, config)
   },
 
   rules: new Rules(),
@@ -314,22 +623,7 @@ var HTMLInspector = {
     listener.trigger("afterInspect", domRoot)
 
     this.config.onComplete(reporter.getWarnings())
-  },
-
-  // expose the utility functions for use in rules
-  utils: {
-    toArray: toArray,
-    getAttributes: getAttributes,
-    isRegExp: isRegExp,
-    unique: unique,
-    extend: extend,
-    foundIn: foundIn,
-    isCrossOrigin: isCrossOrigin,
-    matchesSelector: matchesSelector,
-    matches: matches,
-    parents: parents
   }
-
 }
 
 HTMLInspector.modules.add( require("./modules/css.js") )
@@ -348,7 +642,7 @@ HTMLInspector.rules.add( require("./rules/validation/validate-elements.js") )
 
 module.exports = HTMLInspector
 
-},{"./callbacks":5,"./listener":7,"./modules":8,"./modules/css.js":9,"./modules/validation.js":10,"./reporter":11,"./rules":12,"./rules/best-practices/inline-event-handlers.js":13,"./rules/best-practices/script-placement.js":14,"./rules/best-practices/unnecessary-elements.js":15,"./rules/best-practices/unused-classes.js":16,"./rules/convention/bem-conventions.js":17,"./rules/validation/duplicate-ids.js":18,"./rules/validation/unique-elements.js":19,"./rules/validation/validate-attributes.js":20,"./rules/validation/validate-element-location.js":21,"./rules/validation/validate-elements.js":22,"./utils":23}],7:[function(require,module,exports){
+},{"./listener":19,"./modules":20,"./modules/css.js":21,"./modules/validation.js":22,"./reporter":23,"./rules":24,"./rules/best-practices/inline-event-handlers.js":25,"./rules/best-practices/script-placement.js":26,"./rules/best-practices/unnecessary-elements.js":27,"./rules/best-practices/unused-classes.js":28,"./rules/convention/bem-conventions.js":29,"./rules/validation/duplicate-ids.js":30,"./rules/validation/unique-elements.js":31,"./rules/validation/validate-attributes.js":32,"./rules/validation/validate-element-location.js":33,"./rules/validation/validate-elements.js":34,"./utils/dom/get-attributes":35,"./utils/dom/matches":36,"mout/array/unique":4,"mout/lang/isRegExp":9,"mout/lang/toArray":11,"mout/object/mixIn":16}],19:[function(require,module,exports){
 var Callbacks = require("./callbacks")
 
 function Listener() {
@@ -369,7 +663,7 @@ Listener.prototype.trigger = function(event, context, args) {
 }
 
 module.exports = Listener
-},{"./callbacks":5}],8:[function(require,module,exports){
+},{"./callbacks":17}],20:[function(require,module,exports){
 var mixIn = require("mout/object/mixIn")
 
 function Modules() {}
@@ -385,12 +679,11 @@ Modules.prototype.extend = function(name, options) {
 }
 
 module.exports = Modules
-},{"mout/object/mixIn":4}],9:[function(require,module,exports){
-var utils = require("../utils")
-  , toArray = utils.toArray
-  , matches = utils.matches
-  , unique = utils.unique
-  , reClassSelector = /\.[a-z0-9_\-]+/ig
+},{"mout/object/mixIn":16}],21:[function(require,module,exports){
+var reClassSelector = /\.[a-z0-9_\-]+/ig
+  , toArray = require("mout/lang/toArray")
+  , unique = require("mout/array/unique")
+  , matches = require("../utils/dom/matches")
 
 /**
  * Get an array of class selectors from a CSSRuleList object
@@ -442,9 +735,8 @@ module.exports = {
   module: css
 }
 
-},{"../utils":23}],10:[function(require,module,exports){
-(function(){var utils = require("../utils")
-  , foundIn = utils.foundIn
+},{"../utils/dom/matches":36,"mout/array/unique":4,"mout/lang/toArray":11}],22:[function(require,module,exports){
+(function(){var foundIn = require("../utils/string-matcher")
 
 // ============================================================
 // A data map of all valid HTML elements, their attributes
@@ -1324,7 +1616,7 @@ module.exports = {
 }
 
 })()
-},{"../utils":23}],11:[function(require,module,exports){
+},{"../utils/string-matcher":38}],23:[function(require,module,exports){
 function Reporter() {
   this._errors = []
 }
@@ -1342,7 +1634,7 @@ Reporter.prototype.getWarnings = function() {
 }
 
 module.exports = Reporter
-},{}],12:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 var mixIn = require("mout/object/mixIn")
 
 function Rules() {}
@@ -1376,7 +1668,7 @@ Rules.prototype.extend = function(name, options) {
 
 module.exports = Rules
 
-},{"mout/object/mixIn":4}],13:[function(require,module,exports){
+},{"mout/object/mixIn":16}],25:[function(require,module,exports){
 module.exports = {
 
   name: "inline-event-handlers",
@@ -1394,7 +1686,7 @@ module.exports = {
   }
 }
 
-},{}],14:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 module.exports = {
 
   name: "script-placement",
@@ -1407,7 +1699,7 @@ module.exports = {
 
     var elements = []
       , whitelist = config.whitelist
-      , matches = this.utils.matches
+      , matches = require("../../utils/dom/matches")
 
     function isWhitelisted(el) {
       if (!whitelist) return false
@@ -1448,7 +1740,7 @@ module.exports = {
     })
   }
 }
-},{}],15:[function(require,module,exports){
+},{"../../utils/dom/matches":36}],27:[function(require,module,exports){
 module.exports = {
 
   name: "unnecessary-elements",
@@ -1475,7 +1767,7 @@ module.exports = {
   }
 }
 
-},{}],16:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 module.exports = {
 
   name: "unused-classes",
@@ -1493,7 +1785,7 @@ module.exports = {
 
     var css = HTMLInspector.modules.css
       , classes = css.getClassSelectors()
-      , foundIn = this.utils.foundIn
+      , foundIn = require("../../utils/string-matcher")
 
     listener.on("class", function(name) {
       if (!foundIn(name, config.whitelist) && classes.indexOf(name) < 0) {
@@ -1509,7 +1801,7 @@ module.exports = {
   }
 }
 
-},{}],17:[function(require,module,exports){
+},{"../../utils/string-matcher":38}],29:[function(require,module,exports){
 // ============================================================
 // There are several different BEM  naming conventions that
 // I'm aware of. To make things easier, I refer to the
@@ -1591,8 +1883,8 @@ module.exports = {
 
   func: function(listener, reporter, config) {
 
-    var parents = this.utils.parents
-      , matches = this.utils.matches
+    var parents = require("../../utils/dom/parents")
+      , matches = require("../../utils/dom/matches")
 
     listener.on('class', function(name) {
       if (config.isElement(name)) {
@@ -1625,7 +1917,7 @@ module.exports = {
   }
 }
 
-},{}],18:[function(require,module,exports){
+},{"../../utils/dom/matches":36,"../../utils/dom/parents":37}],30:[function(require,module,exports){
 module.exports = {
 
   name: "duplicate-ids",
@@ -1669,7 +1961,7 @@ module.exports = {
   }
 }
 
-},{}],19:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 module.exports = {
 
   name: "unique-elements",
@@ -1709,7 +2001,7 @@ module.exports = {
   }
 }
 
-},{}],20:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 module.exports = {
 
   name: "validate-attributes",
@@ -1758,7 +2050,7 @@ module.exports = {
   }
 }
 
-},{}],21:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 module.exports = {
 
   name: "validate-element-location",
@@ -1766,8 +2058,8 @@ module.exports = {
   func: function(listener, reporter) {
 
     var validation = this.modules.validation
-      , matches = this.utils.matches
-      , parents = this.utils.parents
+      , matches = require("../../utils/dom/matches")
+      , parents = require("../../utils/dom/parents")
       , warned = [] // store already-warned elements to prevent double warning
 
 
@@ -1840,7 +2132,7 @@ module.exports = {
   }
 }
 
-},{}],22:[function(require,module,exports){
+},{"../../utils/dom/matches":36,"../../utils/dom/parents":37}],34:[function(require,module,exports){
 module.exports = {
 
   name: "validate-elements",
@@ -1868,104 +2160,30 @@ module.exports = {
   }
 }
 
-},{}],23:[function(require,module,exports){
-var slice = Array.prototype.slice
-
+},{}],35:[function(require,module,exports){
 /**
- * Convert an array like object to an array
- */
-function toArray(arrayLike) {
-  return arrayLike && (arrayLike.length)
-    ? slice.call(arrayLike)
-    : []
-}
-
-/**
- * Get a sorted array of the elements attributes
+ * Get an object representation of an element's attributes
  */
 function getAttributes(element) {
   var map = element.attributes
     , len = map.length
     , i = 0
     , attr
-    , attrs = []
+    , attrs = {}
 
   // return an empty array if there are no attributes
-  if (len === 0) return []
+  if (len === 0) return {}
 
   while (attr = map[i++]) {
-    attrs.push({name: attr.name, value: attr.value})
+    attrs[attr.name] = attr.value
   }
-  return attrs.sort(function(a, b) {
-    if (a.name === b.name) return 0
-    return a.name < b.name ? -1 : 1
-  })
+  return attrs
 }
 
-/**
- * Determine if an object is a Regular Expression
- */
-function isRegExp(obj) {
-  return Object.prototype.toString.call(obj) == "[object RegExp]"
-}
+module.exports = getAttributes
 
-
-/**
- * Consume an array and return a new array with no duplicate values
- */
-function unique(array) {
-  var uniq = []
-  array = array.sort()
-  array.forEach(function(val, i) {
-    val !== array[i-1] && uniq.push(val)
-  })
-  return uniq
-}
-
-/**
- * Extend a given object with all the properties in passed-in object(s).
- */
-function extend(obj) {
-  slice.call(arguments, 1).forEach(function(source) {
-    if (source) {
-      for (var prop in source) {
-        obj[prop] = source[prop]
-      }
-    }
-  })
-  return obj
-}
-
-/**
- * Given a string and a RegExp or a list of strings or RegExps,
- * does the string match any of the items in the list?
- */
-function foundIn(needle, haystack) {
-  // if haystack is a RegExp and not an array, just compare againt it
-  if (isRegExp(haystack)) return haystack.test(needle)
-
-  // if haystack is a String, just compare against it
-  if (typeof haystack == "string") return needle == haystack
-
-  // otherwise check each item in the list
-  return haystack.some(function(item) {
-    return isRegExp(item) ? item.test(needle) : needle === item
-  })
-}
-
-/**
- * Tests whether a fully-qualified URL is cross-origin
- * Same origin URLs must have the same protocol and host
- * (note: host include hostname and port)
- */
-function isCrossOrigin(url) {
-  var reURL = /^(?:(https?:)\/\/)?((?:[0-9a-z\.\-]+)(?::(?:\d+))?)/
-    , matches = reURL.exec(url)
-    , protocol = matches[1]
-    , host = matches[2]
-  return !(protocol == location.protocol && host == location.host)
-}
-
+},{}],36:[function(require,module,exports){
+var toArray = require("mout/lang/toArray")
 
 /**
  * Detects the browser's native matches() implementation
@@ -2021,6 +2239,9 @@ function matches(element, test) {
   })
 }
 
+module.exports = matches
+
+},{"mout/lang/toArray":11}],37:[function(require,module,exports){
 /**
  * Returns an array of the element's parent elements
  */
@@ -2032,21 +2253,30 @@ function parents(element) {
   return list
 }
 
+module.exports = parents
 
-module.exports = {
-  slice: slice,
-  toArray: toArray,
-  getAttributes: getAttributes,
-  isRegExp: isRegExp,
-  unique: unique,
-  extend: extend,
-  foundIn: foundIn,
-  isCrossOrigin: isCrossOrigin,
-  matchesSelector: matchesSelector,
-  matches: matches,
-  parents: parents
+},{}],38:[function(require,module,exports){
+var isRegExp = require("mout/lang/isRegExp")
+
+/**
+ * Given a string and a RegExp or a list of strings or RegExps,
+ * does the string match any of the items in the list?
+ */
+function foundIn(needle, haystack) {
+  // if haystack is a RegExp and not an array, just compare againt it
+  if (isRegExp(haystack)) return haystack.test(needle)
+
+  // if haystack is a String, just compare against it
+  if (typeof haystack == "string") return needle == haystack
+
+  // otherwise check each item in the list
+  return haystack.some(function(item) {
+    return isRegExp(item) ? item.test(needle) : needle === item
+  })
 }
 
-},{}]},{},[6])(6)
+module.exports = foundIn
+
+},{"mout/lang/isRegExp":9}]},{},[18])(18)
 });
 ;

@@ -20,7 +20,7 @@ describe("css", function() {
 
   it("can get all the class selectors in the style sheets", function() {
     css.styleSheets = 'link[rel="stylesheet"]:not(#mocha-css)'
-    expect(css.getClassSelectors()).to.deep.equal(classes)
+    expect(css.getClassSelectors().sort()).to.deep.equal(classes)
   })
 
   it("can include both <link> and <style> elements", function() {
@@ -41,7 +41,7 @@ describe("css", function() {
     head.appendChild(styles)
 
     css.styleSheets = 'link[rel="stylesheet"]:not(#mocha-css), style'
-    expect(css.getClassSelectors()).to.deep.equal(extraClasses)
+    expect(css.getClassSelectors().sort()).to.deep.equal(extraClasses)
     head.removeChild(styles)
   })
 

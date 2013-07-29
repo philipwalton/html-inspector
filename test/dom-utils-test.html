@@ -4,14 +4,6 @@
     <meta charset="utf-8">
     <title>Mocha Tests</title>
     <link id="mocha-css" href="../node_modules/mocha/mocha.css" rel="stylesheet" />
-    <link href="browser.css" rel="stylesheet" />
-    <script id="script-placement-test">
-      function parseHTML(string) {
-        var container = document.createElement("div")
-        container.innerHTML = string
-        return container.firstChild
-      }
-    </script>
   </head>
   <body>
       <div id="mocha"></div>
@@ -21,9 +13,7 @@
         mocha.ui('bdd')
         expect = chai.expect
       </script>
-
-      <script src="../dist/html-inspector.js"></script>
-      <script src="browser.js"></script>
+      <script src="dom-utils-test.js"></script>
       <script>
         if (window.mochaPhantomJS) {
           mochaPhantomJS.run()

@@ -1,23 +1,18 @@
-var Callbacks = require("./callbacks")
-  , Listener = require("./listener")
+var Listener = require("./listener")
   , Modules = require("./modules")
   , Reporter = require("./reporter")
   , Rules = require("./rules")
 
-  // TODO: this is ugly, refactor
-  , utils = require("./utils")
-  , slice = utils.slice
-  , toArray = utils.toArray
-  , getAttributes = utils.getAttributes
-  , isRegExp = utils.isRegExp
-  , unique = utils.unique
-  , extend = utils.extend
-  , foundIn = utils.foundIn
-  , isCrossOrigin = utils.isCrossOrigin
-  , matchesSelector = utils.matchesSelector
-  , matches = utils.matches
-  , parents = utils.parents
+  , toArray = require("mout/lang/toArray")
+  , isRegExp = require("mout/lang/isRegExp")
+  , unique = require("mout/array/unique")
+  , mixIn = require("mout/object/mixIn")
 
+  , matches = require("./utils/dom/matches")
+  , getAttributes = require("./utils/dom/get-attributes")
+
+  // used to parse URLs
+  , link = document.createElement("a")
 
 /**
  * Set (or reset) all data back to its original value
@@ -44,6 +39,8 @@ function traverseDOM(node, listener, options) {
   // only deal with element nodes
   if (node.nodeType != 1) return
 
+  var attrs = getAttributes(node)
+
   // trigger events for this element unless it's been excluded
   if (!matches(node, options.exclude)) {
     listener.trigger("element", node, [node.nodeName.toLowerCase(), node])
@@ -53,8 +50,8 @@ function traverseDOM(node, listener, options) {
     toArray(node.classList).forEach(function(name) {
       listener.trigger("class", node, [name, node])
     })
-    getAttributes(node).forEach(function(attr) {
-      listener.trigger("attribute", node, [attr.name, attr.value, node])
+    Object.keys(attrs).sort().forEach(function(name) {
+      listener.trigger("attribute", node, [name, attrs[name], node])
     })
   }
 
@@ -78,7 +75,17 @@ function processConfig(config) {
     }
   }
   // merge config with the defaults
-  return extend({}, HTMLInspector.config, config)
+  return mixIn({}, HTMLInspector.config, config)
+}
+
+/**
+ * Tests whether a URL is cross-origin
+ * Same origin URLs must have the same protocol and host
+ * (note: host include hostname and port)
+ */
+function isCrossOrigin(url) {
+  link.href = url
+  return !(link.protocol == location.protocol && link.host == location.host)
 }
 
 /**
@@ -91,7 +98,11 @@ function filterCrossOrigin(elements) {
   // convert elements to an array if it's not already
   if (!Array.isArray(elements)) elements = [elements]
   elements = elements.map(function(el) {
-    if (el.nodeName.toLowerCase() == "iframe" && isCrossOrigin(el.src))
+    if (el
+      && el.nodeName
+      && el.nodeName.toLowerCase() == "iframe"
+      && isCrossOrigin(el.src)
+    )
       return "(can't display iframe with cross-origin source)"
     else
       return el
@@ -127,7 +138,7 @@ var HTMLInspector = {
         config = { onComplete: config }
       }
     }
-    extend(this.config, this.defaults, config)
+    mixIn(this.config, this.defaults, config)
   },
 
   rules: new Rules(),
@@ -151,22 +162,7 @@ var HTMLInspector = {
     listener.trigger("afterInspect", domRoot)
 
     this.config.onComplete(reporter.getWarnings())
-  },
-
-  // expose the utility functions for use in rules
-  utils: {
-    toArray: toArray,
-    getAttributes: getAttributes,
-    isRegExp: isRegExp,
-    unique: unique,
-    extend: extend,
-    foundIn: foundIn,
-    isCrossOrigin: isCrossOrigin,
-    matchesSelector: matchesSelector,
-    matches: matches,
-    parents: parents
   }
-
 }
 
 HTMLInspector.modules.add( require("./modules/css.js") )
