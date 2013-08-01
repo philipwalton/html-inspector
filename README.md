@@ -91,7 +91,7 @@ HTMLInspector.inspect({
 })
 ```
 
-For convenience, some of the config options may be passed as single arguments. If `.inspect()` receives an argument that is an array it is assume to be the `useRules` option, if it's an string or DOM element it's assumed to be the `domeRoot` option, and if its a function it's assumed to be the `onComplete` callback.
+For convenience, some of the config options may be passed as single arguments. If `.inspect()` receives an argument that is an array it is assume to be the `useRules` option, if it's an string or DOM element it's assumed to be the `domRoot` option, and if its a function it's assumed to be the `onComplete` callback.
 
 ```js
 // only set the useRules options
@@ -136,7 +136,7 @@ Some markup may be perfectly valid but use practices that are commonly considere
 
 - **Inline Event Handlers**: Warn if inline event handlers, like `onclick="return false"` are found in the document. Inline event handlers are hard to manage, hard to debug, and completely non-reusable.
 
-- **Script Placement**: Warn if script elements appear anywhere other than right before the closing `</body>` tag. Because JavaScript is blocking, adding `<script>` elements anywhere other than the end of the document may delay the loading of the page. If a script must appear somewhere other than the end of the doucment, it can be whitelisted.
+- **Script Placement**: Warn if script elements appear anywhere other than right before the closing `</body>` tag. Because JavaScript is blocking, adding `<script>` elements anywhere other than the end of the document may delay the loading of the page. If a script must appear somewhere other than the end of the document, it can be whitelisted.
 
 - **Unused Classes**: Sometimes you'll remove a CSS rule from your stylesheet but forget to remove the class from the HTML. The "unused-classes" rule compares all the class selectors in the CSS to the classes in the HTML and reports any that aren't being used.
 
