@@ -286,7 +286,7 @@ HTMLInspector.modules.add("validation", function() {
     },
     "ol": {
       children: "li",
-      attributes: "globals; reversed; start type"
+      attributes: "globals; reversed; start; type"
     },
     "optgroup": {
       children: "option",

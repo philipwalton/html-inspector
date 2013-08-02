@@ -22,6 +22,9 @@ describe("validate-attributes", function() {
           + '  <ul type="foo">'
           + '    <li>blah</li>'
           + '  </ul>'
+          + '  <ol type="1">'
+          + '    <li>blah</li>'
+          + '  </ol>'
           + '</div>'
         )
 
