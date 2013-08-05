@@ -4,7 +4,7 @@
  * Copyright (c) 2013 Philip Walton <http://philipwalton.com>
  * Released under the MIT license
  *
- * Date: 2013-08-01
+ * Date: 2013-08-04
  */
 
 ;(function(root, document) {
@@ -335,7 +335,7 @@ var HTMLInspector = (function() {
     if (!Array.isArray(elements)) elements = [elements]
     elements = elements.map(function(el) {
       if (el.nodeName.toLowerCase() == "iframe" && isCrossOrigin(el.src))
-        return "(iframe " + el.src + ")"
+        return "(can't display iframe with cross-origin source: " + el.src + ")"
       else
         return el
     })
