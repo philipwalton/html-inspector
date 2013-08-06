@@ -8,9 +8,9 @@
 
 #### How is HTML Inspector different than the W3C Validator?
 
-Though they may seem similar, HTML Inpsector and the [W3C validator](http://validator.w3.org/) are actually completely different tools.
+Though they may seem similar, HTML Inspector and the [W3C validator](http://validator.w3.org/) are actually completely different tools.
 
-The W3C validator is uncompromisingly strict, and none of its warnings can be customized or surpressed. Maybe you're intentionally writing invalid markup, or maybe you only want the build to go red for particular errors. With the W3C validator, that's just not possible.
+The W3C validator is uncompromisingly strict, and none of its warnings can be customized or suppressed. Maybe you're intentionally writing invalid markup, or maybe you only want the build to go red for particular errors. With the W3C validator, that's just not possible.
 
 Moreover, the W3C validator cannot be extended. It allows for testing HTML against the specification and nothing more. If you want to enforce your conventions or markup style with a test, the W3C validator isn't for you.
 
@@ -37,7 +37,7 @@ HTMLInspector.rules.extend("unused-classes", function(config) {
 })
 ```
 
-If, for whatever reason, you are unable to change your build of Modernizr, the other easy way to avoid these errors is to exclude the `<html>` element from traversal. Note, however, that this will also prevent any other rules from inspecting the `<html>` element, which may be undesirable. To exlude the `<html>` element simply invoke the `.inspect` method with the following config options:
+If, for whatever reason, you are unable to change your build of Modernizr, the other easy way to avoid these errors is to exclude the `<html>` element from traversal. Note, however, that this will also prevent any other rules from inspecting the `<html>` element, which may be undesirable. To exclude the `<html>` element simply invoke the `.inspect` method with the following config options:
 
 ```js
 HTMLInspector.inspect({
@@ -62,7 +62,7 @@ HTMLInspector.inspect({
 
 #### Is there a browser extension or bookmarklet for HTML Inspector?
 
-HTML Inspector's primary value is its ability to be customized on a per-site basis. As such, a browser extention or bookmarklet with the default rules would probably report more noise than value on your average site.
+HTML Inspector's primary value is its ability to be customized on a per-site basis. As such, a browser extension or bookmarklet with the default rules would probably report more noise than value on your average site.
 
 However, if you're interested in creating your own bookmarklet, **@hirayama-evolni** contributed the following [gist](https://gist.github.com/hirayama-evolni/5941844):
 

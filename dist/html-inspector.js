@@ -4,7 +4,11 @@
  * Copyright (c) 2013 Philip Walton <http://philipwalton.com>
  * Released under the MIT license
  *
+<<<<<<< HEAD
  * Date: 2013-08-04
+=======
+ * Date: 2013-08-01
+>>>>>>> d3c1df76c9d012b7646f69cee2f6e68e8b2618ea
  */
 
 ;(function(root, document) {
@@ -746,7 +750,7 @@ HTMLInspector.modules.add("validation", function() {
     },
     "ol": {
       children: "li",
-      attributes: "globals; reversed; start type"
+      attributes: "globals; reversed; start; type"
     },
     "optgroup": {
       children: "option",
