@@ -5,8 +5,8 @@ module.exports = {
   func: function(listener, reporter) {
 
     var validation = this.modules.validation
-      , matches = require("../../utils/dom/matches")
-      , parents = require("../../utils/dom/parents")
+      , matches = require("dom-utils/src/matches")
+      , parents = require("dom-utils/src/parents")
       , warned = [] // store already-warned elements to prevent double warning
 
 

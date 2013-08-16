@@ -1,7 +1,7 @@
 var reClassSelector = /\.[a-z0-9_\-]+/ig
   , toArray = require("mout/lang/toArray")
   , unique = require("mout/array/unique")
-  , matches = require("../utils/dom/matches")
+  , matches = require("dom-utils/src/matches")
 
 /**
  * Get an array of class selectors from a CSSRuleList object

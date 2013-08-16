@@ -25,12 +25,6 @@ module.exports = function(grunt) {
         src: "dist/<%= pkg.name %>.js",
         dest: "dist/<%= pkg.name %>.js"
       },
-      dom_utils_test: {
-        src: [
-          "test/dom-utils/*.js"
-        ],
-        dest: "test/dom-utils-test.js"
-      },
       html_inspector_test: {
         src: [
           "test/html-inspector/*.js",
@@ -54,10 +48,6 @@ module.exports = function(grunt) {
           standalone: "HTMLInspector"
           // transform: ["brfs"]
         }
-      },
-      dom_utils_test: {
-        src: "test/dom-utils-test.js",
-        dest: "test/dom-utils-test.js",
       }
     },
 
@@ -73,9 +63,6 @@ module.exports = function(grunt) {
       },
       html_inspector_test: {
         src: "test/html-inspector/**/*.js"
-      },
-      dom_utils_test: {
-        src: "test/dom-utils/**/*.js"
       }
     },
 
@@ -102,9 +89,6 @@ module.exports = function(grunt) {
     mocha_phantomjs: {
       html_inspector: {
         src: "test/html-inspector-test.html"
-      },
-      dom_utils: {
-        src: "test/dom-utils-test.html"
       }
     }
   })
@@ -122,13 +106,6 @@ module.exports = function(grunt) {
     "mochacli"
   ])
 
-  grunt.registerTask("test:dom_utils", [
-    "jshint:dom_utils_test",
-    "concat:dom_utils_test",
-    "browserify:dom_utils_test",
-    "mocha_phantomjs:dom_utils"
-  ])
-
   grunt.registerTask("test:html_inspector", [
     "jshint:html_inspector_test",
     "concat:html_inspector_test",
@@ -138,7 +115,6 @@ module.exports = function(grunt) {
 
   grunt.registerTask("test", [
     "test:classes",
-    "test:dom_utils",
     "test:html_inspector"
   ])
 

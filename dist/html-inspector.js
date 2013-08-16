@@ -1,5 +1,112 @@
+/*!
+ * HTML Inspector - v0.4.1
+ *
+ * Copyright (c) 2013 Philip Walton <http://philipwalton.com>
+ * Released under the MIT license
+ *
+ * Date: 2013-08-16
+ */
+
 (function(e){if("function"==typeof bootstrap)bootstrap("htmlinspector",e);else if("object"==typeof exports)module.exports=e();else if("function"==typeof define&&define.amd)define(e);else if("undefined"!=typeof ses){if(!ses.ok())return;ses.makeHTMLInspector=e}else"undefined"!=typeof window?window.HTMLInspector=e():global.HTMLInspector=e()})(function(){var define,ses,bootstrap,module,exports;
 return (function(e,t,n){function i(n,s){if(!t[n]){if(!e[n]){var o=typeof require=="function"&&require;if(!s&&o)return o(n,!0);if(r)return r(n,!0);throw new Error("Cannot find module '"+n+"'")}var u=t[n]={exports:{}};e[n][0].call(u.exports,function(t){var r=e[n][1][t];return i(r?r:t)},u,u.exports)}return t[n].exports}var r=typeof require=="function"&&require;for(var s=0;s<n.length;s++)i(n[s]);return i})({1:[function(require,module,exports){
+/**
+ * Get an object representation of an element's attributes
+ */
+function getAttributes(element) {
+  var map = element.attributes
+    , len = map.length
+    , i = 0
+    , attr
+    , attrs = {}
+
+  // return an empty array if there are no attributes
+  if (len === 0) return {}
+
+  while (attr = map[i++]) {
+    attrs[attr.name] = attr.value
+  }
+  return attrs
+}
+
+module.exports = getAttributes
+
+
+},{}],2:[function(require,module,exports){
+var toArray = require("mout/lang/toArray")
+
+/**
+ * Detects the browser's native matches() implementation
+ * and calls that. Error if not found.
+ */
+function matchesSelector(element, selector) {
+  var i = 0
+    , method
+    , methods = [
+        "matches",
+        "matchesSelector",
+        "webkitMatchesSelector",
+        "mozMatchesSelector",
+        "msMatchesSelector",
+        "oMatchesSelector"
+      ]
+  while (method = methods[i++]) {
+    if (typeof element[method] == "function")
+      return element[method](selector)
+  }
+  throw new Error("You are using a browser that doesn't not support"
+    + " element.matches() or element.matchesSelector()")
+}
+
+/**
+ * Similar to jQuery's .is() method
+ * Accepts a DOM element and an object to test against
+ *
+ * The test object can be a DOM element, a string selector, an array of
+ * DOM elements or string selectors.
+ *
+ * Returns true if the element matches any part of the test
+ */
+function matches(element, test) {
+  // test can be null, but if it is, it never matches
+  if (test == null) {
+    return false
+  }
+  // if test is a string or DOM element convert it to an array,
+  else if (typeof test == "string" || test.nodeType) {
+    test = [test]
+  }
+  // if it has a length property call toArray in case it's array-like
+  else if ("length" in test) {
+    test = toArray(test)
+  }
+
+  return test.some(function(item) {
+    if (typeof item == "string")
+      return matchesSelector(element, item)
+    else
+      return element === item
+  })
+}
+
+module.exports = matches
+
+
+},{"mout/lang/toArray":14}],3:[function(require,module,exports){
+/**
+ * Returns an array of the element's parent elements
+ */
+
+function parents(element) {
+  var list = []
+  while (element.parentNode && element.parentNode.nodeType == 1) {
+    list.push(element = element.parentNode)
+  }
+  return list
+}
+
+module.exports = parents
+
+},{}],4:[function(require,module,exports){
 var forEach = require('./forEach');
 var makeIterator = require('../function/makeIterator_');
 
@@ -28,7 +135,7 @@ var makeIterator = require('../function/makeIterator_');
 
 
 
-},{"../function/makeIterator_":5,"./forEach":2}],2:[function(require,module,exports){
+},{"../function/makeIterator_":8,"./forEach":5}],5:[function(require,module,exports){
 
 
     /**
@@ -53,7 +160,7 @@ var makeIterator = require('../function/makeIterator_');
 
 
 
-},{}],3:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 
 
     /**
@@ -83,7 +190,7 @@ var makeIterator = require('../function/makeIterator_');
     module.exports = indexOf;
 
 
-},{}],4:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 var indexOf = require('./indexOf');
 var filter = require('./filter');
 
@@ -102,7 +209,7 @@ var filter = require('./filter');
 
 
 
-},{"./filter":1,"./indexOf":3}],5:[function(require,module,exports){
+},{"./filter":4,"./indexOf":6}],8:[function(require,module,exports){
 var prop = require('./prop');
 var deepMatches = require('../object/deepMatches');
 
@@ -138,7 +245,7 @@ var deepMatches = require('../object/deepMatches');
 
 
 
-},{"../object/deepMatches":12,"./prop":6}],6:[function(require,module,exports){
+},{"../object/deepMatches":15,"./prop":9}],9:[function(require,module,exports){
 
 
     /**
@@ -154,7 +261,7 @@ var deepMatches = require('../object/deepMatches');
 
 
 
-},{}],7:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 var isKind = require('./isKind');
     /**
      */
@@ -164,7 +271,7 @@ var isKind = require('./isKind');
     module.exports = isArray;
 
 
-},{"./isKind":8}],8:[function(require,module,exports){
+},{"./isKind":11}],11:[function(require,module,exports){
 var kindOf = require('./kindOf');
     /**
      * Check if value is from a specific "kind".
@@ -175,7 +282,7 @@ var kindOf = require('./kindOf');
     module.exports = isKind;
 
 
-},{"./kindOf":10}],9:[function(require,module,exports){
+},{"./kindOf":13}],12:[function(require,module,exports){
 var isKind = require('./isKind');
     /**
      */
@@ -185,7 +292,7 @@ var isKind = require('./isKind');
     module.exports = isRegExp;
 
 
-},{"./isKind":8}],10:[function(require,module,exports){
+},{"./isKind":11}],13:[function(require,module,exports){
 
 
     var _rKind = /^\[object (.*)\]$/,
@@ -207,7 +314,7 @@ var isKind = require('./isKind');
     module.exports = kindOf;
 
 
-},{}],11:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 var kindOf = require('./kindOf');
 
     var _win = this;
@@ -240,7 +347,7 @@ var kindOf = require('./kindOf');
     module.exports = toArray;
 
 
-},{"./kindOf":10}],12:[function(require,module,exports){
+},{"./kindOf":13}],15:[function(require,module,exports){
 var forOwn = require('./forOwn');
 var isArray = require('../lang/isArray');
 
@@ -297,7 +404,7 @@ var isArray = require('../lang/isArray');
 
 
 
-},{"../lang/isArray":7,"./forOwn":14}],13:[function(require,module,exports){
+},{"../lang/isArray":10,"./forOwn":17}],16:[function(require,module,exports){
 
 
     var _hasDontEnumBug,
@@ -361,7 +468,7 @@ var isArray = require('../lang/isArray');
 
 
 
-},{}],14:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 var hasOwn = require('./hasOwn');
 var forIn = require('./forIn');
 
@@ -382,7 +489,7 @@ var forIn = require('./forIn');
 
 
 
-},{"./forIn":13,"./hasOwn":15}],15:[function(require,module,exports){
+},{"./forIn":16,"./hasOwn":18}],18:[function(require,module,exports){
 
 
     /**
@@ -396,7 +503,7 @@ var forIn = require('./forIn');
 
 
 
-},{}],16:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 var forOwn = require('./forOwn');
 
     /**
@@ -426,7 +533,7 @@ var forOwn = require('./forOwn');
     module.exports = mixIn;
 
 
-},{"./forOwn":14}],17:[function(require,module,exports){
+},{"./forOwn":17}],20:[function(require,module,exports){
 function Callbacks() {
   this.handlers = []
 }
@@ -449,7 +556,7 @@ Callbacks.prototype.fire = function(context, args) {
 
 module.exports = Callbacks
 
-},{}],18:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 var Listener = require("./listener")
   , Modules = require("./modules")
   , Reporter = require("./reporter")
@@ -460,8 +567,8 @@ var Listener = require("./listener")
   , unique = require("mout/array/unique")
   , mixIn = require("mout/object/mixIn")
 
-  , matches = require("./utils/dom/matches")
-  , getAttributes = require("./utils/dom/get-attributes")
+  , matches = require("dom-utils/src/matches")
+  , getAttributes = require("dom-utils/src/get-attributes")
 
   // used to parse URLs
   , link = document.createElement("a")
@@ -633,7 +740,7 @@ HTMLInspector.rules.add( require("./rules/validation/validate-elements.js") )
 
 module.exports = HTMLInspector
 
-},{"./listener":19,"./modules":20,"./modules/css.js":21,"./modules/validation.js":22,"./reporter":23,"./rules":24,"./rules/best-practices/inline-event-handlers.js":25,"./rules/best-practices/script-placement.js":26,"./rules/best-practices/unnecessary-elements.js":27,"./rules/best-practices/unused-classes.js":28,"./rules/convention/bem-conventions.js":29,"./rules/validation/duplicate-ids.js":30,"./rules/validation/unique-elements.js":31,"./rules/validation/validate-attributes.js":32,"./rules/validation/validate-element-location.js":33,"./rules/validation/validate-elements.js":34,"./utils/dom/get-attributes":35,"./utils/dom/matches":36,"mout/array/unique":4,"mout/lang/isRegExp":9,"mout/lang/toArray":11,"mout/object/mixIn":16}],19:[function(require,module,exports){
+},{"./listener":22,"./modules":23,"./modules/css.js":24,"./modules/validation.js":25,"./reporter":26,"./rules":27,"./rules/best-practices/inline-event-handlers.js":28,"./rules/best-practices/script-placement.js":29,"./rules/best-practices/unnecessary-elements.js":30,"./rules/best-practices/unused-classes.js":31,"./rules/convention/bem-conventions.js":32,"./rules/validation/duplicate-ids.js":33,"./rules/validation/unique-elements.js":34,"./rules/validation/validate-attributes.js":35,"./rules/validation/validate-element-location.js":36,"./rules/validation/validate-elements.js":37,"dom-utils/src/get-attributes":1,"dom-utils/src/matches":2,"mout/array/unique":7,"mout/lang/isRegExp":12,"mout/lang/toArray":14,"mout/object/mixIn":19}],22:[function(require,module,exports){
 var Callbacks = require("./callbacks")
 
 function Listener() {
@@ -654,7 +761,7 @@ Listener.prototype.trigger = function(event, context, args) {
 }
 
 module.exports = Listener
-},{"./callbacks":17}],20:[function(require,module,exports){
+},{"./callbacks":20}],23:[function(require,module,exports){
 var mixIn = require("mout/object/mixIn")
 
 function Modules() {}
@@ -670,11 +777,11 @@ Modules.prototype.extend = function(name, options) {
 }
 
 module.exports = Modules
-},{"mout/object/mixIn":16}],21:[function(require,module,exports){
+},{"mout/object/mixIn":19}],24:[function(require,module,exports){
 var reClassSelector = /\.[a-z0-9_\-]+/ig
   , toArray = require("mout/lang/toArray")
   , unique = require("mout/array/unique")
-  , matches = require("../utils/dom/matches")
+  , matches = require("dom-utils/src/matches")
 
 /**
  * Get an array of class selectors from a CSSRuleList object
@@ -726,7 +833,7 @@ module.exports = {
   module: css
 }
 
-},{"../utils/dom/matches":36,"mout/array/unique":4,"mout/lang/toArray":11}],22:[function(require,module,exports){
+},{"dom-utils/src/matches":2,"mout/array/unique":7,"mout/lang/toArray":14}],25:[function(require,module,exports){
 (function(){var foundIn = require("../utils/string-matcher")
 
 // ============================================================
@@ -1607,7 +1714,7 @@ module.exports = {
 }
 
 })()
-},{"../utils/string-matcher":38}],23:[function(require,module,exports){
+},{"../utils/string-matcher":38}],26:[function(require,module,exports){
 function Reporter() {
   this._errors = []
 }
@@ -1625,7 +1732,7 @@ Reporter.prototype.getWarnings = function() {
 }
 
 module.exports = Reporter
-},{}],24:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 var mixIn = require("mout/object/mixIn")
 
 function Rules() {}
@@ -1659,7 +1766,7 @@ Rules.prototype.extend = function(name, options) {
 
 module.exports = Rules
 
-},{"mout/object/mixIn":16}],25:[function(require,module,exports){
+},{"mout/object/mixIn":19}],28:[function(require,module,exports){
 module.exports = {
 
   name: "inline-event-handlers",
@@ -1677,7 +1784,7 @@ module.exports = {
   }
 }
 
-},{}],26:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 module.exports = {
 
   name: "script-placement",
@@ -1690,7 +1797,7 @@ module.exports = {
 
     var elements = []
       , whitelist = config.whitelist
-      , matches = require("../../utils/dom/matches")
+      , matches = require("dom-utils/src/matches")
 
     function isWhitelisted(el) {
       if (!whitelist) return false
@@ -1731,7 +1838,7 @@ module.exports = {
     })
   }
 }
-},{"../../utils/dom/matches":36}],27:[function(require,module,exports){
+},{"dom-utils/src/matches":2}],30:[function(require,module,exports){
 module.exports = {
 
   name: "unnecessary-elements",
@@ -1758,7 +1865,7 @@ module.exports = {
   }
 }
 
-},{}],28:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 module.exports = {
 
   name: "unused-classes",
@@ -1792,7 +1899,7 @@ module.exports = {
   }
 }
 
-},{"../../utils/string-matcher":38}],29:[function(require,module,exports){
+},{"../../utils/string-matcher":38}],32:[function(require,module,exports){
 // ============================================================
 // There are several different BEM  naming conventions that
 // I'm aware of. To make things easier, I refer to the
@@ -1874,8 +1981,8 @@ module.exports = {
 
   func: function(listener, reporter, config) {
 
-    var parents = require("../../utils/dom/parents")
-      , matches = require("../../utils/dom/matches")
+    var parents = require("dom-utils/src/parents")
+      , matches = require("dom-utils/src/matches")
 
     listener.on('class', function(name) {
       if (config.isElement(name)) {
@@ -1908,7 +2015,7 @@ module.exports = {
   }
 }
 
-},{"../../utils/dom/matches":36,"../../utils/dom/parents":37}],30:[function(require,module,exports){
+},{"dom-utils/src/matches":2,"dom-utils/src/parents":3}],33:[function(require,module,exports){
 module.exports = {
 
   name: "duplicate-ids",
@@ -1952,7 +2059,7 @@ module.exports = {
   }
 }
 
-},{}],31:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 module.exports = {
 
   name: "unique-elements",
@@ -1992,7 +2099,7 @@ module.exports = {
   }
 }
 
-},{}],32:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 module.exports = {
 
   name: "validate-attributes",
@@ -2041,7 +2148,7 @@ module.exports = {
   }
 }
 
-},{}],33:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 module.exports = {
 
   name: "validate-element-location",
@@ -2049,8 +2156,8 @@ module.exports = {
   func: function(listener, reporter) {
 
     var validation = this.modules.validation
-      , matches = require("../../utils/dom/matches")
-      , parents = require("../../utils/dom/parents")
+      , matches = require("dom-utils/src/matches")
+      , parents = require("dom-utils/src/parents")
       , warned = [] // store already-warned elements to prevent double warning
 
 
@@ -2123,7 +2230,7 @@ module.exports = {
   }
 }
 
-},{"../../utils/dom/matches":36,"../../utils/dom/parents":37}],34:[function(require,module,exports){
+},{"dom-utils/src/matches":2,"dom-utils/src/parents":3}],37:[function(require,module,exports){
 module.exports = {
 
   name: "validate-elements",
@@ -2151,101 +2258,6 @@ module.exports = {
   }
 }
 
-},{}],35:[function(require,module,exports){
-/**
- * Get an object representation of an element's attributes
- */
-function getAttributes(element) {
-  var map = element.attributes
-    , len = map.length
-    , i = 0
-    , attr
-    , attrs = {}
-
-  // return an empty array if there are no attributes
-  if (len === 0) return {}
-
-  while (attr = map[i++]) {
-    attrs[attr.name] = attr.value
-  }
-  return attrs
-}
-
-module.exports = getAttributes
-
-},{}],36:[function(require,module,exports){
-var toArray = require("mout/lang/toArray")
-
-/**
- * Detects the browser's native matches() implementation
- * and calls that. Error if not found.
- */
-function matchesSelector(element, selector) {
-  var i = 0
-    , method
-    , methods = [
-        "matches",
-        "matchesSelector",
-        "webkitMatchesSelector",
-        "mozMatchesSelector",
-        "msMatchesSelector",
-        "oMatchesSelector"
-      ]
-  while (method = methods[i++]) {
-    if (typeof element[method] == "function")
-      return element[method](selector)
-  }
-  throw new Error("You are using a browser that doesn't not support"
-    + " element.matches() or element.matchesSelector()")
-}
-
-/**
- * Similar to jQuery's .is() method
- * Accepts a DOM element and an object to test against
- *
- * The test object can be a DOM element, a string selector, an array of
- * DOM elements or string selectors.
- *
- * Returns true if the element matches any part of the test
- */
-function matches(element, test) {
-  // test can be null, but if it is, it never matches
-  if (test == null) {
-    return false
-  }
-  // if test is a string or DOM element convert it to an array,
-  else if (typeof test == "string" || test.nodeType) {
-    test = [test]
-  }
-  // if it has a length property call toArray in case it's array-like
-  else if ("length" in test) {
-    test = toArray(test)
-  }
-
-  return test.some(function(item) {
-    if (typeof item == "string")
-      return matchesSelector(element, item)
-    else
-      return element === item
-  })
-}
-
-module.exports = matches
-
-},{"mout/lang/toArray":11}],37:[function(require,module,exports){
-/**
- * Returns an array of the element's parent elements
- */
-function parents(element) {
-  var list = []
-  while (element.parentNode && element.parentNode.nodeType == 1) {
-    list.push(element = element.parentNode)
-  }
-  return list
-}
-
-module.exports = parents
-
 },{}],38:[function(require,module,exports){
 var isRegExp = require("mout/lang/isRegExp")
 
@@ -2268,6 +2280,6 @@ function foundIn(needle, haystack) {
 
 module.exports = foundIn
 
-},{"mout/lang/isRegExp":9}]},{},[18])(18)
+},{"mout/lang/isRegExp":12}]},{},[21])(21)
 });
 ;

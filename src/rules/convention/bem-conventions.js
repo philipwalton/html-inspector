@@ -79,8 +79,8 @@ module.exports = {
 
   func: function(listener, reporter, config) {
 
-    var parents = require("../../utils/dom/parents")
-      , matches = require("../../utils/dom/matches")
+    var parents = require("dom-utils/src/parents")
+      , matches = require("dom-utils/src/matches")
 
     listener.on('class', function(name) {
       if (config.isElement(name)) {

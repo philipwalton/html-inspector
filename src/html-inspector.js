@@ -8,8 +8,8 @@ var Listener = require("./listener")
   , unique = require("mout/array/unique")
   , mixIn = require("mout/object/mixIn")
 
-  , matches = require("./utils/dom/matches")
-  , getAttributes = require("./utils/dom/get-attributes")
+  , matches = require("dom-utils/src/matches")
+  , getAttributes = require("dom-utils/src/get-attributes")
 
   // used to parse URLs
   , link = document.createElement("a")

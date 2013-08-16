@@ -34,6 +34,7 @@
     "chai": "*",
     "mocha": "*",
     "sinon": "*",
-    "mout": "*"
+    "mout": "*",
+    "dom-utils": "*"
   }
 }
