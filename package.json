@@ -35,6 +35,10 @@
     "mocha": "*",
     "sinon": "*",
     "mout": "*",
-    "dom-utils": "*"
+    "dom-utils": "*",
+    "shelljs": "*",
+    "semver": "*",
+    "colors": "*",
+    "moment": "*"
   }
 }

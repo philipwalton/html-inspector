@@ -44,9 +44,7 @@ module.exports = function(grunt) {
         src: "src/html-inspector.js",
         dest: "dist/<%= pkg.name %>.js",
         options: {
-          // debug: true,
           standalone: "HTMLInspector"
-          // transform: ["brfs"]
         }
       }
     },
@@ -110,6 +108,7 @@ module.exports = function(grunt) {
     "jshint:html_inspector_test",
     "concat:html_inspector_test",
     "browserify:dist",
+    "concat:dist",
     "mocha_phantomjs:html_inspector"
   ])
 

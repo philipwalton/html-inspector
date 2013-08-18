@@ -14,12 +14,12 @@ updateFiles()
 run([
   "grunt",
   "git checkout master",
-  // "git add -A",
-  // "git commit -m 'Tag version " + version + ".'",
-  // "git tag " + version,
-  // "git push origin master",
-  // "git push --tags",
-  // "npm publish"
+  "git add -A",
+  "git commit -m 'Tag version " + version + ".'",
+  "git tag " + version,
+  "git push origin master",
+  "git push --tags",
+  "npm publish"
 ])
 
 function run(commands) {
