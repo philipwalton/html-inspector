@@ -1,0 +1,19 @@
+@import url("importee-test.css");
+
+.foo {
+  visibility: visible;
+}
+
+.bar {
+  visibility: visible;
+}
+
+.alpha, .bravo, .charlie {
+  visibility: visible;
+}
+
+@media screen and (max-width: 40em) {
+  #delta .delta p, #echo .echo pre {
+    visibility: visible;
+  }
+}

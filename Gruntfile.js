@@ -4,6 +4,7 @@ module.exports = function(grunt) {
   grunt.initConfig({
     // Metadata.
     pkg: grunt.file.readJSON("package.json"),
+
     banner: "/*!\n"
       + " * <%= pkg.title %> - v<%= pkg.version %>\n"
       + " *\n"
@@ -12,122 +13,82 @@ module.exports = function(grunt) {
       + " *\n"
       + " * Date: <%= grunt.template.today('yyyy-mm-dd') %>\n"
       + " */\n\n",
+
     // Task configuration.
     concat: {
       options: {
-        separator: "\n\n",
+        separator: "\n",
         stripBanners: true
       },
       dist: {
         options: { banner: "<%= banner %>" },
-        src: [
-          "src/intro.js",
-          "src/utils.js",
-          "src/callbacks.js",
-          "src/listener.js",
-          "src/reporter.js",
-          "src/rules.js",
-          "src/modules.js",
-          "src/inspector.js",
-          "src/modules/**/*.js",
-          "src/rules/**/*.js",
-          "src/outro.js"
-        ],
+        src: "dist/<%= pkg.name %>.js",
         dest: "dist/<%= pkg.name %>.js"
       },
-      spec: {
+      html_inspector_test: {
         src: [
-          "spec/src/helpers.js",
-          "spec/src/inspector-spec.js",
-          "spec/src/callbacks-spec.js",
-          "spec/src/listener-spec.js",
-          "spec/src/reporter-spec.js",
-          "spec/src/utils-spec.js",
-          "spec/src/modules-intro.js",
-          "spec/src/modules/*.js",
-          "spec/src/modules-outro.js",
-          "spec/src/rules-intro.js",
-          "spec/src/rules/*.js",
-          "spec/src/rules-outro.js"
+          "test/html-inspector/*.js",
+          "test/html-inspector/modules-intro.txt",
+          "test/html-inspector/modules/*.js",
+          "test/html-inspector/modules-outro.txt",
+          "test/html-inspector/rules-intro.txt",
+          "test/html-inspector/rules/*.js",
+          "test/html-inspector/rules-outro.txt"
         ],
-        dest: "spec/<%= pkg.name %>-spec.js"
-      },
-      core: {
-        src: [
-          "src/intro.js",
-          "src/utils.js",
-          "src/callbacks.js",
-          "src/listener.js",
-          "src/reporter.js",
-          "src/rules.js",
-          "src/modules.js",
-          "src/inspector.js",
-          "src/modules/**/*.js",
-          "src/outro.js"
-        ],
-        dest: "dist/<%= pkg.name %>.core.js"
-      },
-      validation: {
-        src: "src/rules/validation/*.js",
-        dest: "dist/<%= pkg.name %>.validation.js"
-      },
-      convention: {
-        src: "src/rules/convention/*.js",
-        dest: "dist/<%= pkg.name %>.convention.js"
-      },
-      "best-practices": {
-        src: "src/rules/best-practices/*.js",
-        dest: "dist/<%= pkg.name %>.best-practices.js"
+        dest: "test/html-inspector-test.js"
       }
     },
+
+    browserify: {
+      dist: {
+        src: "src/html-inspector.js",
+        dest: "dist/<%= pkg.name %>.js",
+        options: {
+          // debug: true,
+          standalone: "HTMLInspector"
+          // transform: ["brfs"]
+        }
+      }
+    },
+
     jshint: {
       options: {
-        jshintrc: ".jshintrc",
+        jshintrc: ".jshintrc"
       },
-      dist: {
-        src: "<%= concat.dist.dest %>"
+      src: {
+        src: "src/**/*.js"
       },
-      spec: {
-        src: "<%= concat.spec.dest %>"
+      classes_test: {
+        src: "test/classes/**/*.js"
+      },
+      html_inspector_test: {
+        src: "test/html-inspector/**/*.js"
       }
     },
+
     watch: {
-      scripts: {
-        files: ["src/**/*.js"],
-        tasks: ["concat:dist", "strip-test-code:dist", "jshint:dist"]
-      },
-      spec: {
-        files: ["spec/src/**/*.js"],
-        tasks: ["concat:spec", "jshint:spec"]
-      },
       gruntfile: {
         files: ["Gruntfile.js"],
         tasks: ["default"]
-      }
-    },
-    jasmine: {
-      options: {
-        specs: "spec/html-inspector-spec.js",
-        styles: ["spec/html-inspector-spec.css", "spec/importer-spec.css"],
-        outfile: "spec-runner.html",
-        keepRunner: true
       },
-      dist: {
-        src: ["dist/html-inspector.js"]
+      test: {
+        files: ["test/browser/**/*.js"],
+        tasks: ["jshint:test", "concat:test"]
       },
-      builds: {
-        src: [
-          "dist/html-inspector.core.js",
-          "dist/html-inspector.validation.js",
-          "dist/html-inspector.best-practices.js",
-          "dist/html-inspector.convention.js"
-        ]
+      src: {
+        files: ["src/**/*.js"],
+        tasks: ["jshint:src", "browserify"]
       }
+
     },
-    strip_code: {
-      options: {},
-      dist: {
-        src: "dist/*.js"
+
+    mochacli: {
+      src: "test/classes/**/*.js"
+    },
+
+    mocha_phantomjs: {
+      html_inspector: {
+        src: "test/html-inspector-test.html"
       }
     }
   })
@@ -136,14 +97,32 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks("grunt-contrib-concat")
   grunt.loadNpmTasks("grunt-contrib-jshint")
   grunt.loadNpmTasks("grunt-contrib-watch")
-  grunt.loadNpmTasks("grunt-contrib-jasmine")
-  grunt.loadNpmTasks("grunt-strip-code")
+  grunt.loadNpmTasks("grunt-browserify")
+  grunt.loadNpmTasks("grunt-mocha-cli")
+  grunt.loadNpmTasks("grunt-mocha-phantomjs")
 
-  // Default task.
-  grunt.registerTask("default", ["concat", "strip_code", "jshint"])
+  grunt.registerTask("test:classes", [
+    "jshint:classes_test",
+    "mochacli"
+  ])
 
-  grunt.registerTask("test", ["concat", "jshint", "jasmine"])
-  grunt.registerTask("test:dist", ["concat", "jshint", "jasmine:dist"])
-  grunt.registerTask("test:builds", ["concat", "jshint", "jasmine:builds"])
+  grunt.registerTask("test:html_inspector", [
+    "jshint:html_inspector_test",
+    "concat:html_inspector_test",
+    "browserify:dist",
+    "mocha_phantomjs:html_inspector"
+  ])
+
+  grunt.registerTask("test", [
+    "test:classes",
+    "test:html_inspector"
+  ])
+
+  grunt.registerTask("default", [
+    "jshint:src",
+    "test",
+    "browserify:dist",
+    "concat:dist"
+  ])
 
 }

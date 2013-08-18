@@ -1,0 +1,76 @@
+#!/usr/bin/env node
+
+var fs = require("fs")
+  , path = require("path")
+  , shell = require("shelljs")
+  , semver = require("semver")
+  , colors = require("colors")
+  , moment = require("moment")
+  , version = determineVersion()
+
+updateChangelog()
+updateFiles()
+
+run([
+  "grunt",
+  "git checkout master",
+  // "git add -A",
+  // "git commit -m 'Tag version " + version + ".'",
+  // "git tag " + version,
+  // "git push origin master",
+  // "git push --tags",
+  // "npm publish"
+])
+
+function run(commands) {
+  var command
+  while (command = commands.shift()) {
+    console.log("\n >> Running: ".grey + command + "\n")
+    if (shell.exec(command).code) {
+      error("Aborted due to errors trying to run: " + command)
+    }
+  }
+}
+
+function error(msg) {
+  console.error("\n" + " >> ".grey + msg.red + "\n")
+  shell.exit(1)
+}
+
+function updateChangelog() {
+  var filename = path.resolve(__dirname, "../CHANGELOG.md")
+    , changelog = fs.readFileSync(filename, {encoding: "utf8"})
+    , entry = new RegExp("### (" + version + ")(?: \\((.+?)\\))?\\n")
+  // get the changelog entry for the release version, warn if it's not found
+  if (!entry.test(changelog)) {
+    error("Cannot find entry for version " + version + " in CHANGELOG.md.")
+  }
+  fs.writeFileSync(
+    filename,
+    changelog.replace(entry, "### " + version + " (" + moment().format("MMMM D, YYYY") + ")\n")
+  )
+}
+
+function updateFiles() {
+  var files = ["../package.json", "../bower.json"]
+  files.forEach(function(file) {
+    var filepath = path.resolve(__dirname, file)
+    var data = JSON.parse(fs.readFileSync(filepath))
+    data.version = version
+    fs.writeFileSync(filepath, JSON.stringify(data, null, 2) + "\n")
+  })
+}
+
+function determineVersion() {
+  var oldVersion = JSON.parse(fs.readFileSync("./package.json")).version
+    , newVersion = process.argv[2]
+  if (!newVersion) {
+    error("You must provide a version number.")
+  } else if (["--major", "--minor", "--patch"].indexOf(newVersion) >= 0) {
+    newVersion = semver.inc(oldVersion, newVersion.substr(2))
+  } else {
+    newVersion = semver.parse(newVersion)
+    if (!newVersion) error("Version number is invalid.")
+  }
+  return newVersion.toString()
+}

@@ -1,6 +1,8 @@
-HTMLInspector.rules.add(
-  "unused-classes",
-  {
+module.exports = {
+
+  name: "unused-classes",
+
+  config: {
     whitelist: [
       /^js\-/,
       /^supports\-/,
@@ -8,11 +10,12 @@ HTMLInspector.rules.add(
       /^lang\-/
     ]
   },
-  function(listener, reporter, config) {
+
+  func: function(listener, reporter, config) {
 
     var css = HTMLInspector.modules.css
       , classes = css.getClassSelectors()
-      , foundIn = this.utils.foundIn
+      , foundIn = require("../../utils/string-matcher")
 
     listener.on("class", function(name) {
       if (!foundIn(name, config.whitelist) && classes.indexOf(name) < 0) {
@@ -24,6 +27,6 @@ HTMLInspector.rules.add(
           this
         )
       }
-    }
-  )
-})
+    })
+  }
+}

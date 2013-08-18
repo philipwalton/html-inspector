@@ -1,6 +1,8 @@
-HTMLInspector.rules.add(
-  "unnecessary-elements",
-  {
+module.exports = {
+
+  name: "unnecessary-elements",
+
+  config: {
     isUnnecessary: function(element) {
       var name = element.nodeName.toLowerCase()
         , isUnsemantic = name == "div" || name == "span"
@@ -8,7 +10,8 @@ HTMLInspector.rules.add(
       return isUnsemantic && isAttributed
     }
   },
-  function(listener, reporter, config) {
+
+  func: function(listener, reporter, config) {
     listener.on('element', function(name) {
       if (config.isUnnecessary(this)) {
         reporter.warn(
@@ -17,6 +20,6 @@ HTMLInspector.rules.add(
           this
         )
       }
-    }
-  )
-})
+    })
+  }
+}
