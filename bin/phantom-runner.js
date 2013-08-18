@@ -1,19 +1,10 @@
 // Safe to assume arguments here
-var basePath = phantom.args[0],
-  baseVersion = phantom.args[1],
-  inspectLocation = phantom.args[2],
-  configFile = phantom.args[3]
+var basePath = phantom.args[0]
+  , inspectLocation = phantom.args[1]
+  , configFile = phantom.args[2]
 
-var system = require('system'),
-  page = require('webpage').create()
-
-var injectVersions = {
-  full: [''],
-  core: ['.core'],
-  convention: ['.core', '.convention'],
-  'best-practices': ['.core', '.best-practices'],
-  validation: ['.core', '.validation']
-}
+var system = require('system')
+  , page = require('webpage').create()
 
 page.onAlert = system.stdout.write
 
@@ -29,9 +20,7 @@ page.onLoadFinished = function(status) {
   })
 
   if(!hasInspectorScript) {
-    injectVersions[baseVersion].forEach(function(version) {
-      page.injectJs(basePath + '/dist/html-inspector' + version + '.js')
-    })
+    page.injectJs(basePath + '/dist/html-inspector.js')
   }
 
   if(configFile) {

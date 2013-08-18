@@ -21,6 +21,6 @@ function sendMessage() {
     msg = args[0];
 
   if (msg === 'htmlinspector.complete') {
-    alert(JSON.stringify(_parseErrors(args[1])));
+    alert(JSON.stringify(_parseErrors(args[1]), null, 2));
   }
 }
