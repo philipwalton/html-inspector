@@ -13,8 +13,7 @@ module.exports = {
 
   func: function(listener, reporter, config) {
 
-    var css = HTMLInspector.modules.css
-      , classes = css.getClassSelectors()
+    var classes = this.modules.css.getClassSelectors()
       , foundIn = require("../../utils/string-matcher")
 
     listener.on("class", function(name) {

@@ -4,7 +4,7 @@ module.exports = {
 
   func: function(listener, reporter) {
 
-    var validation = HTMLInspector.modules.validation
+    var validation = this.modules.validation
 
     listener.on("element", function(name) {
       var required = validation.getRequiredAttributesForElement(name)

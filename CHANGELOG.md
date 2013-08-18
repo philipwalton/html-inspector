@@ -1,11 +1,10 @@
-### 0.5.0 (Unreleased)
+// ### 0.5.0 (Unreleased)
 
 * Add `excludeRules` option.
-* Remove the custom builds in favor better rule inclusion/exclusion options.
-* Convert HTML Inspector to be built with Browserify.
+* Rename the `exclude` option to `excludeElements`
+* Convert HTML Inspector to be built with Browserify and released as a UMD module.
 * Convert tests from Jasmine to Mocha, Sinon, and Chai.
-* Use Mout for JavaScript utility functions.
-* Abstract DOM utility functions to dom-utils package.
+* Remove the custom builds in favor better rule inclusion/exclusion options.
 
 ### 0.4.1 (July 10, 2013)
 
