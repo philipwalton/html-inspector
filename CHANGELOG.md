@@ -1,6 +1,7 @@
 ### 0.5.0 (Unreleased)
 
 * Add `excludeRules` option.
+* Remove the custom builds in favor better rule inclusion/exclusion options.
 * Convert HTML Inspector to be built with Browserify.
 * Convert tests from Jasmine to Mocha, Sinon, and Chai.
 * Use Mout for JavaScript utility functions.
