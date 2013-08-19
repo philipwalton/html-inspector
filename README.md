@@ -63,7 +63,7 @@ The `inspect` method takes a config object to allow you to change any of this be
 - **useRules**: (Array) a list of rule names to run when inspecting. Defaults to running all rules not excluded via `excludeRules`
 - **excludeRules**: (Array) a list of rule names **not** to run when inspecting. If `useRules` and `excludeRules` are both set, the excluded rules are removed from the list of rules to use.
 - **excludeElements**: (selector | element | Array) any DOM element that matches the selector, element, or list of selectors/elements will be excluded from traversal (note: its descendants will still be traversed).
-- **excludeSubTrees**: (selector } element | Array) the descendants of any DOM element that matches the selector, element, or list of selectors/elements will be excluded from traversal.
+- **excludeSubTrees**: (selector | element | Array) the descendants of any DOM element that matches the selector, element, or list of selectors/elements will be excluded from traversal.
 - **onComplete**: (Function) the callback to be invoked when the inspection is finished. The function is passed an array of errors that were reported by individual rules.
 
 Here are the default configuration values:
@@ -123,21 +123,21 @@ Each rule is registered via a unique string identifier that can be used to inclu
 
 Here is the full list of built in rules by their identifiers:
 
-```
-// validation rules
+```sh
+# validation rules
 validate-elements
 validate-element-location
 validate-attributes
 duplicate-ids
 unique-elements
 
-// best-practices
+# best-practices
 inline-event-handlers
 script-placement
 unused-classes
 unnecessary-elements
 
-// convention
+# convention
 bem-conventions
 ```
 
