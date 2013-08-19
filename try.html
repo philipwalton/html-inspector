@@ -28,14 +28,20 @@
 
     <em><p>emphasize!</p></em>
 
-    <script src="http://requirejs.org/docs/release/2.1.8/comments/require.js"></script>
-    <!-- <script src="dist/html-inspector.js"></script> -->
+    <!-- <script src="http://requirejs.org/docs/release/2.1.8/comments/require.js"></script> -->
+    <script src="dist/html-inspector.js"></script>
 
+    <!--
     <script>
       require(["dist/html-inspector"], function(h) {
         h.inspect()
       })
     </script>
+    -->
+
+    <script>HTMLInspector.inspect({
+      excludeRules: ["validate-element-location"]
+    })</script>
 
   </body>
 </html>

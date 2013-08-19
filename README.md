@@ -7,11 +7,10 @@
 3. [Built-in Rules](#built-in-rules)
 4. [Writing Your Own Rules](#writing-your-own-rules)
 5. [Overriding Rules Configurations](#overriding-rule-configurations)
-6. [Custom Builds](#custom-builds)
-7. [Browser Support](#browser-support)
-8. [Running the Tests](#running-the-tests)
-9. [Contributing](#contributing)
-10. [FAQs](#faqs)
+6. [Browser Support](#browser-support)
+7. [Running the Tests](#running-the-tests)
+8. [Contributing](#contributing)
+9. [FAQs](#faqs)
 
 HTML Inspector is a highly-customizable, code quality tool to help you (and your team) write better markup. It aims to find a balance between the uncompromisingly strict W3C validator and having absolutely no rules at all (the unfortunate reality for most of us).
 
@@ -27,9 +26,16 @@ The easiest way to try out HTML Inspector is to link to the source file hosted o
 <script src="http://cdnjs.cloudflare.com/ajax/libs/html-inspector/0.4.1/html-inspector.js"></script>
 ```
 
-Alternatively, [Bower](https://github.com/bower/bower) users can install HTML Inspector with the following command:
+It can also be install via [NPM](https://npmjs.org/) or [Bower](https://github.com/bower/bower):
 
 ```sh
+# NPM (for command line usage)
+npm install -g html-inspector
+
+# View the CLI options
+htmlinspector --help
+
+# Bower (for browser usage)
 bower install html-inspector
 ```
 
@@ -53,20 +59,22 @@ By default, HTML Inspector runs all added rules, starts traversing from the `<ht
 
 The `inspect` method takes a config object to allow you to change any of this behavior. Here are the config options:
 
-- **useRules**: (Array) a list of rule names to run when inspecting
 - **domRoot**: (selector | element) the DOM element to start traversing from
-- **exclude**: (selector | element | Array) any DOM element that matches the selector, element, or list of selectors/elements will be excluded from traversal (note: its descendants will still be traversed).
-- **excludeSubTree**: (selector } element | Array) the descendants of any DOM element that matches the selector, element, or list of selectors/elements will be excluded from traversal.
+- **useRules**: (Array) a list of rule names to run when inspecting. Defaults to running all rules not excluded via `excludeRules`
+- **excludeRules**: (Array) a list of rule names **not** to run when inspecting. If `useRules` and `excludeRules` are both set, the excluded rules are removed from the list of rules to use.
+- **excludeElements**: (selector | element | Array) any DOM element that matches the selector, element, or list of selectors/elements will be excluded from traversal (note: its descendants will still be traversed).
+- **excludeSubTrees**: (selector } element | Array) the descendants of any DOM element that matches the selector, element, or list of selectors/elements will be excluded from traversal.
 - **onComplete**: (Function) the callback to be invoked when the inspection is finished. The function is passed an array of errors that were reported by individual rules.
 
 Here are the default configuration values:
 
 ```js
 config: {
-  useRules: null,
   domRoot: "html",
-  exclude: "svg",
-  excludeSubTree: ["svg", "iframe"],
+  useRules: null,
+  excludeRules: null,
+  excludeElements: "svg",
+  excludeSubTrees: ["svg", "iframe"],
   onComplete: function(errors) {
     errors.forEach(function(error) {
       console.warn(error.message, error.context)
@@ -79,10 +87,9 @@ Here is how you might override the default configurations:
 
 ```js
 HTMLInspector.inspect({
-  useRules: ["some-rule-name", "some-other-rule-name"],
   domRoot: "body",
-  exclude: "iframe",
-  excludeSubTree: ["svg", "template"],
+  excludeRules: ["some-rule-name", "some-other-rule-name"],
+  excludeElements: ["svg", "iframe"],
   onComplete: function(errors) {
     errors.forEach(function(error) {
       // report errors to external service...
@@ -111,6 +118,30 @@ HTMLInspector.inspect(function(errors) {
 ## Built-in Rules ##
 
 HTML Inspector ships with a set of built-in rules which fall into one of three main categories: validation, best-practices, and convention.
+
+Each rule is registered via a unique string identifier that can be used to include or exclude it at inspection time.
+
+Here is the full list of built in rules by their identifiers:
+
+```
+// validation rules
+validate-elements
+validate-element-location
+validate-attributes
+duplicate-ids
+unique-elements
+
+// best-practices
+inline-event-handlers
+script-placement
+unused-classes
+unnecessary-elements
+
+// convention
+bem-conventions
+```
+
+The following is a more in-depth explanation of each rule:
 
 ### Validation
 
@@ -303,51 +334,6 @@ HTMLInspector.rules.extend("unused-classes", {
 })
 ```
 
-## Custom Builds
-
-HTML Inspector comes with a number of pre-built options to use directly in your projects.
-
-- **html-inspector.js**: The full HTML Inspector code with all built-in rules prepackaged.
-- **html-inspector.core.js**: The core library with none of the rules.
-- **html-inspector.validation.js**: A package containing only the validation rules
-- **html-inspector.best-practices.js**: A package containing only the best practice rules
-- **html-inspector.convention.js**: A package containing only the convention rules
-
-If the full version of HTML Inspector and all the built-in rules is too much, you can mix and match the core library with any combination of the packaged rule libraries as well as your own rules.
-
-The build options for each of these is as follows:
-
-```sh
-# build everything
-grunt
-
-# build the core library
-grunt dist:core
-
-# build the validation ruleset
-grunt dist:validation
-
-# build the best-practices ruleset
-grunt dist:best-practices
-
-# build the convention ruleset
-grunt dist:convention
-```
-
-To alter the custom builds, simply add or remove files from the directories inside of `src/rules`. But keep in mind that rules can be excluded both at build time and at runtime. In other words, you don't need a custom build to exclude certain rules. You also don't need a custom build to add new rules. It's perfectly OK to add new rules directly to the HTML source as separate files.
-
-HTML Inspector uses [Grunt](http://gruntjs.com) which runs on [Node](http://nodejs.org/) to build and lint its source files as well as to run the [Jasmine](http://pivotal.github.io/jasmine/) tests.
-
-If you don't have Node, NPM, and Grunt installed, refer to their documentation for installation instructions. Once they're installed, you can install the rest of the dependencies with the following commands:
-
-```sh
-# Install Node packages
-npm install
-
-# Install script dependencies
-bower install
-```
-
 ## Browser Support
 
 HTML Inspector has been tested and known to work in the latest versions of all modern browsers including Chrome, Firefox, Safari, Opera, and Internet Explorer. It will not work in older browsers that do not support ES5 methods, the CSS Object Model, or `console.warn()`. Since HTML Inspector is primarily a development tool, it is not intended to work in browsers that aren't typically used for development and don't support modern Web standards.
@@ -363,13 +349,15 @@ If you need to test your site in older versions of IE and don't want to see Java
 
 ## Running the Tests
 
-If Grunt and all the dependencies are installed, you can run the Jasmine tests with the following command.
+If Grunt and all the dependencies are installed, you can run the tests with the following command.
 
 ```sh
 grunt test
 ```
 
-This creates a `spec-runner.html` file in the root directory and uses [PhantomJS](http://phantomjs.org/) to run the tests. If you prefer to run the tests in the browser, you can always fire up a local server and load `spec-runner.html` in the browser manually.
+HTML Inspector has two test suites, one that runs in pure Node and one that uses [Mocha](http://visionmedia.github.io/mocha/) and [PhantomJS](http://phantomjs.org/) because it needs a browser.
+
+If you want to run the browser tests in a real browser (instead of via PhantomJS) simply fire up a local server and load the `tests/html-inspector-test.html` file. Make sure to run `grunt test` beforehand as it builds the tests.
 
 ## Contributing
 

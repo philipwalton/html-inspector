@@ -31,22 +31,25 @@ describe("HTMLInspector", function() {
   describe(".setConfig", function() {
 
     it("merges the passed config options with the defaults", function() {
-      var useRules = ["foo", "bar"]
-        , domRoot = "body"
-        , exclude = "svg, iframe"
+      var domRoot = "body"
+        , useRules = ["foo", "bar"]
+        , excludeRules = ["inline-event-handlers", "validate-attributes"]
+        , excludeElements = "svg, iframe"
         , onComplete = function() {}
 
       HTMLInspector.setConfig({
-        useRules: useRules,
         domRoot: domRoot,
-        exclude: exclude,
+        useRules: useRules,
+        excludeRules: excludeRules,
+        excludeElements: excludeElements,
         onComplete: onComplete
       })
-      expect(HTMLInspector.config.useRules).to.equal(useRules)
       expect(HTMLInspector.config.domRoot).to.equal(domRoot)
-      expect(HTMLInspector.config.exclude).to.equal(exclude)
+      expect(HTMLInspector.config.useRules).to.equal(useRules)
+      expect(HTMLInspector.config.excludeRules).to.equal(excludeRules)
+      expect(HTMLInspector.config.excludeElements).to.equal(excludeElements)
+      expect(HTMLInspector.config.excludeSubTrees).to.equal(HTMLInspector.defaults.excludeSubTrees)
       expect(HTMLInspector.config.onComplete).to.equal(onComplete)
-      expect(HTMLInspector.config.excludeSubTree).to.equal(HTMLInspector.defaults.excludeSubTree)
     })
 
     it("accepts a variety of options for the config paramter", function() {
@@ -96,6 +99,31 @@ describe("HTMLInspector", function() {
       expect(rules[1]).to.equal("two")
     })
 
+    it("excludes rules specifically mentioned in the `excludeRules` options", function() {
+      var rules = []
+      HTMLInspector.rules.add("one", function(listener, reporter) {
+        listener.on("beforeInspect", function(name) { rules.push("one") })
+      })
+      HTMLInspector.rules.add("two", function(listener, reporter) {
+        listener.on("beforeInspect", function(name) { rules.push("two") })
+      })
+      HTMLInspector.rules.add("three", function(listener, reporter) {
+        listener.on("beforeInspect", function(name) { rules.push("three") })
+      })
+      HTMLInspector.inspect({
+        excludeRules: ["one", "two"]
+      })
+      expect(rules.length).to.equal(1)
+      expect(rules[0]).to.equal("three")
+      rules = []
+      HTMLInspector.inspect({
+        useRules: ["one", "two"],
+        excludeRules: ["two"]
+      })
+      expect(rules.length).to.equal(1)
+      expect(rules[0]).to.equal("one")
+    })
+
     it("invokes the onComplete callback passing in an array of errors", function() {
       var log
       HTMLInspector.rules.add("one-two", function(listener, reporter) {
@@ -115,7 +143,7 @@ describe("HTMLInspector", function() {
       expect(log[2].message).to.equal("This is the `three` error message")
     })
 
-    it("ignores elements matching the `exclude` config option", function() {
+    it("ignores elements matching the `excludeElements` config option", function() {
       var events = []
       HTMLInspector.rules.add("traverse-test", function(listener, reporter) {
         listener.on("element", function(name) {
@@ -124,18 +152,18 @@ describe("HTMLInspector", function() {
       })
       HTMLInspector.inspect({
         domRoot: html,
-        exclude: ["h1", "p"]
+        excludeElements: ["h1", "p"]
       })
       expect(events).to.deep.equal(["section", "a", "blockquote", "em"])
       events = []
       HTMLInspector.inspect({
         domRoot: html,
-        exclude: html.querySelector("blockquote")
+        excludeElements: html.querySelector("blockquote")
       })
       expect(events).to.deep.equal(["section", "h1", "p", "p", "a", "p", "p", "em"])
     })
 
-    it("ignores elements that descend from the `excludeSubTree` config option", function() {
+    it("ignores elements that descend from the `excludeSubTrees` config option", function() {
       var events = []
       HTMLInspector.rules.add("traverse-test", function(listener, reporter) {
         listener.on("element", function(name) {
@@ -144,13 +172,13 @@ describe("HTMLInspector", function() {
       })
       HTMLInspector.inspect({
         domRoot: html,
-        excludeSubTree: "p"
+        excludeSubTrees: "p"
       })
       expect(events).to.deep.equal(["section", "h1", "p", "p", "blockquote", "p", "p"])
       events = []
       HTMLInspector.inspect({
         domRoot: html,
-        excludeSubTree: [html.querySelector("p:not(.first)"), html.querySelector("blockquote")]
+        excludeSubTrees: [html.querySelector("p:not(.first)"), html.querySelector("blockquote")]
       })
       expect(events).to.deep.equal(["section", "h1", "p", "p", "blockquote"])
     })
@@ -326,7 +354,7 @@ describe("HTMLInspector", function() {
       })
       HTMLInspector.inspect(div)
       expect(console.warn.callCount).to.equal(3)
-      expect(console.warn.getCall(1).args[1]).to.equal("(can't display iframe with cross-origin source)")
+      expect(console.warn.getCall(1).args[1]).to.equal("(can't display iframe with cross-origin source: http://example.com/)")
       expect(console.warn.getCall(2).args[1]).to.equal(iframe2)
       console.warn.restore()
     })

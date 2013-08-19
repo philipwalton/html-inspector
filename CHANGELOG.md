@@ -1,7 +1,8 @@
-// ### 0.5.0 (Unreleased)
+### 0.5.0 (Unreleased)
 
 * Add `excludeRules` option.
-* Rename the `exclude` option to `excludeElements`
+* Rename the `exclude` option to `excludeElements`.
+* Rename the `excludeSubtree` option to `excludeSubtrees`.
 * Convert HTML Inspector to be built with Browserify and released as a UMD module.
 * Convert tests from Jasmine to Mocha, Sinon, and Chai.
 * Remove the custom builds in favor better rule inclusion/exclusion options.

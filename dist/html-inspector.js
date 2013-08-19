@@ -577,11 +577,21 @@ var Listener = require("./listener")
  * Set (or reset) all data back to its original value
  * and initialize the specified rules
  */
-function setup(useRules, listener, reporter) {
-  useRules = useRules == null
+function setup(listener, reporter) {
+  var useRules = HTMLInspector.config.useRules
+    , excludeRules = HTMLInspector.config.excludeRules
+
+  rules = useRules == null
     ? Object.keys(HTMLInspector.rules)
     : useRules
-  useRules.forEach(function(rule) {
+
+  if (excludeRules) {
+    rules = rules.filter(function(rule) {
+      return excludeRules.indexOf(rule) < 0
+    })
+  }
+
+  rules.forEach(function(rule) {
     if (HTMLInspector.rules[rule]) {
       HTMLInspector.rules[rule].func.call(
         HTMLInspector,
@@ -601,7 +611,7 @@ function traverseDOM(node, listener, options) {
   var attrs = getAttributes(node)
 
   // trigger events for this element unless it's been excluded
-  if (!matches(node, options.exclude)) {
+  if (!matches(node, options.excludeElements)) {
     listener.trigger("element", node, [node.nodeName.toLowerCase(), node])
     if (node.id) {
       listener.trigger("id", node, [node.id, node])
@@ -615,7 +625,7 @@ function traverseDOM(node, listener, options) {
   }
 
   // recurse through the subtree unless it's been excluded
-  if (!matches(node, options.excludeSubTree)) {
+  if (!matches(node, options.excludeSubTrees)) {
     toArray(node.childNodes).forEach(function(node) {
       traverseDOM(node, listener, options)
     })
@@ -662,7 +672,7 @@ function filterCrossOrigin(elements) {
       && el.nodeName.toLowerCase() == "iframe"
       && isCrossOrigin(el.src)
     )
-      return "(can't display iframe with cross-origin source)"
+      return "(can't display iframe with cross-origin source: " + el.src + ")"
     else
       return el
   })
@@ -673,10 +683,11 @@ function filterCrossOrigin(elements) {
 var HTMLInspector = {
 
   defaults: {
-    useRules: null,
     domRoot: "html",
-    exclude: "svg",
-    excludeSubTree: ["svg", "iframe"],
+    useRules: null,
+    excludeRules: null,
+    excludeElements: "svg",
+    excludeSubTrees: ["svg", "iframe"],
     onComplete: function(errors) {
       errors.forEach(function(error) {
         console.warn(error.message, filterCrossOrigin(error.context))
@@ -714,7 +725,7 @@ var HTMLInspector = {
       ? document.querySelector(this.config.domRoot)
       : this.config.domRoot
 
-    setup(this.config.useRules, listener, reporter)
+    setup(listener, reporter)
 
     listener.trigger("beforeInspect", domRoot)
     traverseDOM(domRoot, listener, this.config)
