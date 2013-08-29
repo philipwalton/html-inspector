@@ -28,49 +28,21 @@ describe("HTMLInspector", function() {
     HTMLInspector.modules = originalModules
   })
 
-  describe(".setConfig", function() {
-
-    it("merges the passed config options with the defaults", function() {
-      var domRoot = "body"
-        , useRules = ["foo", "bar"]
-        , excludeRules = ["inline-event-handlers", "validate-attributes"]
-        , excludeElements = "svg, iframe"
-        , onComplete = function() {}
-
-      HTMLInspector.setConfig({
-        domRoot: domRoot,
-        useRules: useRules,
-        excludeRules: excludeRules,
-        excludeElements: excludeElements,
-        onComplete: onComplete
-      })
-      expect(HTMLInspector.config.domRoot).to.equal(domRoot)
-      expect(HTMLInspector.config.useRules).to.equal(useRules)
-      expect(HTMLInspector.config.excludeRules).to.equal(excludeRules)
-      expect(HTMLInspector.config.excludeElements).to.equal(excludeElements)
-      expect(HTMLInspector.config.excludeSubTrees).to.equal(HTMLInspector.defaults.excludeSubTrees)
-      expect(HTMLInspector.config.onComplete).to.equal(onComplete)
-    })
-
-    it("accepts a variety of options for the config paramter", function() {
-      var div = document.createElement("div")
-        , fn = function() { }
-      // if it's an array, assume it's the useRules options
-      HTMLInspector.setConfig(["dom"])
-      expect(HTMLInspector.config.useRules).to.deep.equal(["dom"])
-      // if it's a string, assume it's a selector for the domRoot option
-      HTMLInspector.inspect("body")
-      expect(HTMLInspector.config.domRoot).to.equal("body")
-      // if it's a DOM element, assume it's the domRoot option
-      HTMLInspector.inspect(div)
-      expect(HTMLInspector.config.domRoot).to.equal(div)
-      // if it's a function, assume it's the onComplete option
-      HTMLInspector.inspect(fn)
-      expect(HTMLInspector.config.onComplete).to.equal(fn)
-    })
-  })
-
   describe(".inspect", function() {
+
+    it("inspects the HTML starting from the specified domRoot", function() {
+      var events = []
+      HTMLInspector.rules.add("traverse-test", function(listener, reporter) {
+        listener.on("element", function(name) {
+          events.push(name)
+        })
+      })
+      HTMLInspector.inspect()
+      expect(events[0]).to.equal("html")
+      events = []
+      HTMLInspector.inspect({ domRoot: html })
+      expect(events[0]).to.equal("section")
+    })
 
     it("only runs the specified rules (or all rules if none are specified)", function() {
       var rules = []
@@ -124,25 +96,6 @@ describe("HTMLInspector", function() {
       expect(rules[0]).to.equal("one")
     })
 
-    it("invokes the onComplete callback passing in an array of errors", function() {
-      var log
-      HTMLInspector.rules.add("one-two", function(listener, reporter) {
-        reporter.warn("one-two", "This is the `one` error message", document)
-        reporter.warn("one-two", "This is the `two` error message", document)
-
-      })
-      HTMLInspector.rules.add("three", function(listener, reporter) {
-        reporter.warn("three", "This is the `three` error message", document)
-      })
-      HTMLInspector.inspect(function(errors) {
-        log = errors
-      })
-      expect(log.length).to.equal(3)
-      expect(log[0].message).to.equal("This is the `one` error message")
-      expect(log[1].message).to.equal("This is the `two` error message")
-      expect(log[2].message).to.equal("This is the `three` error message")
-    })
-
     it("ignores elements matching the `excludeElements` config option", function() {
       var events = []
       HTMLInspector.rules.add("traverse-test", function(listener, reporter) {
@@ -183,18 +136,65 @@ describe("HTMLInspector", function() {
       expect(events).to.deep.equal(["section", "h1", "p", "p", "blockquote"])
     })
 
-    it("inspects the HTML starting from the specified domRoot", function() {
-      var events = []
-      HTMLInspector.rules.add("traverse-test", function(listener, reporter) {
+    it("invokes the onComplete callback passing in an array of errors", function() {
+      var log
+      HTMLInspector.rules.add("one-two", function(listener, reporter) {
+        reporter.warn("one-two", "This is the `one` error message", document)
+        reporter.warn("one-two", "This is the `two` error message", document)
+
+      })
+      HTMLInspector.rules.add("three", function(listener, reporter) {
+        reporter.warn("three", "This is the `three` error message", document)
+      })
+      HTMLInspector.inspect(function(errors) {
+        log = errors
+      })
+      expect(log.length).to.equal(3)
+      expect(log[0].message).to.equal("This is the `one` error message")
+      expect(log[1].message).to.equal("This is the `two` error message")
+      expect(log[2].message).to.equal("This is the `three` error message")
+    })
+
+    it("accepts a variety of types for the options paramter", function() {
+      var log = []
+        , div = document.createElement("div")
+      HTMLInspector.rules.add("dom", function(listener, reporter) {
         listener.on("element", function(name) {
-          events.push(name)
+          log.push(this)
         })
       })
-      HTMLInspector.inspect()
-      expect(events[0]).to.equal("html")
-      events = []
-      HTMLInspector.inspect({ domRoot: html })
-      expect(events[0]).to.equal("section")
+      HTMLInspector.rules.add("rules", function() {
+        log.push("rules")
+      })
+      // if it's an object, assume it's the full config object
+      HTMLInspector.inspect({
+        useRules: ["dom"],
+        domRoot: parseHTML("<p>foobar</p>"),
+        onComplete: function(errors) {
+          log.push("done")
+        }
+      })
+      expect(log.length).to.equal(2)
+      expect(log[0].innerHTML).to.equal("foobar")
+      expect(log[1]).to.equal("done")
+      log = []
+      // if it's an array, assume it's a list of rules
+      HTMLInspector.inspect(["dom"])
+      expect(log.indexOf("rules")).to.equal(-1)
+      log = []
+      // if it's a string, assume it's a selector
+      HTMLInspector.inspect("body")
+      expect(log[1]).to.equal(document.body)
+      log = []
+      // if it's a DOM element, assume it's the domRoot
+      HTMLInspector.inspect(div)
+      expect(log[1]).to.equal(div)
+      log = []
+      // if it's a function, assume it's complete
+      HTMLInspector.inspect(function(errors) {
+        log = "func"
+      })
+      expect(log).to.equal("func")
     })
 
     it("triggers `beforeInspect` before the DOM traversal", function() {

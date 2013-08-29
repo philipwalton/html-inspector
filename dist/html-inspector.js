@@ -4,7 +4,7 @@
  * Copyright (c) 2013 Philip Walton <http://philipwalton.com>
  * Released under the MIT license
  *
- * Date: 2013-08-18
+ * Date: 2013-08-28
  */
 
 (function(e){if("function"==typeof bootstrap)bootstrap("htmlinspector",e);else if("object"==typeof exports)module.exports=e();else if("function"==typeof define&&define.amd)define(e);else if("undefined"!=typeof ses){if(!ses.ok())return;ses.makeHTMLInspector=e}else"undefined"!=typeof window?window.HTMLInspector=e():global.HTMLInspector=e()})(function(){var define,ses,bootstrap,module,exports;
@@ -577,20 +577,15 @@ var Listener = require("./listener")
  * Set (or reset) all data back to its original value
  * and initialize the specified rules
  */
-function setup(listener, reporter) {
-  var useRules = HTMLInspector.config.useRules
-    , excludeRules = HTMLInspector.config.excludeRules
-
-  rules = useRules == null
+function setup(listener, reporter, useRules, excludeRules) {
+  var rules = useRules == null
     ? Object.keys(HTMLInspector.rules)
     : useRules
-
   if (excludeRules) {
     rules = rules.filter(function(rule) {
       return excludeRules.indexOf(rule) < 0
     })
   }
-
   rules.forEach(function(rule) {
     if (HTMLInspector.rules[rule]) {
       HTMLInspector.rules[rule].func.call(
@@ -603,7 +598,7 @@ function setup(listener, reporter) {
   })
 }
 
-function traverseDOM(node, listener, options) {
+function traverseDOM(listener, node, excludeElements, excludeSubTrees) {
 
   // only deal with element nodes
   if (node.nodeType != 1) return
@@ -611,7 +606,7 @@ function traverseDOM(node, listener, options) {
   var attrs = getAttributes(node)
 
   // trigger events for this element unless it's been excluded
-  if (!matches(node, options.excludeElements)) {
+  if (!matches(node, excludeElements)) {
     listener.trigger("element", node, [node.nodeName.toLowerCase(), node])
     if (node.id) {
       listener.trigger("id", node, [node.id, node])
@@ -625,26 +620,34 @@ function traverseDOM(node, listener, options) {
   }
 
   // recurse through the subtree unless it's been excluded
-  if (!matches(node, options.excludeSubTrees)) {
+  if (!matches(node, excludeSubTrees)) {
     toArray(node.childNodes).forEach(function(node) {
-      traverseDOM(node, listener, options)
+      traverseDOM(listener, node, excludeElements, excludeSubTrees)
     })
   }
 }
 
-function processConfig(config) {
+function mergeOptions(options) {
   // allow config to be individual properties of the defaults object
-  if (config) {
-    if (typeof config == "string" || config.nodeType == 1) {
-      config = { domRoot: config }
-    } else if (Array.isArray(config)) {
-      config = { useRules: config }
-    } else if (typeof config == "function") {
-      config = { onComplete: config }
+  if (options) {
+    if (typeof options == "string" || options.nodeType == 1) {
+      options = { domRoot: options }
+    } else if (Array.isArray(options)) {
+      options = { useRules: options }
+    } else if (typeof options == "function") {
+      options = { onComplete: options }
     }
   }
-  // merge config with the defaults
-  return mixIn({}, HTMLInspector.config, config)
+
+  // merge options with the defaults
+  options = mixIn({}, HTMLInspector.defaults, options)
+
+  // set the domRoot to an HTMLElement if it's not
+  options.domRoot = typeof options.domRoot == "string"
+    ? document.querySelector(options.domRoot)
+    : options.domRoot
+
+  return options
 }
 
 /**
@@ -695,43 +698,22 @@ var HTMLInspector = {
     }
   },
 
-  config: {},
-
-  setConfig: function(config) {
-    // allow config to be individual properties of the defaults object
-    if (config) {
-      if (typeof config == "string" || config.nodeType == 1) {
-        config = { domRoot: config }
-      } else if (Array.isArray(config)) {
-        config = { useRules: config }
-      } else if (typeof config == "function") {
-        config = { onComplete: config }
-      }
-    }
-    mixIn(this.config, this.defaults, config)
-  },
-
   rules: new Rules(),
 
   modules: new Modules(),
 
-  inspect: function(config) {
-    var domRoot
+  inspect: function(options) {
+    var config = mergeOptions(options)
       , listener = new Listener()
       , reporter = new Reporter()
 
-    this.setConfig(config)
-    domRoot = typeof this.config.domRoot == "string"
-      ? document.querySelector(this.config.domRoot)
-      : this.config.domRoot
+    setup(listener, reporter, config.useRules, config.excludeRules)
 
-    setup(listener, reporter)
+    listener.trigger("beforeInspect", config.domRoot)
+    traverseDOM(listener, config.domRoot, config.excludeElements, config.excludeSubTrees)
+    listener.trigger("afterInspect", config.domRoot)
 
-    listener.trigger("beforeInspect", domRoot)
-    traverseDOM(domRoot, listener, this.config)
-    listener.trigger("afterInspect", domRoot)
-
-    this.config.onComplete(reporter.getWarnings())
+    config.onComplete(reporter.getWarnings())
   }
 }
 
