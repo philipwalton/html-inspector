@@ -26,10 +26,13 @@ if(program.args.length !== 1 || reporters.indexOf(program.reporter) === -1) {
 
 // Try to resolve local file, otherwise assume and pass url
 var inputLocation = program.args[0],
-  inspectLocation = fs.exists(path.resolve(inputLocation)) ? path.resolve(inputLocation) : inputLocation
+  inspectLocation = fs.existsSync(path.resolve(inputLocation)) ? path.resolve(inputLocation) : inputLocation
 
-if(program.config) {
-  configFile = path.resolve(program.config)
+
+if (program.config) {
+  configFile = fs.existsSync(path.resolve(program.config))
+    ? path.resolve(program.config)
+    : ""
 }
 
 reporter = require(reporterBasePath + program.reporter);

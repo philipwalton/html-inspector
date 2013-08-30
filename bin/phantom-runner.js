@@ -25,16 +25,17 @@ page.onLoadFinished = function(status) {
 
   page.injectJs(basePath + '/bin/phantom-bridge.js')
 
+  page.evaluate(function() {
+    HTMLInspector.defaults.onComplete = function(errors) {
+      sendMessage('htmlinspector.complete', errors)
+    }
+  })
+
   if (configFile) {
-    console.log(configFile)
     page.injectJs(configFile)
   } else {
     page.evaluate(function() {
-      HTMLInspector.inspect({
-        onComplete: function onComplete(errors) {
-          sendMessage('htmlinspector.complete', errors)
-        }
-      })
+      HTMLInspector.inspect()
     })
   }
   phantom.exit()
