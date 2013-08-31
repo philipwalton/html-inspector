@@ -8,7 +8,7 @@
  */
 
 (function(e){if("function"==typeof bootstrap)bootstrap("htmlinspector",e);else if("object"==typeof exports)module.exports=e();else if("function"==typeof define&&define.amd)define(e);else if("undefined"!=typeof ses){if(!ses.ok())return;ses.makeHTMLInspector=e}else"undefined"!=typeof window?window.HTMLInspector=e():global.HTMLInspector=e()})(function(){var define,ses,bootstrap,module,exports;
-return (function(e,t,n){function i(n,s){if(!t[n]){if(!e[n]){var o=typeof require=="function"&&require;if(!s&&o)return o(n,!0);if(r)return r(n,!0);throw new Error("Cannot find module '"+n+"'")}var u=t[n]={exports:{}};e[n][0].call(u.exports,function(t){var r=e[n][1][t];return i(r?r:t)},u,u.exports)}return t[n].exports}var r=typeof require=="function"&&require;for(var s=0;s<n.length;s++)i(n[s]);return i})({1:[function(require,module,exports){
+return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /**
  * Get an object representation of an element's attributes
  */
@@ -827,7 +827,7 @@ module.exports = {
 }
 
 },{"dom-utils/src/matches":2,"mout/array/unique":7,"mout/lang/toArray":14}],25:[function(require,module,exports){
-(function(){var foundIn = require("../utils/string-matcher")
+var foundIn = require("../utils/string-matcher")
 
 // ============================================================
 // A data map of all valid HTML elements, their attributes
@@ -1706,7 +1706,6 @@ module.exports = {
   module: spec
 }
 
-})()
 },{"../utils/string-matcher":38}],26:[function(require,module,exports){
 function Reporter() {
   this._errors = []

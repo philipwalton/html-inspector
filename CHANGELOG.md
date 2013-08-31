@@ -4,6 +4,7 @@
 * Rename the `exclude` option to `excludeElements`.
 * Rename the `excludeSubtree` option to `excludeSubtrees`.
 * Remove the setConfig method as it was overwriting previous setConfigs if there were multiple calls.
+* Improve the CLI and allow for async error reporting via the config file.
 * Convert HTML Inspector to be built with Browserify and released as a UMD module.
 * Convert tests from Jasmine to Mocha, Sinon, and Chai.
 * Remove the custom builds in favor better rule inclusion/exclusion options.
