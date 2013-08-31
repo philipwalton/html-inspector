@@ -1,3 +1,7 @@
+### 0.5.1 (Unreleased)
+
+* Fix incorrectly reporting version number from CLI.
+
 ### 0.5.0 (August 31, 2013)
 
 * Add `excludeRules` option.

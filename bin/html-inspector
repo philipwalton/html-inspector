@@ -3,10 +3,11 @@
 var fs = require('fs')
   , path = require('path')
   , program = require('commander')
-  , version = JSON.parse(fs.readFileSync("./package.json")).version
+
   , inspectLocation
   , configFile
   , basePath = path.normalize(__dirname + path.sep + '..')
+  , version = JSON.parse(fs.readFileSync(path.join(basePath, "package.json"))).version
   , phantomRunner = basePath + path.sep + 'bin' + path.sep + 'phantom-runner.js'
 
 program
