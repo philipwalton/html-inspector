@@ -29,14 +29,12 @@ page.onLoadFinished = function(status) {
   }
 
   var hasInspectorScript = page.evaluate(function() {
-    return 'HTMLInspector' in this
+    return window.HTMLInspector
   })
 
-  if(!hasInspectorScript) {
+  if (!hasInspectorScript) {
     page.injectJs(basePath + '/dist/html-inspector.js')
   }
-
-  page.injectJs(basePath + '/bin/phantom-bridge.js')
 
   page.evaluate(function() {
     HTMLInspector.defaults.onComplete = function(errors) {
