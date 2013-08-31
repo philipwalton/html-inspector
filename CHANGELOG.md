@@ -1,4 +1,4 @@
-### 0.5.1 (Unreleased)
+### 0.5.1 (August 31, 2013)
 
 * Fix incorrectly reporting version number from CLI.
 
