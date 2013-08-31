@@ -1,4 +1,4 @@
-### 0.5.0 (Unreleased)
+### 0.5.0 (August 31, 2013)
 
 * Add `excludeRules` option.
 * Rename the `exclude` option to `excludeElements`.
