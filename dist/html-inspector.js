@@ -4,7 +4,7 @@
  * Copyright (c) 2013 Philip Walton <http://philipwalton.com>
  * Released under the MIT license
  *
- * Date: 2013-08-28
+ * Date: 2013-08-31
  */
 
 (function(e){if("function"==typeof bootstrap)bootstrap("htmlinspector",e);else if("object"==typeof exports)module.exports=e();else if("function"==typeof define&&define.amd)define(e);else if("undefined"!=typeof ses){if(!ses.ok())return;ses.makeHTMLInspector=e}else"undefined"!=typeof window?window.HTMLInspector=e():global.HTMLInspector=e()})(function(){var define,ses,bootstrap,module,exports;

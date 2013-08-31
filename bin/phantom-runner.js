@@ -6,7 +6,20 @@ var basePath = phantom.args[0]
 var system = require('system')
   , page = require('webpage').create()
 
-page.onAlert = system.stdout.write
+page.onCallback = function(data) {
+  if (data && data.sender && data.sender == "HTMLInspector") {
+    console.log(data.message)
+  }
+}
+
+page.onClosing = function() {
+  phantom.exit()
+}
+
+page.onError = function(msg) {
+  console.error(msg)
+  phantom.exit()
+}
 
 page.onLoadFinished = function(status) {
 
@@ -27,7 +40,13 @@ page.onLoadFinished = function(status) {
 
   page.evaluate(function() {
     HTMLInspector.defaults.onComplete = function(errors) {
-      sendMessage('htmlinspector.complete', errors)
+      window.callPhantom({
+        sender: "HTMLInspector",
+        message: errors.map(function(error) {
+          return "[" + error.rule + "] " + error.message
+        }).join("\n")
+      })
+      window.close()
     }
   })
 
@@ -38,7 +57,6 @@ page.onLoadFinished = function(status) {
       HTMLInspector.inspect()
     })
   }
-  phantom.exit()
 }
 
 page.open(inspectLocation)
