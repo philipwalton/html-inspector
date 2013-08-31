@@ -3,31 +3,25 @@
 var fs = require('fs')
   , path = require('path')
   , program = require('commander')
-
-var inspectLocation
+  , version = JSON.parse(fs.readFileSync("./package.json")).version
+  , inspectLocation
   , configFile
-  , reporters = ['console.simple']
-  , reporter
-
-var basePath = path.normalize(__dirname + path.sep + '..')
+  , basePath = path.normalize(__dirname + path.sep + '..')
   , phantomRunner = basePath + path.sep + 'bin' + path.sep + 'phantom-runner.js'
-  , reporterBasePath = path.resolve(basePath + '/src/reporter') + path.sep
 
 program
-  .version('0.0.1')
+  .version(version)
   .usage('[options] <file or url>')
   .option('-c, --config [file]', 'Configuration file (./html-inspector-config.js)', './html-inspector-config.js')
-  .option('-r, --reporter [reporter]', 'Reporter (' + reporters.join(', ') + ')', 'console.simple')
   .parse(process.argv)
 
-if(program.args.length !== 1 || reporters.indexOf(program.reporter) === -1) {
+if(program.args.length !== 1) {
   program.help()
 }
 
 // Try to resolve local file, otherwise assume and pass url
-var inputLocation = program.args[0],
-  inspectLocation = fs.existsSync(path.resolve(inputLocation)) ? path.resolve(inputLocation) : inputLocation
-
+var inputLocation = program.args[0]
+  , inspectLocation = fs.existsSync(path.resolve(inputLocation)) ? path.resolve(inputLocation) : inputLocation
 
 if (program.config) {
   configFile = fs.existsSync(path.resolve(program.config))
@@ -35,10 +29,7 @@ if (program.config) {
     : ""
 }
 
-reporter = require(reporterBasePath + program.reporter);
-
 // Spawn process to run PhantomJS from CLI
-// TODO: Is this the way to go?
 function run(cmd, args, callback) {
   var spawn = require('child_process').spawn
   var command = spawn(cmd, args)
