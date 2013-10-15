@@ -81,6 +81,9 @@ module.exports = function(grunt) {
     },
 
     mochacli: {
+      options: {
+        reporter: "spec"
+      },
       src: "test/classes/**/*.js"
     },
 
