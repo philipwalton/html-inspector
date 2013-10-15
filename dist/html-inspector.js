@@ -4,10 +4,10 @@
  * Copyright (c) 2013 Philip Walton <http://philipwalton.com>
  * Released under the MIT license
  *
- * Date: 2013-08-31
+ * Date: 2013-10-15
  */
 
-(function(e){if("function"==typeof bootstrap)bootstrap("htmlinspector",e);else if("object"==typeof exports)module.exports=e();else if("function"==typeof define&&define.amd)define(e);else if("undefined"!=typeof ses){if(!ses.ok())return;ses.makeHTMLInspector=e}else"undefined"!=typeof window?window.HTMLInspector=e():global.HTMLInspector=e()})(function(){var define,ses,bootstrap,module,exports;
+!function(e){"object"==typeof exports?module.exports=e():"function"==typeof define&&define.amd?define(e):"undefined"!=typeof window?window.HTMLInspector=e():"undefined"!=typeof global?global.HTMLInspector=e():"undefined"!=typeof self&&(self.HTMLInspector=e())}(function(){var define,module,exports;
 return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /**
  * Get an object representation of an element's attributes
@@ -91,7 +91,7 @@ function matches(element, test) {
 module.exports = matches
 
 
-},{"mout/lang/toArray":14}],3:[function(require,module,exports){
+},{"mout/lang/toArray":13}],3:[function(require,module,exports){
 /**
  * Returns an array of the element's parent elements
  */
@@ -107,7 +107,6 @@ function parents(element) {
 module.exports = parents
 
 },{}],4:[function(require,module,exports){
-var forEach = require('./forEach');
 var makeIterator = require('../function/makeIterator_');
 
     /**
@@ -135,32 +134,7 @@ var makeIterator = require('../function/makeIterator_');
 
 
 
-},{"../function/makeIterator_":8,"./forEach":5}],5:[function(require,module,exports){
-
-
-    /**
-     * Array forEach
-     */
-    function forEach(arr, callback, thisObj) {
-        if (arr == null) {
-            return;
-        }
-        var i = -1,
-            len = arr.length;
-        while (++i < len) {
-            // we iterate over sparse items since there is no way to make it
-            // work properly on IE 7-8. see #64
-            if ( callback.call(thisObj, arr[i], i, arr) === false ) {
-                break;
-            }
-        }
-    }
-
-    module.exports = forEach;
-
-
-
-},{}],6:[function(require,module,exports){
+},{"../function/makeIterator_":7}],5:[function(require,module,exports){
 
 
     /**
@@ -190,7 +164,7 @@ var makeIterator = require('../function/makeIterator_');
     module.exports = indexOf;
 
 
-},{}],7:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 var indexOf = require('./indexOf');
 var filter = require('./filter');
 
@@ -209,7 +183,7 @@ var filter = require('./filter');
 
 
 
-},{"./filter":4,"./indexOf":6}],8:[function(require,module,exports){
+},{"./filter":4,"./indexOf":5}],7:[function(require,module,exports){
 var prop = require('./prop');
 var deepMatches = require('../object/deepMatches');
 
@@ -220,22 +194,19 @@ var deepMatches = require('../object/deepMatches');
      */
     function makeIterator(src, thisObj){
         switch(typeof src) {
+            case 'function':
+                // function is the first to improve perf (most common case)
+                return (typeof thisObj !== 'undefined')? function(val, i, arr){
+                    return src.call(thisObj, val, i, arr);
+                } : src;
             case 'object':
                 // typeof null == "object"
-                return (src != null)? function(val, key, target){
+                return (src != null)? function(val){
                     return deepMatches(val, src);
                 } : src;
             case 'string':
             case 'number':
                 return prop(src);
-            case 'function':
-                if (typeof thisObj === 'undefined') {
-                    return src;
-                } else {
-                    return function(val, i, arr){
-                        return src.call(thisObj, val, i, arr);
-                    };
-                }
             default:
                 return src;
         }
@@ -245,7 +216,7 @@ var deepMatches = require('../object/deepMatches');
 
 
 
-},{"../object/deepMatches":15,"./prop":9}],9:[function(require,module,exports){
+},{"../object/deepMatches":14,"./prop":8}],8:[function(require,module,exports){
 
 
     /**
@@ -261,7 +232,7 @@ var deepMatches = require('../object/deepMatches');
 
 
 
-},{}],10:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 var isKind = require('./isKind');
     /**
      */
@@ -271,7 +242,7 @@ var isKind = require('./isKind');
     module.exports = isArray;
 
 
-},{"./isKind":11}],11:[function(require,module,exports){
+},{"./isKind":10}],10:[function(require,module,exports){
 var kindOf = require('./kindOf');
     /**
      * Check if value is from a specific "kind".
@@ -282,7 +253,7 @@ var kindOf = require('./kindOf');
     module.exports = isKind;
 
 
-},{"./kindOf":13}],12:[function(require,module,exports){
+},{"./kindOf":12}],11:[function(require,module,exports){
 var isKind = require('./isKind');
     /**
      */
@@ -292,7 +263,7 @@ var isKind = require('./isKind');
     module.exports = isRegExp;
 
 
-},{"./isKind":11}],13:[function(require,module,exports){
+},{"./isKind":10}],12:[function(require,module,exports){
 
 
     var _rKind = /^\[object (.*)\]$/,
@@ -314,7 +285,7 @@ var isKind = require('./isKind');
     module.exports = kindOf;
 
 
-},{}],14:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 var kindOf = require('./kindOf');
 
     var _win = this;
@@ -347,7 +318,7 @@ var kindOf = require('./kindOf');
     module.exports = toArray;
 
 
-},{"./kindOf":13}],15:[function(require,module,exports){
+},{"./kindOf":12}],14:[function(require,module,exports){
 var forOwn = require('./forOwn');
 var isArray = require('../lang/isArray');
 
@@ -404,7 +375,7 @@ var isArray = require('../lang/isArray');
 
 
 
-},{"../lang/isArray":10,"./forOwn":17}],16:[function(require,module,exports){
+},{"../lang/isArray":9,"./forOwn":16}],15:[function(require,module,exports){
 
 
     var _hasDontEnumBug,
@@ -468,7 +439,7 @@ var isArray = require('../lang/isArray');
 
 
 
-},{}],17:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 var hasOwn = require('./hasOwn');
 var forIn = require('./forIn');
 
@@ -489,7 +460,7 @@ var forIn = require('./forIn');
 
 
 
-},{"./forIn":16,"./hasOwn":18}],18:[function(require,module,exports){
+},{"./forIn":15,"./hasOwn":17}],17:[function(require,module,exports){
 
 
     /**
@@ -503,7 +474,7 @@ var forIn = require('./forIn');
 
 
 
-},{}],19:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 var forOwn = require('./forOwn');
 
     /**
@@ -533,7 +504,7 @@ var forOwn = require('./forOwn');
     module.exports = mixIn;
 
 
-},{"./forOwn":17}],20:[function(require,module,exports){
+},{"./forOwn":16}],19:[function(require,module,exports){
 function Callbacks() {
   this.handlers = []
 }
@@ -556,7 +527,7 @@ Callbacks.prototype.fire = function(context, args) {
 
 module.exports = Callbacks
 
-},{}],21:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 var Listener = require("./listener")
   , Modules = require("./modules")
   , Reporter = require("./reporter")
@@ -733,7 +704,7 @@ HTMLInspector.rules.add( require("./rules/validation/validate-elements.js") )
 
 module.exports = HTMLInspector
 
-},{"./listener":22,"./modules":23,"./modules/css.js":24,"./modules/validation.js":25,"./reporter":26,"./rules":27,"./rules/best-practices/inline-event-handlers.js":28,"./rules/best-practices/script-placement.js":29,"./rules/best-practices/unnecessary-elements.js":30,"./rules/best-practices/unused-classes.js":31,"./rules/convention/bem-conventions.js":32,"./rules/validation/duplicate-ids.js":33,"./rules/validation/unique-elements.js":34,"./rules/validation/validate-attributes.js":35,"./rules/validation/validate-element-location.js":36,"./rules/validation/validate-elements.js":37,"dom-utils/src/get-attributes":1,"dom-utils/src/matches":2,"mout/array/unique":7,"mout/lang/isRegExp":12,"mout/lang/toArray":14,"mout/object/mixIn":19}],22:[function(require,module,exports){
+},{"./listener":21,"./modules":22,"./modules/css.js":23,"./modules/validation.js":24,"./reporter":25,"./rules":26,"./rules/best-practices/inline-event-handlers.js":27,"./rules/best-practices/script-placement.js":28,"./rules/best-practices/unnecessary-elements.js":29,"./rules/best-practices/unused-classes.js":30,"./rules/convention/bem-conventions.js":31,"./rules/validation/duplicate-ids.js":32,"./rules/validation/unique-elements.js":33,"./rules/validation/validate-attributes.js":34,"./rules/validation/validate-element-location.js":35,"./rules/validation/validate-elements.js":36,"dom-utils/src/get-attributes":1,"dom-utils/src/matches":2,"mout/array/unique":6,"mout/lang/isRegExp":11,"mout/lang/toArray":13,"mout/object/mixIn":18}],21:[function(require,module,exports){
 var Callbacks = require("./callbacks")
 
 function Listener() {
@@ -754,7 +725,7 @@ Listener.prototype.trigger = function(event, context, args) {
 }
 
 module.exports = Listener
-},{"./callbacks":20}],23:[function(require,module,exports){
+},{"./callbacks":19}],22:[function(require,module,exports){
 var mixIn = require("mout/object/mixIn")
 
 function Modules() {}
@@ -770,7 +741,7 @@ Modules.prototype.extend = function(name, options) {
 }
 
 module.exports = Modules
-},{"mout/object/mixIn":19}],24:[function(require,module,exports){
+},{"mout/object/mixIn":18}],23:[function(require,module,exports){
 var reClassSelector = /\.[a-z0-9_\-]+/ig
   , toArray = require("mout/lang/toArray")
   , unique = require("mout/array/unique")
@@ -826,7 +797,7 @@ module.exports = {
   module: css
 }
 
-},{"dom-utils/src/matches":2,"mout/array/unique":7,"mout/lang/toArray":14}],25:[function(require,module,exports){
+},{"dom-utils/src/matches":2,"mout/array/unique":6,"mout/lang/toArray":13}],24:[function(require,module,exports){
 var foundIn = require("../utils/string-matcher")
 
 // ============================================================
@@ -1706,7 +1677,7 @@ module.exports = {
   module: spec
 }
 
-},{"../utils/string-matcher":38}],26:[function(require,module,exports){
+},{"../utils/string-matcher":37}],25:[function(require,module,exports){
 function Reporter() {
   this._errors = []
 }
@@ -1724,7 +1695,7 @@ Reporter.prototype.getWarnings = function() {
 }
 
 module.exports = Reporter
-},{}],27:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 var mixIn = require("mout/object/mixIn")
 
 function Rules() {}
@@ -1758,7 +1729,7 @@ Rules.prototype.extend = function(name, options) {
 
 module.exports = Rules
 
-},{"mout/object/mixIn":19}],28:[function(require,module,exports){
+},{"mout/object/mixIn":18}],27:[function(require,module,exports){
 module.exports = {
 
   name: "inline-event-handlers",
@@ -1776,7 +1747,7 @@ module.exports = {
   }
 }
 
-},{}],29:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 module.exports = {
 
   name: "script-placement",
@@ -1830,7 +1801,7 @@ module.exports = {
     })
   }
 }
-},{"dom-utils/src/matches":2}],30:[function(require,module,exports){
+},{"dom-utils/src/matches":2}],29:[function(require,module,exports){
 module.exports = {
 
   name: "unnecessary-elements",
@@ -1857,7 +1828,7 @@ module.exports = {
   }
 }
 
-},{}],31:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 module.exports = {
 
   name: "unused-classes",
@@ -1890,7 +1861,7 @@ module.exports = {
   }
 }
 
-},{"../../utils/string-matcher":38}],32:[function(require,module,exports){
+},{"../../utils/string-matcher":37}],31:[function(require,module,exports){
 // ============================================================
 // There are several different BEM  naming conventions that
 // I'm aware of. To make things easier, I refer to the
@@ -2006,7 +1977,7 @@ module.exports = {
   }
 }
 
-},{"dom-utils/src/matches":2,"dom-utils/src/parents":3}],33:[function(require,module,exports){
+},{"dom-utils/src/matches":2,"dom-utils/src/parents":3}],32:[function(require,module,exports){
 module.exports = {
 
   name: "duplicate-ids",
@@ -2050,7 +2021,7 @@ module.exports = {
   }
 }
 
-},{}],34:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 module.exports = {
 
   name: "unique-elements",
@@ -2090,7 +2061,7 @@ module.exports = {
   }
 }
 
-},{}],35:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 module.exports = {
 
   name: "validate-attributes",
@@ -2139,7 +2110,7 @@ module.exports = {
   }
 }
 
-},{}],36:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 module.exports = {
 
   name: "validate-element-location",
@@ -2221,7 +2192,7 @@ module.exports = {
   }
 }
 
-},{"dom-utils/src/matches":2,"dom-utils/src/parents":3}],37:[function(require,module,exports){
+},{"dom-utils/src/matches":2,"dom-utils/src/parents":3}],36:[function(require,module,exports){
 module.exports = {
 
   name: "validate-elements",
@@ -2249,7 +2220,7 @@ module.exports = {
   }
 }
 
-},{}],38:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 var isRegExp = require("mout/lang/isRegExp")
 
 /**
@@ -2271,6 +2242,7 @@ function foundIn(needle, haystack) {
 
 module.exports = foundIn
 
-},{"mout/lang/isRegExp":12}]},{},[21])(21)
+},{"mout/lang/isRegExp":11}]},{},[20])
+(20)
 });
 ;
