@@ -799,12 +799,6 @@ function getAllowedChildElements(parent) {
 
 var spec = {
 
-  // This allows AngularJS's ng-* attributes to be allowed,
-  // customize to fit your needs
-  attributeWhitelist: [
-    /ng\-[a-z\-]+/
-  ],
-
   // Include any custom element you're using and want to allow
   elementWhitelist: [],
 
