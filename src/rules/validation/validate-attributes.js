@@ -2,13 +2,24 @@ module.exports = {
 
   name: "validate-attributes",
 
-  func: function(listener, reporter) {
+  config: {
+    whitelist: [
+      /ng\-[a-z\-]+/ // AngularJS
+    ]
+  },
+
+  func: function(listener, reporter, config) {
 
     var validation = this.modules.validation
+      , foundIn = require("../../utils/string-matcher")
 
     listener.on("element", function(name) {
       var required = validation.getRequiredAttributesForElement(name)
+
       required.forEach(function(attr) {
+        // ignore whitelisted attributes
+        if (foundIn(attr, config.whitelist)) return
+
         if (!this.hasAttribute(attr)) {
           reporter.warn(
             "validate-attributes",
@@ -25,6 +36,9 @@ module.exports = {
 
       // don't validate the attributes of invalid elements
       if (!validation.isElementValid(element)) return
+
+      // ignore whitelisted attributes
+      if (foundIn(name, config.whitelist)) return
 
       if (validation.isAttributeObsoleteForElement(name, element)) {
         reporter.warn(

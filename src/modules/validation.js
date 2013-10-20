@@ -776,10 +776,6 @@ function isWhitelistedElement(element) {
   return foundIn(element, spec.elementWhitelist)
 }
 
-function isWhitelistedAttribute(attribute) {
-  return foundIn(attribute, spec.attributeWhitelist)
-}
-
 function getAllowedChildElements(parent) {
   var contents
     , contentModel = []
@@ -825,9 +821,8 @@ var spec = {
   },
 
   isAttributeValidForElement: function(attribute, element) {
-    if (isGlobalAttribute(attribute) || isWhitelistedAttribute(attribute)) {
-      return true
-    }
+    if (isGlobalAttribute(attribute)) return true
+
     // some elements (like embed) accept any attribute
     // http://drafts.htmlwg.org/html/master/embedded-content-0.html#the-embed-element
     if (allowedAttributesForElement(element).indexOf("any") >= 0) return true
@@ -835,9 +830,6 @@ var spec = {
   },
 
   isAttributeObsoleteForElement: function(attribute, element) {
-    // attributes in the whitelist are never considered obsolete
-    if (isWhitelistedAttribute(attribute)) return false
-
     return obsoleteAttributes.some(function(item) {
       if (item.attribute !== attribute) return false
       return item.elements.split(/\s*;\s*/).some(function(name) {
@@ -847,9 +839,6 @@ var spec = {
   },
 
   isAttributeRequiredForElement: function(attribute, element) {
-    // attributes in the whitelist are never considered required
-    if (isWhitelistedAttribute(attribute)) return false
-
     return requiredAttributes.some(function(item) {
       return element == item.element && item.attributes.indexOf(attribute) >= 0
     })

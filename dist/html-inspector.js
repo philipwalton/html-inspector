@@ -4,7 +4,7 @@
  * Copyright (c) 2013 Philip Walton <http://philipwalton.com>
  * Released under the MIT license
  *
- * Date: 2013-10-15
+ * Date: 2013-10-19
  */
 
 !function(e){"object"==typeof exports?module.exports=e():"function"==typeof define&&define.amd?define(e):"undefined"!=typeof window?window.HTMLInspector=e():"undefined"!=typeof global?global.HTMLInspector=e():"undefined"!=typeof self&&(self.HTMLInspector=e())}(function(){var define,module,exports;
@@ -1576,10 +1576,6 @@ function isWhitelistedElement(element) {
   return foundIn(element, spec.elementWhitelist)
 }
 
-function isWhitelistedAttribute(attribute) {
-  return foundIn(attribute, spec.attributeWhitelist)
-}
-
 function getAllowedChildElements(parent) {
   var contents
     , contentModel = []
@@ -1625,9 +1621,8 @@ var spec = {
   },
 
   isAttributeValidForElement: function(attribute, element) {
-    if (isGlobalAttribute(attribute) || isWhitelistedAttribute(attribute)) {
-      return true
-    }
+    if (isGlobalAttribute(attribute)) return true
+
     // some elements (like embed) accept any attribute
     // http://drafts.htmlwg.org/html/master/embedded-content-0.html#the-embed-element
     if (allowedAttributesForElement(element).indexOf("any") >= 0) return true
@@ -1635,9 +1630,6 @@ var spec = {
   },
 
   isAttributeObsoleteForElement: function(attribute, element) {
-    // attributes in the whitelist are never considered obsolete
-    if (isWhitelistedAttribute(attribute)) return false
-
     return obsoleteAttributes.some(function(item) {
       if (item.attribute !== attribute) return false
       return item.elements.split(/\s*;\s*/).some(function(name) {
@@ -1647,9 +1639,6 @@ var spec = {
   },
 
   isAttributeRequiredForElement: function(attribute, element) {
-    // attributes in the whitelist are never considered required
-    if (isWhitelistedAttribute(attribute)) return false
-
     return requiredAttributes.some(function(item) {
       return element == item.element && item.attributes.indexOf(attribute) >= 0
     })
@@ -2066,13 +2055,24 @@ module.exports = {
 
   name: "validate-attributes",
 
-  func: function(listener, reporter) {
+  config: {
+    whitelist: [
+      /ng\-[a-z\-]+/ // AngularJS
+    ]
+  },
+
+  func: function(listener, reporter, config) {
 
     var validation = this.modules.validation
+      , foundIn = require("../../utils/string-matcher")
 
     listener.on("element", function(name) {
       var required = validation.getRequiredAttributesForElement(name)
+
       required.forEach(function(attr) {
+        // ignore whitelisted attributes
+        if (foundIn(attr, config.whitelist)) return
+
         if (!this.hasAttribute(attr)) {
           reporter.warn(
             "validate-attributes",
@@ -2089,6 +2089,9 @@ module.exports = {
 
       // don't validate the attributes of invalid elements
       if (!validation.isElementValid(element)) return
+
+      // ignore whitelisted attributes
+      if (foundIn(name, config.whitelist)) return
 
       if (validation.isAttributeObsoleteForElement(name, element)) {
         reporter.warn(
@@ -2110,7 +2113,7 @@ module.exports = {
   }
 }
 
-},{}],35:[function(require,module,exports){
+},{"../../utils/string-matcher":37}],35:[function(require,module,exports){
 module.exports = {
 
   name: "validate-element-location",

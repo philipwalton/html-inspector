@@ -164,5 +164,32 @@ describe("validate-attributes", function() {
 
   })
 
+  it("allows for customization by altering the config object", function() {
+
+    var html = parseHTML(''
+          + '<div align="right" role="main">'
+          + '  <span ng-model="User">Foo</span>'
+          + '  <select placeholder="Select a Day">'
+          + '    <option>Monday</option>'
+          + '    <option>Tuesday</option>'
+          + '  </select>'
+          + '  <img alt="Image" />'
+          + '</div>'
+        )
+
+    // the whitelist can be a single RegExp
+    HTMLInspector.rules.extend("validate-attributes", function(config) {
+      config.whitelist.push("src", /place.+/, "align")
+      return config
+    })
+
+    HTMLInspector.inspect({
+      useRules: ["validate-attributes"],
+      domRoot: html,
+      onComplete: onComplete
+    })
+
+    expect(log.length).to.equal(0)
+  })
 
 })

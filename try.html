@@ -24,7 +24,7 @@
       <li>Bar</li>
     </ul>
 
-    <p>This is a <title>title</title> element</p>
+    <p foo="bar">This is a <title>title</title> element</p>
 
     <em><p>emphasize!</p></em>
 
@@ -43,7 +43,8 @@
 
 
       HTMLInspector.inspect({
-        excludeRules: ["inline-event-handlers"]
+        // excludeRules: ["inline-event-handlers"]
+        useRules: ['validate-attributes']
       })
 
     </script>
