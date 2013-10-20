@@ -1572,17 +1572,13 @@ function isGlobalAttribute(attribute) {
   return foundIn(attribute, globalAttributes)
 }
 
-function isWhitelistedElement(element) {
-  return foundIn(element, spec.elementWhitelist)
-}
-
 function getAllowedChildElements(parent) {
   var contents
     , contentModel = []
 
   // ignore children properties that contain an asterisk for now
   contents = elementData[parent].children
-  contents = contents.indexOf("*") > -1 ? [] : contents.split(/\s*\;\s*/)
+  contents = contents.indexOf("*") >= 0 ? [] : contents.split(/\s*\;\s*/)
 
   // replace content categories with their elements
   contents.forEach(function(item) {
@@ -1599,19 +1595,12 @@ function getAllowedChildElements(parent) {
 
 var spec = {
 
-  // Include any custom element you're using and want to allow
-  elementWhitelist: [],
-
   isElementValid: function(element) {
-    return isWhitelistedElement(element)
-      ? true
-      : elements.indexOf(element) >= 0
+    return elements.indexOf(element) >= 0
   },
 
   isElementObsolete: function(element) {
-    return isWhitelistedElement(element)
-      ? false
-      : obsoluteElements.indexOf(element) >= 0
+    return obsoluteElements.indexOf(element) >= 0
   },
 
   isAttributeValidForElement: function(attribute, element) {
@@ -2045,6 +2034,8 @@ module.exports = {
 }
 
 },{}],34:[function(require,module,exports){
+var foundIn = require("../../utils/string-matcher")
+
 module.exports = {
 
   name: "validate-attributes",
@@ -2058,7 +2049,6 @@ module.exports = {
   func: function(listener, reporter, config) {
 
     var validation = this.modules.validation
-      , foundIn = require("../../utils/string-matcher")
 
     listener.on("element", function(name) {
       var required = validation.getRequiredAttributesForElement(name)
@@ -2190,15 +2180,25 @@ module.exports = {
 }
 
 },{"dom-utils/src/matches":2,"dom-utils/src/parents":3}],36:[function(require,module,exports){
+var foundIn = require("../../utils/string-matcher")
+
 module.exports = {
 
   name: "validate-elements",
 
-  func: function(listener, reporter) {
+  config: {
+    whitelist: []
+  },
+
+  func: function(listener, reporter, config) {
 
     var validation = this.modules.validation
 
     listener.on("element", function(name) {
+
+      // ignore whitelisted elements
+      if (foundIn(name, config.whitelist)) return
+
       if (validation.isElementObsolete(name)) {
         reporter.warn(
           "validate-elements",
@@ -2217,7 +2217,7 @@ module.exports = {
   }
 }
 
-},{}],37:[function(require,module,exports){
+},{"../../utils/string-matcher":37}],37:[function(require,module,exports){
 var isRegExp = require("mout/lang/isRegExp")
 
 /**

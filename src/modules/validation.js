@@ -772,17 +772,13 @@ function isGlobalAttribute(attribute) {
   return foundIn(attribute, globalAttributes)
 }
 
-function isWhitelistedElement(element) {
-  return foundIn(element, spec.elementWhitelist)
-}
-
 function getAllowedChildElements(parent) {
   var contents
     , contentModel = []
 
   // ignore children properties that contain an asterisk for now
   contents = elementData[parent].children
-  contents = contents.indexOf("*") > -1 ? [] : contents.split(/\s*\;\s*/)
+  contents = contents.indexOf("*") >= 0 ? [] : contents.split(/\s*\;\s*/)
 
   // replace content categories with their elements
   contents.forEach(function(item) {
@@ -799,19 +795,12 @@ function getAllowedChildElements(parent) {
 
 var spec = {
 
-  // Include any custom element you're using and want to allow
-  elementWhitelist: [],
-
   isElementValid: function(element) {
-    return isWhitelistedElement(element)
-      ? true
-      : elements.indexOf(element) >= 0
+    return elements.indexOf(element) >= 0
   },
 
   isElementObsolete: function(element) {
-    return isWhitelistedElement(element)
-      ? false
-      : obsoluteElements.indexOf(element) >= 0
+    return obsoluteElements.indexOf(element) >= 0
   },
 
   isAttributeValidForElement: function(attribute, element) {

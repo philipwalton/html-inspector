@@ -1,12 +1,22 @@
+var foundIn = require("../../utils/string-matcher")
+
 module.exports = {
 
   name: "validate-elements",
 
-  func: function(listener, reporter) {
+  config: {
+    whitelist: []
+  },
+
+  func: function(listener, reporter, config) {
 
     var validation = this.modules.validation
 
     listener.on("element", function(name) {
+
+      // ignore whitelisted elements
+      if (foundIn(name, config.whitelist)) return
+
       if (validation.isElementObsolete(name)) {
         reporter.warn(
           "validate-elements",

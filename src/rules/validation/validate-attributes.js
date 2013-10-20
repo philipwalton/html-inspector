@@ -1,3 +1,5 @@
+var foundIn = require("../../utils/string-matcher")
+
 module.exports = {
 
   name: "validate-attributes",
@@ -11,7 +13,6 @@ module.exports = {
   func: function(listener, reporter, config) {
 
     var validation = this.modules.validation
-      , foundIn = require("../../utils/string-matcher")
 
     listener.on("element", function(name) {
       var required = validation.getRequiredAttributesForElement(name)

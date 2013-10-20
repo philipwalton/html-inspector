@@ -68,14 +68,4 @@ describe("validation", function() {
     expect(validation.isChildAllowedInParent("td", "tr")).to.equal(true)
   })
 
-  it("ignores elements that are whitelisted", function() {
-    validation.elementWhitelist = validation.elementWhitelist.concat(["foo", "bar", "font", "center"])
-    // valid elements
-    expect(validation.isElementValid("foo")).to.equal(true)
-    expect(validation.isElementValid("bar")).to.equal(true)
-    // obsolete elements
-    expect(validation.isElementObsolete("font")).to.equal(false)
-    expect(validation.isElementObsolete("center")).to.equal(false)
-  })
-
 })

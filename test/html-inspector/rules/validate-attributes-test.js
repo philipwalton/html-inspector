@@ -177,7 +177,6 @@ describe("validate-attributes", function() {
           + '</div>'
         )
 
-    // the whitelist can be a single RegExp
     HTMLInspector.rules.extend("validate-attributes", function(config) {
       config.whitelist.push("src", /place.+/, "align")
       return config

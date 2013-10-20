@@ -484,16 +484,6 @@ describe("validation", function() {
     expect(validation.isChildAllowedInParent("td", "tr")).to.equal(true)
   })
 
-  it("ignores elements that are whitelisted", function() {
-    validation.elementWhitelist = validation.elementWhitelist.concat(["foo", "bar", "font", "center"])
-    // valid elements
-    expect(validation.isElementValid("foo")).to.equal(true)
-    expect(validation.isElementValid("bar")).to.equal(true)
-    // obsolete elements
-    expect(validation.isElementObsolete("font")).to.equal(false)
-    expect(validation.isElementObsolete("center")).to.equal(false)
-  })
-
 })
 
 })
@@ -1382,7 +1372,6 @@ describe("validate-attributes", function() {
           + '</div>'
         )
 
-    // the whitelist can be a single RegExp
     HTMLInspector.rules.extend("validate-attributes", function(config) {
       config.whitelist.push("src", /place.+/, "align")
       return config
@@ -1663,6 +1652,33 @@ describe("validate-elements", function() {
 
     expect(log.length).to.equal(0)
 
+  })
+
+
+  it("allows for customization by altering the config object", function() {
+
+    var html = parseHTML(''
+          + '<div>'
+          + '  <center>'
+          + '    <foo>Foo</foo>'
+          + '    <bar>Bar</bar>'
+          + '    <font>Font</font>'
+          + '  </center>'
+          + '</div>'
+        )
+
+    // HTMLInspector.rules.extend("validate-elements", function(config) {
+    //   config.whitelist.push("foo", "bar", "font", "center")
+    //   return config
+    // })
+
+    HTMLInspector.inspect({
+      useRules: ["validate-elements"],
+      domRoot: html,
+      onComplete: onComplete
+    })
+
+    expect(log.length).to.equal(0)
   })
 
 })
