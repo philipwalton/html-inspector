@@ -2,7 +2,7 @@
 
 - [How is HTML Inspector different than the W3C Validator?](#how-is-html-inspector-different-than-the-w3c-validator)
 - [Can HTML Inspector detect unclosed tags?](#can-html-inspector-detect-unclosed-tags)
-- [Why does HTML Inspector warn me about unused classes when those classes *are* found in my stylesheets?](https://github.com/philipwalton/html-inspector/edit/master/FAQs.md#why-does-html-inspector-warn-me-about-unused-classes-when-those-classes-are-found-in-my-stylesheets)
+- [Why does HTML Inspector warn me about unused classes when those classes *are* found in my stylesheets?](#why-does-html-inspector-warn-me-about-unused-classes-when-those-classes-are-found-in-my-stylesheets)
 - [How can I get HTML Inspector to stop warning me about unused Modernizr classes?](#how-can-i-get-html-inspector-to-stop-warning-me-about-unused-modernizr-classes)
 - [I use Disqus and I'm getting warnings about obsolete attributes on the `<iframe>` element. How can I prevent those?](#i-use-disqus-and-im-getting-warnings-about-obsolete-attributes-on-the-iframe-element-how-can-i-prevent-those)
 - [Is there a browser extension or bookmarklet for HTML Inspector?](#is-there-a-browser-extension-or-bookmarklet-for-html-inspector)
