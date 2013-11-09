@@ -1,3 +1,8 @@
+### 0.6.0 (November 9, 2013)
+
+* Add the ability to whitelist to every rule.
+* Fix a security warning in Firefox when trying to access properties of cross origin stylesheets.
+
 ### 0.5.1 (August 31, 2013)
 
 * Fix incorrectly reporting version number from CLI.
