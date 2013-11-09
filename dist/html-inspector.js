@@ -541,8 +541,7 @@ var Listener = require("./listener")
   , matches = require("dom-utils/src/matches")
   , getAttributes = require("dom-utils/src/get-attributes")
 
-  // used to parse URLs
-  , link = document.createElement("a")
+  , isCrossOrigin = require("./utils/cross-origin")
 
 /**
  * Set (or reset) all data back to its original value
@@ -622,16 +621,6 @@ function mergeOptions(options) {
 }
 
 /**
- * Tests whether a URL is cross-origin
- * Same origin URLs must have the same protocol and host
- * (note: host include hostname and port)
- */
-function isCrossOrigin(url) {
-  link.href = url
-  return !(link.protocol == location.protocol && link.host == location.host)
-}
-
-/**
  * cross-origin iframe elements throw errors when being
  * logged to the console.
  * This function removes them from the context before
@@ -704,7 +693,7 @@ HTMLInspector.rules.add( require("./rules/validation/validate-elements.js") )
 
 module.exports = HTMLInspector
 
-},{"./listener":21,"./modules":22,"./modules/css.js":23,"./modules/validation.js":24,"./reporter":25,"./rules":26,"./rules/best-practices/inline-event-handlers.js":27,"./rules/best-practices/script-placement.js":28,"./rules/best-practices/unnecessary-elements.js":29,"./rules/best-practices/unused-classes.js":30,"./rules/convention/bem-conventions.js":31,"./rules/validation/duplicate-ids.js":32,"./rules/validation/unique-elements.js":33,"./rules/validation/validate-attributes.js":34,"./rules/validation/validate-element-location.js":35,"./rules/validation/validate-elements.js":36,"dom-utils/src/get-attributes":1,"dom-utils/src/matches":2,"mout/array/unique":6,"mout/lang/isRegExp":11,"mout/lang/toArray":13,"mout/object/mixIn":18}],21:[function(require,module,exports){
+},{"./listener":21,"./modules":22,"./modules/css.js":23,"./modules/validation.js":24,"./reporter":25,"./rules":26,"./rules/best-practices/inline-event-handlers.js":27,"./rules/best-practices/script-placement.js":28,"./rules/best-practices/unnecessary-elements.js":29,"./rules/best-practices/unused-classes.js":30,"./rules/convention/bem-conventions.js":31,"./rules/validation/duplicate-ids.js":32,"./rules/validation/unique-elements.js":33,"./rules/validation/validate-attributes.js":34,"./rules/validation/validate-element-location.js":35,"./rules/validation/validate-elements.js":36,"./utils/cross-origin":37,"dom-utils/src/get-attributes":1,"dom-utils/src/matches":2,"mout/array/unique":6,"mout/lang/isRegExp":11,"mout/lang/toArray":13,"mout/object/mixIn":18}],21:[function(require,module,exports){
 var Callbacks = require("./callbacks")
 
 function Listener() {
@@ -746,6 +735,7 @@ var reClassSelector = /\.[a-z0-9_\-]+/ig
   , toArray = require("mout/lang/toArray")
   , unique = require("mout/array/unique")
   , matches = require("dom-utils/src/matches")
+  , isCrossOrigin = require("../utils/cross-origin")
 
 /**
  * Get an array of class selectors from a CSSRuleList object
@@ -772,7 +762,10 @@ function getClassesFromRuleList(rulelist) {
  */
 function getClassesFromStyleSheets(styleSheets) {
   return styleSheets.reduce(function(classes, sheet) {
-    return classes.concat(getClassesFromRuleList(toArray(sheet.cssRules)))
+    // cross origin stylesheets don't expose their cssRules property
+    return sheet.href && isCrossOrigin(sheet.href)
+      ? classes
+      : classes.concat(getClassesFromRuleList(toArray(sheet.cssRules)))
   }, [])
 }
 
@@ -797,7 +790,7 @@ module.exports = {
   module: css
 }
 
-},{"dom-utils/src/matches":2,"mout/array/unique":6,"mout/lang/toArray":13}],24:[function(require,module,exports){
+},{"../utils/cross-origin":37,"dom-utils/src/matches":2,"mout/array/unique":6,"mout/lang/toArray":13}],24:[function(require,module,exports){
 var foundIn = require("../utils/string-matcher")
 
 // ============================================================
@@ -1649,7 +1642,7 @@ module.exports = {
   module: spec
 }
 
-},{"../utils/string-matcher":37}],25:[function(require,module,exports){
+},{"../utils/string-matcher":38}],25:[function(require,module,exports){
 function Reporter() {
   this._errors = []
 }
@@ -1725,7 +1718,7 @@ module.exports = {
   }
 }
 
-},{"../../utils/string-matcher":37}],28:[function(require,module,exports){
+},{"../../utils/string-matcher":38}],28:[function(require,module,exports){
 module.exports = {
 
   name: "script-placement",
@@ -1839,7 +1832,7 @@ module.exports = {
   }
 }
 
-},{"../../utils/string-matcher":37}],31:[function(require,module,exports){
+},{"../../utils/string-matcher":38}],31:[function(require,module,exports){
 // ============================================================
 // There are several different BEM  naming conventions that
 // I'm aware of. To make things easier, I refer to the
@@ -2008,7 +2001,7 @@ module.exports = {
   }
 }
 
-},{"../../utils/string-matcher":37}],33:[function(require,module,exports){
+},{"../../utils/string-matcher":38}],33:[function(require,module,exports){
 module.exports = {
 
   name: "unique-elements",
@@ -2112,7 +2105,7 @@ module.exports = {
   }
 }
 
-},{"../../utils/string-matcher":37}],35:[function(require,module,exports){
+},{"../../utils/string-matcher":38}],35:[function(require,module,exports){
 module.exports = {
 
   name: "validate-element-location",
@@ -2244,7 +2237,21 @@ module.exports = {
   }
 }
 
-},{"../../utils/string-matcher":37}],37:[function(require,module,exports){
+},{"../../utils/string-matcher":38}],37:[function(require,module,exports){
+// used to parse URLs
+var link = document.createElement("a")
+
+/**
+ * Tests whether a URL is cross-origin
+ * Same origin URLs must have the same protocol and host
+ * (note: host include hostname and port)
+ */
+module.exports = function(url) {
+  link.href = url
+  return !(link.protocol == location.protocol && link.host == location.host)
+}
+
+},{}],38:[function(require,module,exports){
 var isRegExp = require("mout/lang/isRegExp")
 
 /**

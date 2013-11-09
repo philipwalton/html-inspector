@@ -2,6 +2,7 @@ var reClassSelector = /\.[a-z0-9_\-]+/ig
   , toArray = require("mout/lang/toArray")
   , unique = require("mout/array/unique")
   , matches = require("dom-utils/src/matches")
+  , isCrossOrigin = require("../utils/cross-origin")
 
 /**
  * Get an array of class selectors from a CSSRuleList object
@@ -28,7 +29,10 @@ function getClassesFromRuleList(rulelist) {
  */
 function getClassesFromStyleSheets(styleSheets) {
   return styleSheets.reduce(function(classes, sheet) {
-    return classes.concat(getClassesFromRuleList(toArray(sheet.cssRules)))
+    // cross origin stylesheets don't expose their cssRules property
+    return sheet.href && isCrossOrigin(sheet.href)
+      ? classes
+      : classes.concat(getClassesFromRuleList(toArray(sheet.cssRules)))
   }, [])
 }
 

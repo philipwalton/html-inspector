@@ -11,8 +11,7 @@ var Listener = require("./listener")
   , matches = require("dom-utils/src/matches")
   , getAttributes = require("dom-utils/src/get-attributes")
 
-  // used to parse URLs
-  , link = document.createElement("a")
+  , isCrossOrigin = require("./utils/cross-origin")
 
 /**
  * Set (or reset) all data back to its original value
@@ -89,16 +88,6 @@ function mergeOptions(options) {
     : options.domRoot
 
   return options
-}
-
-/**
- * Tests whether a URL is cross-origin
- * Same origin URLs must have the same protocol and host
- * (note: host include hostname and port)
- */
-function isCrossOrigin(url) {
-  link.href = url
-  return !(link.protocol == location.protocol && link.host == location.host)
 }
 
 /**
