@@ -747,9 +747,9 @@ describe("duplicate-ids", function() {
           + '</div>'
         )
 
-    // whitelist #script1
+    // whitelist foobar
     HTMLInspector.rules.extend("duplicate-ids", {
-      whitelist: "foobar"
+      whitelist: ["foobar"]
     })
 
     HTMLInspector.inspect({
@@ -813,6 +813,30 @@ describe("inline-event-handlers", function() {
     })
 
     expect(log.length).to.equal(0)
+  })
+
+  it("allows for customization by altering the config object", function() {
+    var html = parseHTML(''
+          + '<div onresize="alert(\'bad!\')">'
+          + '  <p>Foo</p>'
+          + '  <p>Bar <a href="#" onclick="alert(\'bad!\')">click me</em></p>'
+          + '</div>'
+        )
+
+    // whitelist onclick
+    HTMLInspector.rules.extend("inline-event-handlers", {
+      whitelist: ["onclick"]
+    })
+
+    HTMLInspector.inspect({
+      useRules: ["inline-event-handlers"],
+      domRoot: html,
+      onComplete: onComplete
+    })
+
+    expect(log.length).to.equal(1)
+    expect(log[0].message).to.equal("An 'onresize' attribute was found in the HTML. Use external scripts for event binding instead.")
+    expect(log[0].context).to.deep.equal(html)
   })
 
 })

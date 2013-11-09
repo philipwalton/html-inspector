@@ -57,7 +57,7 @@ describe("duplicate-ids", function() {
           + '</div>'
         )
 
-    // whitelist #script1
+    // whitelist foobar
     HTMLInspector.rules.extend("duplicate-ids", {
       whitelist: ["foobar"]
     })

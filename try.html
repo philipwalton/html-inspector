@@ -41,13 +41,13 @@
 
     <script>
 
-      HTMLInspector.rules.extend('duplicate-ids', {
-        whitelist: ['foo']
+      HTMLInspector.rules.extend('inline-event-handlers', {
+        whitelist: [/om/]
       })
 
       HTMLInspector.inspect({
         // excludeRules: ["inline-event-handlers"]
-        useRules: ['duplicate-ids']
+        useRules: ['inline-event-handlers']
       })
 
     </script>

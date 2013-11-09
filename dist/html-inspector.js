@@ -1702,13 +1702,19 @@ Rules.prototype.extend = function(name, options) {
 module.exports = Rules
 
 },{"mout/object/mixIn":18}],27:[function(require,module,exports){
+var foundIn = require("../../utils/string-matcher")
+
 module.exports = {
 
   name: "inline-event-handlers",
 
-  func: function(listener, reporter) {
+  config: {
+    whitelist: []
+  },
+
+  func: function(listener, reporter, config) {
     listener.on('attribute', function(name, value) {
-      if (name.indexOf("on") === 0) {
+      if (name.indexOf("on") === 0 && !foundIn(name, config.whitelist)) {
         reporter.warn(
           "inline-event-handlers",
           "An '" + name + "' attribute was found in the HTML. Use external scripts for event binding instead.",
@@ -1719,7 +1725,7 @@ module.exports = {
   }
 }
 
-},{}],28:[function(require,module,exports){
+},{"../../utils/string-matcher":37}],28:[function(require,module,exports){
 module.exports = {
 
   name: "script-placement",
