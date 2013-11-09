@@ -43,7 +43,7 @@ htmlinspector --help
 bower install html-inspector
 ```
 
-If you clone the Github repo, just use the file at `dist/html-inspector.js`.
+If you clone the Github repo, just use the file named `html-inspector.js` in the project root.
 
 Once HTML Inspector is added, you can run `HTMLInspector.inspect()` to see the results. Calling `inspect` with no options will load all rules and run them with their default configuration options.
 

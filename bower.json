@@ -1,7 +1,7 @@
 {
   "name": "html-inspector",
   "version": "0.6.0",
-  "main": "dist/html-inspector.js",
+  "main": "html-inspector.js",
   "ignore": [
     "bin",
     "img",

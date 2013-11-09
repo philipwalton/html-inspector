@@ -22,8 +22,8 @@ module.exports = function(grunt) {
       },
       dist: {
         options: { banner: "<%= banner %>" },
-        src: "dist/<%= pkg.name %>.js",
-        dest: "dist/<%= pkg.name %>.js"
+        src: "<%= pkg.name %>.js",
+        dest: "<%= pkg.name %>.js"
       },
       html_inspector_test: {
         src: [
@@ -42,7 +42,7 @@ module.exports = function(grunt) {
     browserify: {
       dist: {
         src: "src/html-inspector.js",
-        dest: "dist/<%= pkg.name %>.js",
+        dest: "<%= pkg.name %>.js",
         options: {
           standalone: "HTMLInspector"
         }
