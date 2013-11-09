@@ -1,3 +1,8 @@
+### 0.7.0 (November 9, 2013)
+
+* Move the main script from the `dist` folder to the project root.
+* Ignore all files execpt the main script in bower.json.
+
 ### 0.6.0 (November 9, 2013)
 
 * Add the ability to whitelist to every rule.
