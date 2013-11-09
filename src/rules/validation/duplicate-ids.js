@@ -1,13 +1,22 @@
+var foundIn = require("../../utils/string-matcher")
+
 module.exports = {
 
   name: "duplicate-ids",
 
-  func: function(listener, reporter) {
+  config: {
+    whitelist: []
+  },
+
+  func: function(listener, reporter, config) {
 
     var elements = []
 
     listener.on("id", function(name) {
-      elements.push({id: name, context: this})
+      // ignore whitelisted attributes
+      if (!foundIn(name, config.whitelist)) {
+        elements.push({id: name, context: this})
+      }
     })
 
     listener.on("afterInspect", function() {

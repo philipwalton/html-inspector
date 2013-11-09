@@ -484,30 +484,8 @@ describe("validation", function() {
     expect(validation.isChildAllowedInParent("td", "tr")).to.equal(true)
   })
 
-  it("ignores elements that are whitelisted", function() {
-    validation.elementWhitelist = validation.elementWhitelist.concat(["foo", "bar", "font", "center"])
-    // valid elements
-    expect(validation.isElementValid("foo")).to.equal(true)
-    expect(validation.isElementValid("bar")).to.equal(true)
-    // obsolete elements
-    expect(validation.isElementObsolete("font")).to.equal(false)
-    expect(validation.isElementObsolete("center")).to.equal(false)
-  })
-
-  it("ignores attributes that are whitelisted", function() {
-    validation.attributeWhitelist = validation.attributeWhitelist.concat(["src", "placeholder", "align", /^bg[a-z]+$/])
-    // valid elements
-    expect(validation.isAttributeValidForElement("placeholder", "select")).to.equal(true)
-    expect(validation.isAttributeValidForElement("ng-model", "div")).to.equal(true)
-    // obsolete elements
-    expect(validation.isAttributeObsoleteForElement("align", "div")).to.equal(false)
-    expect(validation.isAttributeObsoleteForElement("bgcolor", "body")).to.equal(false)
-    // required attributes
-    expect(validation.isAttributeRequiredForElement("src", "img")).to.equal(false)
-
-  })
-
 })
+
 })
 
 describe("Rules", function() {
@@ -760,6 +738,31 @@ describe("duplicate-ids", function() {
     expect(log.length).to.equal(0)
   })
 
+  it("allows for customization by altering the config object", function() {
+
+    var html = parseHTML(''
+          + '<div id="foobar">'
+          + '  <p id="foobar">Foo</p>'
+          + '  <p id="barfoo">bar <em id="barfoo">Em</em></p>'
+          + '</div>'
+        )
+
+    // whitelist foobar
+    HTMLInspector.rules.extend("duplicate-ids", {
+      whitelist: ["foobar"]
+    })
+
+    HTMLInspector.inspect({
+      useRules: ["duplicate-ids"],
+      domRoot: html,
+      onComplete: onComplete
+    })
+
+    expect(log.length).to.equal(1)
+    expect(log[0].message).to.equal("The id 'barfoo' appears more than once in the document.")
+    expect(log[0].context).to.deep.equal([html.querySelector("p#barfoo"), html.querySelector("em#barfoo")])
+  })
+
 })
 
 describe("inline-event-handlers", function() {
@@ -810,6 +813,30 @@ describe("inline-event-handlers", function() {
     })
 
     expect(log.length).to.equal(0)
+  })
+
+  it("allows for customization by altering the config object", function() {
+    var html = parseHTML(''
+          + '<div onresize="alert(\'bad!\')">'
+          + '  <p>Foo</p>'
+          + '  <p>Bar <a href="#" onclick="alert(\'bad!\')">click me</em></p>'
+          + '</div>'
+        )
+
+    // whitelist onclick
+    HTMLInspector.rules.extend("inline-event-handlers", {
+      whitelist: ["onclick"]
+    })
+
+    HTMLInspector.inspect({
+      useRules: ["inline-event-handlers"],
+      domRoot: html,
+      onComplete: onComplete
+    })
+
+    expect(log.length).to.equal(1)
+    expect(log[0].message).to.equal("An 'onresize' attribute was found in the HTML. Use external scripts for event binding instead.")
+    expect(log[0].context).to.deep.equal(html)
   })
 
 })
@@ -1381,6 +1408,32 @@ describe("validate-attributes", function() {
 
   })
 
+  it("allows for customization by altering the config object", function() {
+
+    var html = parseHTML(''
+          + '<div align="right" role="main">'
+          + '  <span ng-model="User">Foo</span>'
+          + '  <select placeholder="Select a Day">'
+          + '    <option>Monday</option>'
+          + '    <option>Tuesday</option>'
+          + '  </select>'
+          + '  <img alt="Image" />'
+          + '</div>'
+        )
+
+    HTMLInspector.rules.extend("validate-attributes", function(config) {
+      config.whitelist.push("src", /place.+/, "align")
+      return config
+    })
+
+    HTMLInspector.inspect({
+      useRules: ["validate-attributes"],
+      domRoot: html,
+      onComplete: onComplete
+    })
+
+    expect(log.length).to.equal(0)
+  })
 
 })
 describe("validate-element-location", function() {
@@ -1542,6 +1595,44 @@ describe("validate-element-location", function() {
     expect(log.length).to.equal(0)
   })
 
+  it("allows for customization by altering the config object", function() {
+
+    var html = parseHTML(''
+          + '<div>'
+          + '  <style scoped> .foo { } </style>'
+          + '  <h1>This is a <p>Heading!</p> shit</h1>'
+          + '  <span>'
+          + '    <ul>'
+          + '      <li>foo</li>'
+          + '    </ul>'
+          + '  </span>'
+          + '  <ul>'
+          + '    <span><li>Foo</li></span>'
+          + '    <li>Bar</li>'
+          + '  </ul>'
+          + '  <p>This is a <title>title</title> element</p>'
+          + '  <em><p>emphasize!</p></em>'
+          + '</div>'
+        )
+
+    // whitelist foobar
+    HTMLInspector.rules.extend("validate-element-location", {
+      whitelist: [":not(p)"]
+    })
+
+    HTMLInspector.inspect({
+      useRules: ["validate-element-location"],
+      domRoot: html,
+      onComplete: onComplete
+    })
+
+    expect(log.length).to.equal(2)
+    expect(log[0].message).to.equal("The <p> element cannot be a child of the <h1> element.")
+    expect(log[0].context).to.equal(html.querySelector("h1 > p"))
+    expect(log[1].message).to.equal("The <p> element cannot be a child of the <em> element.")
+    expect(log[1].context).to.equal(html.querySelector("em > p"))
+  })
+
 })
 describe("validate-elements", function() {
 
@@ -1648,6 +1739,33 @@ describe("validate-elements", function() {
 
     expect(log.length).to.equal(0)
 
+  })
+
+
+  it("allows for customization by altering the config object", function() {
+
+    var html = parseHTML(''
+          + '<div>'
+          + '  <center>'
+          + '    <foo>Foo</foo>'
+          + '    <bar>Bar</bar>'
+          + '    <font>Font</font>'
+          + '  </center>'
+          + '</div>'
+        )
+
+    HTMLInspector.rules.extend("validate-elements", function(config) {
+      config.whitelist.push("foo", "bar", "font", "center")
+      return config
+    })
+
+    HTMLInspector.inspect({
+      useRules: ["validate-elements"],
+      domRoot: html,
+      onComplete: onComplete
+    })
+
+    expect(log.length).to.equal(0)
   })
 
 })

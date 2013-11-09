@@ -772,21 +772,13 @@ function isGlobalAttribute(attribute) {
   return foundIn(attribute, globalAttributes)
 }
 
-function isWhitelistedElement(element) {
-  return foundIn(element, spec.elementWhitelist)
-}
-
-function isWhitelistedAttribute(attribute) {
-  return foundIn(attribute, spec.attributeWhitelist)
-}
-
 function getAllowedChildElements(parent) {
   var contents
     , contentModel = []
 
   // ignore children properties that contain an asterisk for now
   contents = elementData[parent].children
-  contents = contents.indexOf("*") > -1 ? [] : contents.split(/\s*\;\s*/)
+  contents = contents.indexOf("*") >= 0 ? [] : contents.split(/\s*\;\s*/)
 
   // replace content categories with their elements
   contents.forEach(function(item) {
@@ -803,31 +795,17 @@ function getAllowedChildElements(parent) {
 
 var spec = {
 
-  // This allows AngularJS's ng-* attributes to be allowed,
-  // customize to fit your needs
-  attributeWhitelist: [
-    /ng\-[a-z\-]+/
-  ],
-
-  // Include any custom element you're using and want to allow
-  elementWhitelist: [],
-
   isElementValid: function(element) {
-    return isWhitelistedElement(element)
-      ? true
-      : elements.indexOf(element) >= 0
+    return elements.indexOf(element) >= 0
   },
 
   isElementObsolete: function(element) {
-    return isWhitelistedElement(element)
-      ? false
-      : obsoluteElements.indexOf(element) >= 0
+    return obsoluteElements.indexOf(element) >= 0
   },
 
   isAttributeValidForElement: function(attribute, element) {
-    if (isGlobalAttribute(attribute) || isWhitelistedAttribute(attribute)) {
-      return true
-    }
+    if (isGlobalAttribute(attribute)) return true
+
     // some elements (like embed) accept any attribute
     // http://drafts.htmlwg.org/html/master/embedded-content-0.html#the-embed-element
     if (allowedAttributesForElement(element).indexOf("any") >= 0) return true
@@ -835,9 +813,6 @@ var spec = {
   },
 
   isAttributeObsoleteForElement: function(attribute, element) {
-    // attributes in the whitelist are never considered obsolete
-    if (isWhitelistedAttribute(attribute)) return false
-
     return obsoleteAttributes.some(function(item) {
       if (item.attribute !== attribute) return false
       return item.elements.split(/\s*;\s*/).some(function(name) {
@@ -847,9 +822,6 @@ var spec = {
   },
 
   isAttributeRequiredForElement: function(attribute, element) {
-    // attributes in the whitelist are never considered required
-    if (isWhitelistedAttribute(attribute)) return false
-
     return requiredAttributes.some(function(item) {
       return element == item.element && item.attributes.indexOf(attribute) >= 0
     })

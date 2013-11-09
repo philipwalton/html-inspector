@@ -105,4 +105,31 @@ describe("validate-elements", function() {
 
   })
 
+
+  it("allows for customization by altering the config object", function() {
+
+    var html = parseHTML(''
+          + '<div>'
+          + '  <center>'
+          + '    <foo>Foo</foo>'
+          + '    <bar>Bar</bar>'
+          + '    <font>Font</font>'
+          + '  </center>'
+          + '</div>'
+        )
+
+    HTMLInspector.rules.extend("validate-elements", function(config) {
+      config.whitelist.push("foo", "bar", "font", "center")
+      return config
+    })
+
+    HTMLInspector.inspect({
+      useRules: ["validate-elements"],
+      domRoot: html,
+      onComplete: onComplete
+    })
+
+    expect(log.length).to.equal(0)
+  })
+
 })

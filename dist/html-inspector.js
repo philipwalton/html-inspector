@@ -4,7 +4,7 @@
  * Copyright (c) 2013 Philip Walton <http://philipwalton.com>
  * Released under the MIT license
  *
- * Date: 2013-10-15
+ * Date: 2013-11-09
  */
 
 !function(e){"object"==typeof exports?module.exports=e():"function"==typeof define&&define.amd?define(e):"undefined"!=typeof window?window.HTMLInspector=e():"undefined"!=typeof global?global.HTMLInspector=e():"undefined"!=typeof self&&(self.HTMLInspector=e())}(function(){var define,module,exports;
@@ -1572,21 +1572,13 @@ function isGlobalAttribute(attribute) {
   return foundIn(attribute, globalAttributes)
 }
 
-function isWhitelistedElement(element) {
-  return foundIn(element, spec.elementWhitelist)
-}
-
-function isWhitelistedAttribute(attribute) {
-  return foundIn(attribute, spec.attributeWhitelist)
-}
-
 function getAllowedChildElements(parent) {
   var contents
     , contentModel = []
 
   // ignore children properties that contain an asterisk for now
   contents = elementData[parent].children
-  contents = contents.indexOf("*") > -1 ? [] : contents.split(/\s*\;\s*/)
+  contents = contents.indexOf("*") >= 0 ? [] : contents.split(/\s*\;\s*/)
 
   // replace content categories with their elements
   contents.forEach(function(item) {
@@ -1603,31 +1595,17 @@ function getAllowedChildElements(parent) {
 
 var spec = {
 
-  // This allows AngularJS's ng-* attributes to be allowed,
-  // customize to fit your needs
-  attributeWhitelist: [
-    /ng\-[a-z\-]+/
-  ],
-
-  // Include any custom element you're using and want to allow
-  elementWhitelist: [],
-
   isElementValid: function(element) {
-    return isWhitelistedElement(element)
-      ? true
-      : elements.indexOf(element) >= 0
+    return elements.indexOf(element) >= 0
   },
 
   isElementObsolete: function(element) {
-    return isWhitelistedElement(element)
-      ? false
-      : obsoluteElements.indexOf(element) >= 0
+    return obsoluteElements.indexOf(element) >= 0
   },
 
   isAttributeValidForElement: function(attribute, element) {
-    if (isGlobalAttribute(attribute) || isWhitelistedAttribute(attribute)) {
-      return true
-    }
+    if (isGlobalAttribute(attribute)) return true
+
     // some elements (like embed) accept any attribute
     // http://drafts.htmlwg.org/html/master/embedded-content-0.html#the-embed-element
     if (allowedAttributesForElement(element).indexOf("any") >= 0) return true
@@ -1635,9 +1613,6 @@ var spec = {
   },
 
   isAttributeObsoleteForElement: function(attribute, element) {
-    // attributes in the whitelist are never considered obsolete
-    if (isWhitelistedAttribute(attribute)) return false
-
     return obsoleteAttributes.some(function(item) {
       if (item.attribute !== attribute) return false
       return item.elements.split(/\s*;\s*/).some(function(name) {
@@ -1647,9 +1622,6 @@ var spec = {
   },
 
   isAttributeRequiredForElement: function(attribute, element) {
-    // attributes in the whitelist are never considered required
-    if (isWhitelistedAttribute(attribute)) return false
-
     return requiredAttributes.some(function(item) {
       return element == item.element && item.attributes.indexOf(attribute) >= 0
     })
@@ -1730,13 +1702,19 @@ Rules.prototype.extend = function(name, options) {
 module.exports = Rules
 
 },{"mout/object/mixIn":18}],27:[function(require,module,exports){
+var foundIn = require("../../utils/string-matcher")
+
 module.exports = {
 
   name: "inline-event-handlers",
 
-  func: function(listener, reporter) {
+  config: {
+    whitelist: []
+  },
+
+  func: function(listener, reporter, config) {
     listener.on('attribute', function(name, value) {
-      if (name.indexOf("on") === 0) {
+      if (name.indexOf("on") === 0 && !foundIn(name, config.whitelist)) {
         reporter.warn(
           "inline-event-handlers",
           "An '" + name + "' attribute was found in the HTML. Use external scripts for event binding instead.",
@@ -1747,7 +1725,7 @@ module.exports = {
   }
 }
 
-},{}],28:[function(require,module,exports){
+},{"../../utils/string-matcher":37}],28:[function(require,module,exports){
 module.exports = {
 
   name: "script-placement",
@@ -1978,16 +1956,25 @@ module.exports = {
 }
 
 },{"dom-utils/src/matches":2,"dom-utils/src/parents":3}],32:[function(require,module,exports){
+var foundIn = require("../../utils/string-matcher")
+
 module.exports = {
 
   name: "duplicate-ids",
 
-  func: function(listener, reporter) {
+  config: {
+    whitelist: []
+  },
+
+  func: function(listener, reporter, config) {
 
     var elements = []
 
     listener.on("id", function(name) {
-      elements.push({id: name, context: this})
+      // ignore whitelisted attributes
+      if (!foundIn(name, config.whitelist)) {
+        elements.push({id: name, context: this})
+      }
     })
 
     listener.on("afterInspect", function() {
@@ -2021,7 +2008,7 @@ module.exports = {
   }
 }
 
-},{}],33:[function(require,module,exports){
+},{"../../utils/string-matcher":37}],33:[function(require,module,exports){
 module.exports = {
 
   name: "unique-elements",
@@ -2062,17 +2049,29 @@ module.exports = {
 }
 
 },{}],34:[function(require,module,exports){
+var foundIn = require("../../utils/string-matcher")
+
 module.exports = {
 
   name: "validate-attributes",
 
-  func: function(listener, reporter) {
+  config: {
+    whitelist: [
+      /ng\-[a-z\-]+/ // AngularJS
+    ]
+  },
+
+  func: function(listener, reporter, config) {
 
     var validation = this.modules.validation
 
     listener.on("element", function(name) {
       var required = validation.getRequiredAttributesForElement(name)
+
       required.forEach(function(attr) {
+        // ignore whitelisted attributes
+        if (foundIn(attr, config.whitelist)) return
+
         if (!this.hasAttribute(attr)) {
           reporter.warn(
             "validate-attributes",
@@ -2089,6 +2088,9 @@ module.exports = {
 
       // don't validate the attributes of invalid elements
       if (!validation.isElementValid(element)) return
+
+      // ignore whitelisted attributes
+      if (foundIn(name, config.whitelist)) return
 
       if (validation.isAttributeObsoleteForElement(name, element)) {
         reporter.warn(
@@ -2110,12 +2112,16 @@ module.exports = {
   }
 }
 
-},{}],35:[function(require,module,exports){
+},{"../../utils/string-matcher":37}],35:[function(require,module,exports){
 module.exports = {
 
   name: "validate-element-location",
 
-  func: function(listener, reporter) {
+  config: {
+    whitelist: []
+  },
+
+  func: function(listener, reporter, config) {
 
     var validation = this.modules.validation
       , matches = require("dom-utils/src/matches")
@@ -2128,10 +2134,7 @@ module.exports = {
     // More complicated cases are tested below
     // ===========================================================================
 
-    listener.on("element", function(name) {
-      // skip elements without a DOM element for a parent
-      if (!(this.parentNode && this.parentNode.nodeType == 1)) return
-
+    function testGeneralElementLocation(name) {
       var child = name
         , parent = this.parentNode.nodeName.toLowerCase()
 
@@ -2143,17 +2146,14 @@ module.exports = {
           this
         )
       }
-    })
+    }
 
     // ===========================================================================
     // Make sure <style> elements inside <body> have the 'scoped' attribute.
     // They must also be the first element child of their parent.
     // ===========================================================================
 
-    listener.on("element", function(name) {
-      // don't double warn if the style elements already has a location warning
-      if (warned.indexOf(this) > -1) return
-
+    function testUnscopedStyles(name) {
       if (matches(this, "body style:not([scoped])")) {
         reporter.warn(
           "validate-element-location",
@@ -2168,18 +2168,14 @@ module.exports = {
           this
         )
       }
-
-    })
+    }
 
     // ===========================================================================
     // Make sure <meta> and <link> elements inside <body> have the 'itemprop'
     // attribute
     // ===========================================================================
 
-    listener.on("element", function(name) {
-      // don't double warn if the style elements already has a location warning
-      if (warned.indexOf(this) > -1) return
-
+    function testItemProp(name) {
       if (matches(this, "body meta:not([itemprop]), body link:not([itemprop])")) {
         reporter.warn(
           "validate-element-location",
@@ -2188,20 +2184,48 @@ module.exports = {
           this
         )
       }
+    }
+
+
+    listener.on("element", function(name) {
+
+      // ignore whitelisted elements
+      if (matches(this, config.whitelist)) return
+
+      // skip elements without a DOM element for a parent
+      if (!(this.parentNode && this.parentNode.nodeType == 1)) return
+
+      // don't double warn if the elements already has a location warning
+      if (warned.indexOf(this) > -1) return
+
+      testGeneralElementLocation.call(this, name)
+      testUnscopedStyles.call(this, name)
+      testItemProp.call(this, name)
     })
+
   }
 }
 
 },{"dom-utils/src/matches":2,"dom-utils/src/parents":3}],36:[function(require,module,exports){
+var foundIn = require("../../utils/string-matcher")
+
 module.exports = {
 
   name: "validate-elements",
 
-  func: function(listener, reporter) {
+  config: {
+    whitelist: []
+  },
+
+  func: function(listener, reporter, config) {
 
     var validation = this.modules.validation
 
     listener.on("element", function(name) {
+
+      // ignore whitelisted elements
+      if (foundIn(name, config.whitelist)) return
+
       if (validation.isElementObsolete(name)) {
         reporter.warn(
           "validate-elements",
@@ -2220,7 +2244,7 @@ module.exports = {
   }
 }
 
-},{}],37:[function(require,module,exports){
+},{"../../utils/string-matcher":37}],37:[function(require,module,exports){
 var isRegExp = require("mout/lang/isRegExp")
 
 /**

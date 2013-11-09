@@ -48,4 +48,29 @@ describe("duplicate-ids", function() {
     expect(log.length).to.equal(0)
   })
 
+  it("allows for customization by altering the config object", function() {
+
+    var html = parseHTML(''
+          + '<div id="foobar">'
+          + '  <p id="foobar">Foo</p>'
+          + '  <p id="barfoo">bar <em id="barfoo">Em</em></p>'
+          + '</div>'
+        )
+
+    // whitelist foobar
+    HTMLInspector.rules.extend("duplicate-ids", {
+      whitelist: ["foobar"]
+    })
+
+    HTMLInspector.inspect({
+      useRules: ["duplicate-ids"],
+      domRoot: html,
+      onComplete: onComplete
+    })
+
+    expect(log.length).to.equal(1)
+    expect(log[0].message).to.equal("The id 'barfoo' appears more than once in the document.")
+    expect(log[0].context).to.deep.equal([html.querySelector("p#barfoo"), html.querySelector("em#barfoo")])
+  })
+
 })

@@ -68,27 +68,4 @@ describe("validation", function() {
     expect(validation.isChildAllowedInParent("td", "tr")).to.equal(true)
   })
 
-  it("ignores elements that are whitelisted", function() {
-    validation.elementWhitelist = validation.elementWhitelist.concat(["foo", "bar", "font", "center"])
-    // valid elements
-    expect(validation.isElementValid("foo")).to.equal(true)
-    expect(validation.isElementValid("bar")).to.equal(true)
-    // obsolete elements
-    expect(validation.isElementObsolete("font")).to.equal(false)
-    expect(validation.isElementObsolete("center")).to.equal(false)
-  })
-
-  it("ignores attributes that are whitelisted", function() {
-    validation.attributeWhitelist = validation.attributeWhitelist.concat(["src", "placeholder", "align", /^bg[a-z]+$/])
-    // valid elements
-    expect(validation.isAttributeValidForElement("placeholder", "select")).to.equal(true)
-    expect(validation.isAttributeValidForElement("ng-model", "div")).to.equal(true)
-    // obsolete elements
-    expect(validation.isAttributeObsoleteForElement("align", "div")).to.equal(false)
-    expect(validation.isAttributeObsoleteForElement("bgcolor", "body")).to.equal(false)
-    // required attributes
-    expect(validation.isAttributeRequiredForElement("src", "img")).to.equal(false)
-
-  })
-
 })

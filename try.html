@@ -6,8 +6,8 @@
   </head>
   <body ondblclick="alert('foo')">
 
-    <span><meta name="foobar"></span>
-    <span><link type="imports" href="foobar.html"></span>
+    <span id="foo"><meta name="foobar"></span>
+    <span id="foo"><link type="imports" href="foobar.html"></span>
 
     <style scoped>foo { }</style>
 
@@ -24,7 +24,7 @@
       <li>Bar</li>
     </ul>
 
-    <p>This is a <title>title</title> element</p>
+    <p foo="bar">This is a <title>title</title> element</p>
 
     <em><p>emphasize!</p></em>
 
@@ -41,9 +41,13 @@
 
     <script>
 
+      HTMLInspector.rules.extend('validate-element-location', {
+        whitelist: [":not(p)"]
+      })
 
       HTMLInspector.inspect({
-        excludeRules: ["inline-event-handlers"]
+        // excludeRules: ["inline-event-handlers"]
+        useRules: ['validate-element-location']
       })
 
     </script>
