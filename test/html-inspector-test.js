@@ -1595,6 +1595,44 @@ describe("validate-element-location", function() {
     expect(log.length).to.equal(0)
   })
 
+  it("allows for customization by altering the config object", function() {
+
+    var html = parseHTML(''
+          + '<div>'
+          + '  <style scoped> .foo { } </style>'
+          + '  <h1>This is a <p>Heading!</p> shit</h1>'
+          + '  <span>'
+          + '    <ul>'
+          + '      <li>foo</li>'
+          + '    </ul>'
+          + '  </span>'
+          + '  <ul>'
+          + '    <span><li>Foo</li></span>'
+          + '    <li>Bar</li>'
+          + '  </ul>'
+          + '  <p>This is a <title>title</title> element</p>'
+          + '  <em><p>emphasize!</p></em>'
+          + '</div>'
+        )
+
+    // whitelist foobar
+    HTMLInspector.rules.extend("validate-element-location", {
+      whitelist: [":not(p)"]
+    })
+
+    HTMLInspector.inspect({
+      useRules: ["validate-element-location"],
+      domRoot: html,
+      onComplete: onComplete
+    })
+
+    expect(log.length).to.equal(2)
+    expect(log[0].message).to.equal("The <p> element cannot be a child of the <h1> element.")
+    expect(log[0].context).to.equal(html.querySelector("h1 > p"))
+    expect(log[1].message).to.equal("The <p> element cannot be a child of the <em> element.")
+    expect(log[1].context).to.equal(html.querySelector("em > p"))
+  })
+
 })
 describe("validate-elements", function() {
 

@@ -2,7 +2,11 @@ module.exports = {
 
   name: "validate-element-location",
 
-  func: function(listener, reporter) {
+  config: {
+    whitelist: []
+  },
+
+  func: function(listener, reporter, config) {
 
     var validation = this.modules.validation
       , matches = require("dom-utils/src/matches")
@@ -15,10 +19,7 @@ module.exports = {
     // More complicated cases are tested below
     // ===========================================================================
 
-    listener.on("element", function(name) {
-      // skip elements without a DOM element for a parent
-      if (!(this.parentNode && this.parentNode.nodeType == 1)) return
-
+    function testGeneralElementLocation(name) {
       var child = name
         , parent = this.parentNode.nodeName.toLowerCase()
 
@@ -30,17 +31,14 @@ module.exports = {
           this
         )
       }
-    })
+    }
 
     // ===========================================================================
     // Make sure <style> elements inside <body> have the 'scoped' attribute.
     // They must also be the first element child of their parent.
     // ===========================================================================
 
-    listener.on("element", function(name) {
-      // don't double warn if the style elements already has a location warning
-      if (warned.indexOf(this) > -1) return
-
+    function testUnscopedStyles(name) {
       if (matches(this, "body style:not([scoped])")) {
         reporter.warn(
           "validate-element-location",
@@ -55,18 +53,14 @@ module.exports = {
           this
         )
       }
-
-    })
+    }
 
     // ===========================================================================
     // Make sure <meta> and <link> elements inside <body> have the 'itemprop'
     // attribute
     // ===========================================================================
 
-    listener.on("element", function(name) {
-      // don't double warn if the style elements already has a location warning
-      if (warned.indexOf(this) > -1) return
-
+    function testItemProp(name) {
       if (matches(this, "body meta:not([itemprop]), body link:not([itemprop])")) {
         reporter.warn(
           "validate-element-location",
@@ -75,6 +69,24 @@ module.exports = {
           this
         )
       }
+    }
+
+
+    listener.on("element", function(name) {
+
+      // ignore whitelisted elements
+      if (matches(this, config.whitelist)) return
+
+      // skip elements without a DOM element for a parent
+      if (!(this.parentNode && this.parentNode.nodeType == 1)) return
+
+      // don't double warn if the elements already has a location warning
+      if (warned.indexOf(this) > -1) return
+
+      testGeneralElementLocation.call(this, name)
+      testUnscopedStyles.call(this, name)
+      testItemProp.call(this, name)
     })
+
   }
 }

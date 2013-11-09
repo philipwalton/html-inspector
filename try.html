@@ -41,13 +41,13 @@
 
     <script>
 
-      HTMLInspector.rules.extend('inline-event-handlers', {
-        whitelist: [/om/]
+      HTMLInspector.rules.extend('validate-element-location', {
+        whitelist: [":not(p)"]
       })
 
       HTMLInspector.inspect({
         // excludeRules: ["inline-event-handlers"]
-        useRules: ['inline-event-handlers']
+        useRules: ['validate-element-location']
       })
 
     </script>
