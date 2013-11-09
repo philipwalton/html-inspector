@@ -3,13 +3,17 @@
   "version": "0.6.0",
   "main": "dist/html-inspector.js",
   "ignore": [
+    "bin",
     "img",
-    "spec",
     "src",
+    "test",
     ".*",
     "bower.json",
+    "CHANGELOG.md",
     "CONTRIBUTING.md",
+    "FAQs.md",
     "Gruntfile.js",
-    "package.json"
+    "package.json",
+    "try.html"
   ]
 }
