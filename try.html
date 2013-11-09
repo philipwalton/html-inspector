@@ -6,8 +6,8 @@
   </head>
   <body ondblclick="alert('foo')">
 
-    <span><meta name="foobar"></span>
-    <span><link type="imports" href="foobar.html"></span>
+    <span id="foo"><meta name="foobar"></span>
+    <span id="foo"><link type="imports" href="foobar.html"></span>
 
     <style scoped>foo { }</style>
 
@@ -41,10 +41,13 @@
 
     <script>
 
+      HTMLInspector.rules.extend('duplicate-ids', {
+        whitelist: ['foo']
+      })
 
       HTMLInspector.inspect({
         // excludeRules: ["inline-event-handlers"]
-        useRules: ['validate-attributes']
+        useRules: ['duplicate-ids']
       })
 
     </script>

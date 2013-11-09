@@ -4,7 +4,7 @@
  * Copyright (c) 2013 Philip Walton <http://philipwalton.com>
  * Released under the MIT license
  *
- * Date: 2013-10-19
+ * Date: 2013-11-08
  */
 
 !function(e){"object"==typeof exports?module.exports=e():"function"==typeof define&&define.amd?define(e):"undefined"!=typeof window?window.HTMLInspector=e():"undefined"!=typeof global?global.HTMLInspector=e():"undefined"!=typeof self&&(self.HTMLInspector=e())}(function(){var define,module,exports;
@@ -1950,16 +1950,25 @@ module.exports = {
 }
 
 },{"dom-utils/src/matches":2,"dom-utils/src/parents":3}],32:[function(require,module,exports){
+var foundIn = require("../../utils/string-matcher")
+
 module.exports = {
 
   name: "duplicate-ids",
 
-  func: function(listener, reporter) {
+  config: {
+    whitelist: []
+  },
+
+  func: function(listener, reporter, config) {
 
     var elements = []
 
     listener.on("id", function(name) {
-      elements.push({id: name, context: this})
+      // ignore whitelisted attributes
+      if (!foundIn(name, config.whitelist)) {
+        elements.push({id: name, context: this})
+      }
     })
 
     listener.on("afterInspect", function() {
@@ -1993,7 +2002,7 @@ module.exports = {
   }
 }
 
-},{}],33:[function(require,module,exports){
+},{"../../utils/string-matcher":37}],33:[function(require,module,exports){
 module.exports = {
 
   name: "unique-elements",
