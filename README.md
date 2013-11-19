@@ -18,10 +18,6 @@ HTML Inspector is opinionated, but every rule is completely customizable, so you
 
 For a more formal introduction, please refer to [this blog post](http://philipwalton.com/articles/introducing-html-inspector/) which goes into more detail as to why HTML Inspector was created and why you should consider using it.
 
-### News
-
-**The online hackathan site [ChallengePost](http://challengepost.com/) is sponsoring a competition to extend HTML Inspector. You can [register here](http://htmlinspector.challengepost.com) to enter. Submissions are due by November 13, 2013.**
-
 ## Getting Started
 
 The easiest way to try out HTML Inspector is to link to the source file hosted on [CDNJS](http://cdnjs.com/):
