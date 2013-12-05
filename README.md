@@ -11,6 +11,7 @@
 7. [Running the Tests](#running-the-tests)
 8. [Contributing](#contributing)
 9. [FAQs](#faqs)
+10. [Third Party Rules](#third-party-rules)
 
 HTML Inspector is a highly-customizable, code quality tool to help you (and your team) write better markup. It aims to find a balance between the uncompromisingly strict W3C validator and having absolutely no rules at all (the unfortunate reality for most of us).
 
@@ -370,3 +371,7 @@ If you're submitting a pull request please read [CONTRIBUTING.md](https://github
 ## FAQs
 
 The FAQs section has grown rather large, so it has been moved to its own page. You can find the [full FAQs here](https://github.com/philipwalton/html-inspector/blob/master/FAQs.md).
+
+## Third Party Rules
+
+- [Large Viewstate](https://github.com/palewar/html-inspector/blob/master/src/rules/best-practices/large-viewstate.js) - warn if View State takes up more than 50KB (configurable) in ASP.NET generated HTML
