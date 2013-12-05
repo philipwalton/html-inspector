@@ -375,5 +375,5 @@ The FAQs section has grown rather large, so it has been moved to its own page. Y
 ## Third Party Rules
 
 - [Large Viewstate](https://github.com/palewar/html-inspector/blob/master/src/rules/best-practices/large-viewstate.js) - warn if View State takes up more than 50KB (configurable) in ASP.NET generated HTML
-- [Voice Input](https://googledrive.com/host/0B8yu2s4Q9YD8VEZNUHJaV3BkSzA/File.htm) warn when input fields are inaccessible to voice input
+- [Voice Input](https://googledrive.com/host/0B8yu2s4Q9YD8VEZNUHJaV3BkSzA/File.htm) - warn when input fields are inaccessible to voice input
 
