@@ -1,5 +1,5 @@
 /*!
- * HTML Inspector - v0.7.0
+ * HTML Inspector - v0.7.1
  *
  * Copyright (c) 2014 Philip Walton <http://philipwalton.com>
  * Released under the MIT license

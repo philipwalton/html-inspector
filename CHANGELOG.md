@@ -1,3 +1,7 @@
+### 0.7.1 (January 16, 2014)
+
+* Fix an incorrect reference to `dist/html-inspector.js` in phantom runner.
+
 ### 0.7.0 (November 9, 2013)
 
 * Move the main script from the `dist` folder to the project root.
