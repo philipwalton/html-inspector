@@ -33,7 +33,7 @@ page.onLoadFinished = function(status) {
   })
 
   if (!hasInspectorScript) {
-    page.injectJs(basePath + '/dist/html-inspector.js')
+    page.injectJs(basePath + '/html-inspector.js')
   }
 
   page.evaluate(function() {

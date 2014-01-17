@@ -1,14 +1,13 @@
 /*!
  * HTML Inspector - v0.7.0
  *
- * Copyright (c) 2013 Philip Walton <http://philipwalton.com>
+ * Copyright (c) 2014 Philip Walton <http://philipwalton.com>
  * Released under the MIT license
  *
- * Date: 2013-11-09
+ * Date: 2014-01-16
  */
 
-!function(e){"object"==typeof exports?module.exports=e():"function"==typeof define&&define.amd?define(e):"undefined"!=typeof window?window.HTMLInspector=e():"undefined"!=typeof global?global.HTMLInspector=e():"undefined"!=typeof self&&(self.HTMLInspector=e())}(function(){var define,module,exports;
-return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+!function(e){if("object"==typeof exports)module.exports=e();else if("function"==typeof define&&define.amd)define(e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.HTMLInspector=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /**
  * Get an object representation of an element's attributes
  */
@@ -135,55 +134,48 @@ var makeIterator = require('../function/makeIterator_');
 
 
 },{"../function/makeIterator_":7}],5:[function(require,module,exports){
-
-
-    /**
-     * Array.indexOf
-     */
-    function indexOf(arr, item, fromIndex) {
-        fromIndex = fromIndex || 0;
-        if (arr == null) {
-            return -1;
-        }
-
-        var len = arr.length,
-            i = fromIndex < 0 ? len + fromIndex : fromIndex;
-        while (i < len) {
-            // we iterate over sparse items since there is no way to make it
-            // work properly on IE 7-8. see #64
-            if (arr[i] === item) {
-                return i;
-            }
-
-            i++;
-        }
-
-        return -1;
-    }
-
-    module.exports = indexOf;
-
-
-},{}],6:[function(require,module,exports){
-var indexOf = require('./indexOf');
 var filter = require('./filter');
 
     /**
      * @return {array} Array of unique items
      */
-    function unique(arr){
-        return filter(arr, isUnique);
+    function unique(arr, compare){
+        compare = compare || isEqual;
+        return filter(arr, function(item, i, arr){
+            var n = arr.length;
+            while (++i < n) {
+                if ( compare(item, arr[i]) ) {
+                    return false;
+                }
+            }
+            return true;
+        });
     }
 
-    function isUnique(item, i, arr){
-        return indexOf(arr, item, i+1) === -1;
+    function isEqual(a, b){
+        return a === b;
     }
 
     module.exports = unique;
 
 
 
-},{"./filter":4,"./indexOf":5}],7:[function(require,module,exports){
+},{"./filter":4}],6:[function(require,module,exports){
+
+
+    /**
+     * Returns the first argument provided to it.
+     */
+    function identity(val){
+        return val;
+    }
+
+    module.exports = identity;
+
+
+
+},{}],7:[function(require,module,exports){
+var identity = require('./identity');
 var prop = require('./prop');
 var deepMatches = require('../object/deepMatches');
 
@@ -193,22 +185,24 @@ var deepMatches = require('../object/deepMatches');
      * callback/iterator providing a shortcut syntax.
      */
     function makeIterator(src, thisObj){
+        if (src == null) {
+            return identity;
+        }
         switch(typeof src) {
             case 'function':
                 // function is the first to improve perf (most common case)
+                // also avoid using `Function#call` if not needed, which boosts
+                // perf a lot in some cases
                 return (typeof thisObj !== 'undefined')? function(val, i, arr){
                     return src.call(thisObj, val, i, arr);
                 } : src;
             case 'object':
-                // typeof null == "object"
-                return (src != null)? function(val){
+                return function(val){
                     return deepMatches(val, src);
-                } : src;
+                };
             case 'string':
             case 'number':
                 return prop(src);
-            default:
-                return src;
         }
     }
 
@@ -216,7 +210,7 @@ var deepMatches = require('../object/deepMatches');
 
 
 
-},{"../object/deepMatches":14,"./prop":8}],8:[function(require,module,exports){
+},{"../object/deepMatches":14,"./identity":6,"./prop":8}],8:[function(require,module,exports){
 
 
     /**
@@ -693,7 +687,7 @@ HTMLInspector.rules.add( require("./rules/validation/validate-elements.js") )
 
 module.exports = HTMLInspector
 
-},{"./listener":21,"./modules":22,"./modules/css.js":23,"./modules/validation.js":24,"./reporter":25,"./rules":26,"./rules/best-practices/inline-event-handlers.js":27,"./rules/best-practices/script-placement.js":28,"./rules/best-practices/unnecessary-elements.js":29,"./rules/best-practices/unused-classes.js":30,"./rules/convention/bem-conventions.js":31,"./rules/validation/duplicate-ids.js":32,"./rules/validation/unique-elements.js":33,"./rules/validation/validate-attributes.js":34,"./rules/validation/validate-element-location.js":35,"./rules/validation/validate-elements.js":36,"./utils/cross-origin":37,"dom-utils/src/get-attributes":1,"dom-utils/src/matches":2,"mout/array/unique":6,"mout/lang/isRegExp":11,"mout/lang/toArray":13,"mout/object/mixIn":18}],21:[function(require,module,exports){
+},{"./listener":21,"./modules":22,"./modules/css.js":23,"./modules/validation.js":24,"./reporter":25,"./rules":26,"./rules/best-practices/inline-event-handlers.js":27,"./rules/best-practices/script-placement.js":28,"./rules/best-practices/unnecessary-elements.js":29,"./rules/best-practices/unused-classes.js":30,"./rules/convention/bem-conventions.js":31,"./rules/validation/duplicate-ids.js":32,"./rules/validation/unique-elements.js":33,"./rules/validation/validate-attributes.js":34,"./rules/validation/validate-element-location.js":35,"./rules/validation/validate-elements.js":36,"./utils/cross-origin":37,"dom-utils/src/get-attributes":1,"dom-utils/src/matches":2,"mout/array/unique":5,"mout/lang/isRegExp":11,"mout/lang/toArray":13,"mout/object/mixIn":18}],21:[function(require,module,exports){
 var Callbacks = require("./callbacks")
 
 function Listener() {
@@ -790,7 +784,7 @@ module.exports = {
   module: css
 }
 
-},{"../utils/cross-origin":37,"dom-utils/src/matches":2,"mout/array/unique":6,"mout/lang/toArray":13}],24:[function(require,module,exports){
+},{"../utils/cross-origin":37,"dom-utils/src/matches":2,"mout/array/unique":5,"mout/lang/toArray":13}],24:[function(require,module,exports){
 var foundIn = require("../utils/string-matcher")
 
 // ============================================================
@@ -2276,4 +2270,3 @@ module.exports = foundIn
 },{"mout/lang/isRegExp":11}]},{},[20])
 (20)
 });
-;
