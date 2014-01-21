@@ -33,6 +33,11 @@ It can also be install via [NPM](https://npmjs.org/) or [Bower](https://github.c
 # NPM (for command line usage)
 npm install -g html-inspector
 
+# Inspect a file from the command line
+# Note: the CLI requires phantomjs to be installed
+# http://phantomjs.org/download.html
+htmlinspector path/to/file.html
+
 # View the CLI options
 htmlinspector --help
 
