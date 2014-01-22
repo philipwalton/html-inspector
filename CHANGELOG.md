@@ -1,3 +1,7 @@
+### 0.7.2 (January 22, 2014)
+
+* Warn if the user tries to use the CLI when phantomjs isn't installed.
+
 ### 0.7.1 (January 16, 2014)
 
 * Fix an incorrect reference to `dist/html-inspector.js` in phantom runner.
