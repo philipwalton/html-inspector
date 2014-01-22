@@ -3,6 +3,7 @@
 var fs = require('fs')
   , path = require('path')
   , program = require('commander')
+  , shell = require('shelljs')
 
   , inspectLocation
   , configFile
@@ -18,6 +19,13 @@ program
 
 if(program.args.length !== 1) {
   program.help()
+  process.exit()
+}
+
+// warn is PhantomJS isn't install
+if (shell.exec("which phantomjs").code > 0) {
+  console.error("PhantomJS must be installed to use the HTML Inspector CLI.")
+  process.exit()
 }
 
 // Try to resolve local file, otherwise assume and pass url
