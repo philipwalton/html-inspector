@@ -1,15 +1,21 @@
 #!/usr/bin/env node
 
+require('colors')
+require('shelljs/global')
+
+// set the shelljs config
+config.silent = true
+
 var fs = require('fs')
   , path = require('path')
   , program = require('commander')
-  , shell = require('shelljs')
 
   , inspectLocation
   , configFile
   , basePath = path.normalize(__dirname + path.sep + '..')
   , version = JSON.parse(fs.readFileSync(path.join(basePath, "package.json"))).version
   , phantomRunner = basePath + path.sep + 'bin' + path.sep + 'phantom-runner.js'
+
 
 program
   .version(version)
@@ -19,13 +25,13 @@ program
 
 if(program.args.length !== 1) {
   program.help()
-  process.exit()
+  exit()
 }
 
 // warn is PhantomJS isn't install
-if (shell.exec("which phantomjs").code > 0) {
-  console.error("PhantomJS must be installed to use the HTML Inspector CLI.")
-  process.exit()
+if (exec("which phantomjs").code !== 0) {
+  echo("PhantomJS must be installed to use the HTML Inspector CLI.".red)
+  exit(1)
 }
 
 // Try to resolve local file, otherwise assume and pass url

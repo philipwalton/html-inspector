@@ -20,7 +20,8 @@
     "htmlinspector": "bin/html-inspector"
   },
   "dependencies": {
-    "commander": "*"
+    "commander": "*",
+    "colors": "*"
   },
   "devDependencies": {
     "grunt": "*",
@@ -38,7 +39,6 @@
     "dom-utils": "*",
     "shelljs": "*",
     "semver": "*",
-    "colors": "*",
     "moment": "*"
   }
 }
