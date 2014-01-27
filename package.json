@@ -21,7 +21,8 @@
   },
   "dependencies": {
     "commander": "*",
-    "colors": "*"
+    "colors": "*",
+    "shelljs": "*"
   },
   "devDependencies": {
     "grunt": "*",
@@ -37,7 +38,6 @@
     "sinon": "*",
     "mout": "*",
     "dom-utils": "*",
-    "shelljs": "*",
     "semver": "*",
     "moment": "*"
   }
