@@ -1,4 +1,4 @@
-### 0.7.3
+### 0.7.3 (January 27, 2014)
 
 * Move shelljs from devDependencies to dependencies.
 

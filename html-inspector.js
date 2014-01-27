@@ -1,13 +1,13 @@
 /*!
- * HTML Inspector - v0.7.2
+ * HTML Inspector - v0.7.3
  *
  * Copyright (c) 2014 Philip Walton <http://philipwalton.com>
  * Released under the MIT license
  *
- * Date: 2014-01-22
+ * Date: 2014-01-27
  */
 
-!function(e){if("object"==typeof exports)module.exports=e();else if("function"==typeof define&&define.amd)define(e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.HTMLInspector=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+!function(e){if("object"==typeof exports)module.exports=e();else if("function"==typeof define&&define.amd)define(e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.HTMLInspector=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
 /**
  * Get an object representation of an element's attributes
  */
@@ -30,8 +30,8 @@ function getAttributes(element) {
 module.exports = getAttributes
 
 
-},{}],2:[function(require,module,exports){
-var toArray = require("mout/lang/toArray")
+},{}],2:[function(_dereq_,module,exports){
+var toArray = _dereq_("mout/lang/toArray")
 
 /**
  * Detects the browser's native matches() implementation
@@ -90,7 +90,7 @@ function matches(element, test) {
 module.exports = matches
 
 
-},{"mout/lang/toArray":13}],3:[function(require,module,exports){
+},{"mout/lang/toArray":13}],3:[function(_dereq_,module,exports){
 /**
  * Returns an array of the element's parent elements
  */
@@ -105,8 +105,8 @@ function parents(element) {
 
 module.exports = parents
 
-},{}],4:[function(require,module,exports){
-var makeIterator = require('../function/makeIterator_');
+},{}],4:[function(_dereq_,module,exports){
+var makeIterator = _dereq_('../function/makeIterator_');
 
     /**
      * Array filter
@@ -133,8 +133,8 @@ var makeIterator = require('../function/makeIterator_');
 
 
 
-},{"../function/makeIterator_":7}],5:[function(require,module,exports){
-var filter = require('./filter');
+},{"../function/makeIterator_":7}],5:[function(_dereq_,module,exports){
+var filter = _dereq_('./filter');
 
     /**
      * @return {array} Array of unique items
@@ -160,7 +160,7 @@ var filter = require('./filter');
 
 
 
-},{"./filter":4}],6:[function(require,module,exports){
+},{"./filter":4}],6:[function(_dereq_,module,exports){
 
 
     /**
@@ -174,10 +174,10 @@ var filter = require('./filter');
 
 
 
-},{}],7:[function(require,module,exports){
-var identity = require('./identity');
-var prop = require('./prop');
-var deepMatches = require('../object/deepMatches');
+},{}],7:[function(_dereq_,module,exports){
+var identity = _dereq_('./identity');
+var prop = _dereq_('./prop');
+var deepMatches = _dereq_('../object/deepMatches');
 
     /**
      * Converts argument into a valid iterator.
@@ -210,7 +210,7 @@ var deepMatches = require('../object/deepMatches');
 
 
 
-},{"../object/deepMatches":14,"./identity":6,"./prop":8}],8:[function(require,module,exports){
+},{"../object/deepMatches":14,"./identity":6,"./prop":8}],8:[function(_dereq_,module,exports){
 
 
     /**
@@ -226,8 +226,8 @@ var deepMatches = require('../object/deepMatches');
 
 
 
-},{}],9:[function(require,module,exports){
-var isKind = require('./isKind');
+},{}],9:[function(_dereq_,module,exports){
+var isKind = _dereq_('./isKind');
     /**
      */
     var isArray = Array.isArray || function (val) {
@@ -236,8 +236,8 @@ var isKind = require('./isKind');
     module.exports = isArray;
 
 
-},{"./isKind":10}],10:[function(require,module,exports){
-var kindOf = require('./kindOf');
+},{"./isKind":10}],10:[function(_dereq_,module,exports){
+var kindOf = _dereq_('./kindOf');
     /**
      * Check if value is from a specific "kind".
      */
@@ -247,8 +247,8 @@ var kindOf = require('./kindOf');
     module.exports = isKind;
 
 
-},{"./kindOf":12}],11:[function(require,module,exports){
-var isKind = require('./isKind');
+},{"./kindOf":12}],11:[function(_dereq_,module,exports){
+var isKind = _dereq_('./isKind');
     /**
      */
     function isRegExp(val) {
@@ -257,7 +257,7 @@ var isKind = require('./isKind');
     module.exports = isRegExp;
 
 
-},{"./isKind":10}],12:[function(require,module,exports){
+},{"./isKind":10}],12:[function(_dereq_,module,exports){
 
 
     var _rKind = /^\[object (.*)\]$/,
@@ -279,8 +279,8 @@ var isKind = require('./isKind');
     module.exports = kindOf;
 
 
-},{}],13:[function(require,module,exports){
-var kindOf = require('./kindOf');
+},{}],13:[function(_dereq_,module,exports){
+var kindOf = _dereq_('./kindOf');
 
     var _win = this;
 
@@ -312,9 +312,9 @@ var kindOf = require('./kindOf');
     module.exports = toArray;
 
 
-},{"./kindOf":12}],14:[function(require,module,exports){
-var forOwn = require('./forOwn');
-var isArray = require('../lang/isArray');
+},{"./kindOf":12}],14:[function(_dereq_,module,exports){
+var forOwn = _dereq_('./forOwn');
+var isArray = _dereq_('../lang/isArray');
 
     function containsMatch(array, pattern) {
         var i = -1, length = array.length;
@@ -369,7 +369,7 @@ var isArray = require('../lang/isArray');
 
 
 
-},{"../lang/isArray":9,"./forOwn":16}],15:[function(require,module,exports){
+},{"../lang/isArray":9,"./forOwn":16}],15:[function(_dereq_,module,exports){
 
 
     var _hasDontEnumBug,
@@ -433,9 +433,9 @@ var isArray = require('../lang/isArray');
 
 
 
-},{}],16:[function(require,module,exports){
-var hasOwn = require('./hasOwn');
-var forIn = require('./forIn');
+},{}],16:[function(_dereq_,module,exports){
+var hasOwn = _dereq_('./hasOwn');
+var forIn = _dereq_('./forIn');
 
     /**
      * Similar to Array/forEach but works over object properties and fixes Don't
@@ -454,7 +454,7 @@ var forIn = require('./forIn');
 
 
 
-},{"./forIn":15,"./hasOwn":17}],17:[function(require,module,exports){
+},{"./forIn":15,"./hasOwn":17}],17:[function(_dereq_,module,exports){
 
 
     /**
@@ -468,8 +468,8 @@ var forIn = require('./forIn');
 
 
 
-},{}],18:[function(require,module,exports){
-var forOwn = require('./forOwn');
+},{}],18:[function(_dereq_,module,exports){
+var forOwn = _dereq_('./forOwn');
 
     /**
     * Combine properties from all the objects into first one.
@@ -498,7 +498,7 @@ var forOwn = require('./forOwn');
     module.exports = mixIn;
 
 
-},{"./forOwn":16}],19:[function(require,module,exports){
+},{"./forOwn":16}],19:[function(_dereq_,module,exports){
 function Callbacks() {
   this.handlers = []
 }
@@ -521,21 +521,21 @@ Callbacks.prototype.fire = function(context, args) {
 
 module.exports = Callbacks
 
-},{}],20:[function(require,module,exports){
-var Listener = require("./listener")
-  , Modules = require("./modules")
-  , Reporter = require("./reporter")
-  , Rules = require("./rules")
+},{}],20:[function(_dereq_,module,exports){
+var Listener = _dereq_("./listener")
+  , Modules = _dereq_("./modules")
+  , Reporter = _dereq_("./reporter")
+  , Rules = _dereq_("./rules")
 
-  , toArray = require("mout/lang/toArray")
-  , isRegExp = require("mout/lang/isRegExp")
-  , unique = require("mout/array/unique")
-  , mixIn = require("mout/object/mixIn")
+  , toArray = _dereq_("mout/lang/toArray")
+  , isRegExp = _dereq_("mout/lang/isRegExp")
+  , unique = _dereq_("mout/array/unique")
+  , mixIn = _dereq_("mout/object/mixIn")
 
-  , matches = require("dom-utils/src/matches")
-  , getAttributes = require("dom-utils/src/get-attributes")
+  , matches = _dereq_("dom-utils/src/matches")
+  , getAttributes = _dereq_("dom-utils/src/get-attributes")
 
-  , isCrossOrigin = require("./utils/cross-origin")
+  , isCrossOrigin = _dereq_("./utils/cross-origin")
 
 /**
  * Set (or reset) all data back to its original value
@@ -671,24 +671,24 @@ var HTMLInspector = {
   }
 }
 
-HTMLInspector.modules.add( require("./modules/css.js") )
-HTMLInspector.modules.add( require("./modules/validation.js") )
+HTMLInspector.modules.add( _dereq_("./modules/css.js") )
+HTMLInspector.modules.add( _dereq_("./modules/validation.js") )
 
-HTMLInspector.rules.add( require("./rules/best-practices/inline-event-handlers.js") )
-HTMLInspector.rules.add( require("./rules/best-practices/script-placement.js") )
-HTMLInspector.rules.add( require("./rules/best-practices/unnecessary-elements.js") )
-HTMLInspector.rules.add( require("./rules/best-practices/unused-classes.js") )
-HTMLInspector.rules.add( require("./rules/convention/bem-conventions.js") )
-HTMLInspector.rules.add( require("./rules/validation/duplicate-ids.js") )
-HTMLInspector.rules.add( require("./rules/validation/unique-elements.js") )
-HTMLInspector.rules.add( require("./rules/validation/validate-attributes.js") )
-HTMLInspector.rules.add( require("./rules/validation/validate-element-location.js") )
-HTMLInspector.rules.add( require("./rules/validation/validate-elements.js") )
+HTMLInspector.rules.add( _dereq_("./rules/best-practices/inline-event-handlers.js") )
+HTMLInspector.rules.add( _dereq_("./rules/best-practices/script-placement.js") )
+HTMLInspector.rules.add( _dereq_("./rules/best-practices/unnecessary-elements.js") )
+HTMLInspector.rules.add( _dereq_("./rules/best-practices/unused-classes.js") )
+HTMLInspector.rules.add( _dereq_("./rules/convention/bem-conventions.js") )
+HTMLInspector.rules.add( _dereq_("./rules/validation/duplicate-ids.js") )
+HTMLInspector.rules.add( _dereq_("./rules/validation/unique-elements.js") )
+HTMLInspector.rules.add( _dereq_("./rules/validation/validate-attributes.js") )
+HTMLInspector.rules.add( _dereq_("./rules/validation/validate-element-location.js") )
+HTMLInspector.rules.add( _dereq_("./rules/validation/validate-elements.js") )
 
 module.exports = HTMLInspector
 
-},{"./listener":21,"./modules":22,"./modules/css.js":23,"./modules/validation.js":24,"./reporter":25,"./rules":26,"./rules/best-practices/inline-event-handlers.js":27,"./rules/best-practices/script-placement.js":28,"./rules/best-practices/unnecessary-elements.js":29,"./rules/best-practices/unused-classes.js":30,"./rules/convention/bem-conventions.js":31,"./rules/validation/duplicate-ids.js":32,"./rules/validation/unique-elements.js":33,"./rules/validation/validate-attributes.js":34,"./rules/validation/validate-element-location.js":35,"./rules/validation/validate-elements.js":36,"./utils/cross-origin":37,"dom-utils/src/get-attributes":1,"dom-utils/src/matches":2,"mout/array/unique":5,"mout/lang/isRegExp":11,"mout/lang/toArray":13,"mout/object/mixIn":18}],21:[function(require,module,exports){
-var Callbacks = require("./callbacks")
+},{"./listener":21,"./modules":22,"./modules/css.js":23,"./modules/validation.js":24,"./reporter":25,"./rules":26,"./rules/best-practices/inline-event-handlers.js":27,"./rules/best-practices/script-placement.js":28,"./rules/best-practices/unnecessary-elements.js":29,"./rules/best-practices/unused-classes.js":30,"./rules/convention/bem-conventions.js":31,"./rules/validation/duplicate-ids.js":32,"./rules/validation/unique-elements.js":33,"./rules/validation/validate-attributes.js":34,"./rules/validation/validate-element-location.js":35,"./rules/validation/validate-elements.js":36,"./utils/cross-origin":37,"dom-utils/src/get-attributes":1,"dom-utils/src/matches":2,"mout/array/unique":5,"mout/lang/isRegExp":11,"mout/lang/toArray":13,"mout/object/mixIn":18}],21:[function(_dereq_,module,exports){
+var Callbacks = _dereq_("./callbacks")
 
 function Listener() {
   this._events = {}
@@ -708,8 +708,8 @@ Listener.prototype.trigger = function(event, context, args) {
 }
 
 module.exports = Listener
-},{"./callbacks":19}],22:[function(require,module,exports){
-var mixIn = require("mout/object/mixIn")
+},{"./callbacks":19}],22:[function(_dereq_,module,exports){
+var mixIn = _dereq_("mout/object/mixIn")
 
 function Modules() {}
 
@@ -724,12 +724,12 @@ Modules.prototype.extend = function(name, options) {
 }
 
 module.exports = Modules
-},{"mout/object/mixIn":18}],23:[function(require,module,exports){
+},{"mout/object/mixIn":18}],23:[function(_dereq_,module,exports){
 var reClassSelector = /\.[a-z0-9_\-]+/ig
-  , toArray = require("mout/lang/toArray")
-  , unique = require("mout/array/unique")
-  , matches = require("dom-utils/src/matches")
-  , isCrossOrigin = require("../utils/cross-origin")
+  , toArray = _dereq_("mout/lang/toArray")
+  , unique = _dereq_("mout/array/unique")
+  , matches = _dereq_("dom-utils/src/matches")
+  , isCrossOrigin = _dereq_("../utils/cross-origin")
 
 /**
  * Get an array of class selectors from a CSSRuleList object
@@ -784,8 +784,8 @@ module.exports = {
   module: css
 }
 
-},{"../utils/cross-origin":37,"dom-utils/src/matches":2,"mout/array/unique":5,"mout/lang/toArray":13}],24:[function(require,module,exports){
-var foundIn = require("../utils/string-matcher")
+},{"../utils/cross-origin":37,"dom-utils/src/matches":2,"mout/array/unique":5,"mout/lang/toArray":13}],24:[function(_dereq_,module,exports){
+var foundIn = _dereq_("../utils/string-matcher")
 
 // ============================================================
 // A data map of all valid HTML elements, their attributes
@@ -1636,7 +1636,7 @@ module.exports = {
   module: spec
 }
 
-},{"../utils/string-matcher":38}],25:[function(require,module,exports){
+},{"../utils/string-matcher":38}],25:[function(_dereq_,module,exports){
 function Reporter() {
   this._errors = []
 }
@@ -1654,8 +1654,8 @@ Reporter.prototype.getWarnings = function() {
 }
 
 module.exports = Reporter
-},{}],26:[function(require,module,exports){
-var mixIn = require("mout/object/mixIn")
+},{}],26:[function(_dereq_,module,exports){
+var mixIn = _dereq_("mout/object/mixIn")
 
 function Rules() {}
 
@@ -1688,8 +1688,8 @@ Rules.prototype.extend = function(name, options) {
 
 module.exports = Rules
 
-},{"mout/object/mixIn":18}],27:[function(require,module,exports){
-var foundIn = require("../../utils/string-matcher")
+},{"mout/object/mixIn":18}],27:[function(_dereq_,module,exports){
+var foundIn = _dereq_("../../utils/string-matcher")
 
 module.exports = {
 
@@ -1712,7 +1712,7 @@ module.exports = {
   }
 }
 
-},{"../../utils/string-matcher":38}],28:[function(require,module,exports){
+},{"../../utils/string-matcher":38}],28:[function(_dereq_,module,exports){
 module.exports = {
 
   name: "script-placement",
@@ -1725,7 +1725,7 @@ module.exports = {
 
     var elements = []
       , whitelist = config.whitelist
-      , matches = require("dom-utils/src/matches")
+      , matches = _dereq_("dom-utils/src/matches")
 
     function isWhitelisted(el) {
       if (!whitelist) return false
@@ -1766,7 +1766,7 @@ module.exports = {
     })
   }
 }
-},{"dom-utils/src/matches":2}],29:[function(require,module,exports){
+},{"dom-utils/src/matches":2}],29:[function(_dereq_,module,exports){
 module.exports = {
 
   name: "unnecessary-elements",
@@ -1793,7 +1793,7 @@ module.exports = {
   }
 }
 
-},{}],30:[function(require,module,exports){
+},{}],30:[function(_dereq_,module,exports){
 module.exports = {
 
   name: "unused-classes",
@@ -1810,7 +1810,7 @@ module.exports = {
   func: function(listener, reporter, config) {
 
     var classes = this.modules.css.getClassSelectors()
-      , foundIn = require("../../utils/string-matcher")
+      , foundIn = _dereq_("../../utils/string-matcher")
 
     listener.on("class", function(name) {
       if (!foundIn(name, config.whitelist) && classes.indexOf(name) < 0) {
@@ -1826,7 +1826,7 @@ module.exports = {
   }
 }
 
-},{"../../utils/string-matcher":38}],31:[function(require,module,exports){
+},{"../../utils/string-matcher":38}],31:[function(_dereq_,module,exports){
 // ============================================================
 // There are several different BEM  naming conventions that
 // I'm aware of. To make things easier, I refer to the
@@ -1908,8 +1908,8 @@ module.exports = {
 
   func: function(listener, reporter, config) {
 
-    var parents = require("dom-utils/src/parents")
-      , matches = require("dom-utils/src/matches")
+    var parents = _dereq_("dom-utils/src/parents")
+      , matches = _dereq_("dom-utils/src/matches")
 
     listener.on('class', function(name) {
       if (config.isElement(name)) {
@@ -1942,8 +1942,8 @@ module.exports = {
   }
 }
 
-},{"dom-utils/src/matches":2,"dom-utils/src/parents":3}],32:[function(require,module,exports){
-var foundIn = require("../../utils/string-matcher")
+},{"dom-utils/src/matches":2,"dom-utils/src/parents":3}],32:[function(_dereq_,module,exports){
+var foundIn = _dereq_("../../utils/string-matcher")
 
 module.exports = {
 
@@ -1995,7 +1995,7 @@ module.exports = {
   }
 }
 
-},{"../../utils/string-matcher":38}],33:[function(require,module,exports){
+},{"../../utils/string-matcher":38}],33:[function(_dereq_,module,exports){
 module.exports = {
 
   name: "unique-elements",
@@ -2035,8 +2035,8 @@ module.exports = {
   }
 }
 
-},{}],34:[function(require,module,exports){
-var foundIn = require("../../utils/string-matcher")
+},{}],34:[function(_dereq_,module,exports){
+var foundIn = _dereq_("../../utils/string-matcher")
 
 module.exports = {
 
@@ -2099,7 +2099,7 @@ module.exports = {
   }
 }
 
-},{"../../utils/string-matcher":38}],35:[function(require,module,exports){
+},{"../../utils/string-matcher":38}],35:[function(_dereq_,module,exports){
 module.exports = {
 
   name: "validate-element-location",
@@ -2111,8 +2111,8 @@ module.exports = {
   func: function(listener, reporter, config) {
 
     var validation = this.modules.validation
-      , matches = require("dom-utils/src/matches")
-      , parents = require("dom-utils/src/parents")
+      , matches = _dereq_("dom-utils/src/matches")
+      , parents = _dereq_("dom-utils/src/parents")
       , warned = [] // store already-warned elements to prevent double warning
 
 
@@ -2193,8 +2193,8 @@ module.exports = {
   }
 }
 
-},{"dom-utils/src/matches":2,"dom-utils/src/parents":3}],36:[function(require,module,exports){
-var foundIn = require("../../utils/string-matcher")
+},{"dom-utils/src/matches":2,"dom-utils/src/parents":3}],36:[function(_dereq_,module,exports){
+var foundIn = _dereq_("../../utils/string-matcher")
 
 module.exports = {
 
@@ -2231,7 +2231,7 @@ module.exports = {
   }
 }
 
-},{"../../utils/string-matcher":38}],37:[function(require,module,exports){
+},{"../../utils/string-matcher":38}],37:[function(_dereq_,module,exports){
 // used to parse URLs
 var link = document.createElement("a")
 
@@ -2245,8 +2245,8 @@ module.exports = function(url) {
   return !(link.protocol == location.protocol && link.host == location.host)
 }
 
-},{}],38:[function(require,module,exports){
-var isRegExp = require("mout/lang/isRegExp")
+},{}],38:[function(_dereq_,module,exports){
+var isRegExp = _dereq_("mout/lang/isRegExp")
 
 /**
  * Given a string and a RegExp or a list of strings or RegExps,
