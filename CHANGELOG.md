@@ -1,3 +1,7 @@
+### 0.7.3
+
+* Move shelljs from devDependencies to dependencies.
+
 ### 0.7.2 (January 22, 2014)
 
 * Warn if the user tries to use the CLI when phantomjs isn't installed.
