@@ -35,7 +35,7 @@
     "grunt-mocha-cli": "*",
     "chai": "*",
     "mocha": "*",
-    "sinon": "*",
+    "sinon": "1.7.3",
     "mout": "*",
     "dom-utils": "*",
     "semver": "*",
