@@ -161,4 +161,4 @@ HTMLInspector.rules.add( require("./rules/validation/validate-attributes.js") )
 HTMLInspector.rules.add( require("./rules/validation/validate-element-location.js") )
 HTMLInspector.rules.add( require("./rules/validation/validate-elements.js") )
 
-module.exports = HTMLInspector
+window.HTMLInspector = HTMLInspector
