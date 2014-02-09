@@ -1,3 +1,7 @@
+### 0.8.0 (February 7, 2014)
+
+* Remove the UMD wrapper to avoid CLI conflicts on pages using AMD.
+
 ### 0.7.3 (January 27, 2014)
 
 * Move shelljs from devDependencies to dependencies.
