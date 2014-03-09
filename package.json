@@ -9,7 +9,7 @@
     "url": "http://philipwalton.com"
   },
   "scripts": {
-    "test": "grunt test"
+    "test": "./node_modules/.bin/grunt test"
   },
   "repository": {
     "type": "git",
@@ -39,6 +39,7 @@
     "mout": "*",
     "dom-utils": "*",
     "semver": "*",
-    "moment": "*"
+    "moment": "*",
+    "grunt-cli": "~0.1.13"
   }
 }
