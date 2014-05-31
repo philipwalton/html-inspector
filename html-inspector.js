@@ -1,10 +1,10 @@
 /*!
- * HTML Inspector - v0.8.0
+ * HTML Inspector - v0.8.1
  *
  * Copyright (c) 2014 Philip Walton <http://philipwalton.com>
  * Released under the MIT license
  *
- * Date: 2014-02-07
+ * Date: 2014-05-30
  */
 
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
@@ -370,7 +370,7 @@ var isArray = require('../lang/isArray');
 
 
 },{"../lang/isArray":9,"./forOwn":16}],15:[function(require,module,exports){
-var hasOwn = require('./hasOwn');
+
 
     var _hasDontEnumBug,
         _dontEnums;
@@ -412,25 +412,11 @@ var hasOwn = require('./hasOwn');
             }
         }
 
-
         if (_hasDontEnumBug) {
-            var ctor = obj.constructor,
-                isProto = !!ctor && obj === ctor.prototype;
-
             while (key = _dontEnums[i++]) {
-                // For constructor, if it is a prototype object the constructor
-                // is always non-enumerable unless defined otherwise (and
-                // enumerated above).  For non-prototype objects, it will have
-                // to be defined on this object, since it cannot be defined on
-                // any prototype objects.
-                //
-                // For other [[DontEnum]] properties, check if the value is
-                // different than Object prototype value.
-                if (
-                    (key !== 'constructor' ||
-                        (!isProto && hasOwn(obj, key))) &&
-                    obj[key] !== Object.prototype[key]
-                ) {
+                // since we aren't using hasOwn check we need to make sure the
+                // property was overwritten
+                if (obj[key] !== Object.prototype[key]) {
                     if (exec(fn, obj, key, thisObj) === false) {
                         break;
                     }
@@ -447,7 +433,7 @@ var hasOwn = require('./hasOwn');
 
 
 
-},{"./hasOwn":17}],16:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 var hasOwn = require('./hasOwn');
 var forIn = require('./forIn');
 
@@ -1846,7 +1832,7 @@ module.exports = {
 // I'm aware of. To make things easier, I refer to the
 // methodologies by the name of projects that utilize them.
 //
-// suit: https://github.com/necolas/suit
+// suit: http://suitcss.github.io/
 // -------------------------------------
 // BlockName
 // BlockName--modifierName
