@@ -1,6 +1,6 @@
 ### 0.8.1 (May 30, 2014)
 
-* Update Suit CSS URL.
+* Update SUIT CSS URL.
 
 ### 0.8.0 (February 7, 2014)
 
