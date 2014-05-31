@@ -3,7 +3,7 @@
 // I'm aware of. To make things easier, I refer to the
 // methodologies by the name of projects that utilize them.
 //
-// suit: https://github.com/necolas/suit
+// suit: http://suitcss.github.io/
 // -------------------------------------
 // BlockName
 // BlockName--modifierName
