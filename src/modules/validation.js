@@ -455,7 +455,7 @@ var elementData = {
 }
 
 // ============================================================
-// Element categories and the elements tht are in those
+// Element categories and the elements that are in those
 // categories. Elements may be in more than one category
 //
 // http://drafts.htmlwg.org/html/master/iana.html#element-content-categories
