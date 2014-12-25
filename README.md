@@ -27,7 +27,7 @@ The easiest way to try out HTML Inspector is to link to the source file hosted o
 <script src="http://cdnjs.cloudflare.com/ajax/libs/html-inspector/0.8.1/html-inspector.js"></script>
 ```
 
-It can also be install via [NPM](https://npmjs.org/) or [Bower](https://github.com/bower/bower):
+It can also be installed via [NPM](https://npmjs.org/) or [Bower](https://github.com/bower/bower):
 
 ```sh
 # NPM (for command line usage)
@@ -57,7 +57,7 @@ After the script runs, any errors will be reported to the console (unless you ch
 
 ![Sample HTML Inspector Output](https://raw.github.com/philipwalton/html-inspector/master/img/html-inspector-console.png)
 
-**Make sure you call `inspect` after any other DOM altering scripts have finished running or those alterations won't get inspected.**
+**Make sure you call `inspect` after any other DOM-altering scripts have finished running or those alterations won't get inspected.**
 
 ## Configuring HTML Inspector
 
@@ -104,7 +104,7 @@ HTMLInspector.inspect({
 })
 ```
 
-For convenience, some of the config options may be passed as single arguments. If `.inspect()` receives an argument that is an array it is assume to be the `useRules` option, if it's an string or DOM element it's assumed to be the `domRoot` option, and if its a function it's assumed to be the `onComplete` callback.
+For convenience, some of the config options may be passed as single arguments. If `.inspect()` receives an argument that is an array, it is assumed to be the `useRules` option; if it's a string or DOM element, it's assumed to be the `domRoot` option; and if it's a function, it's assumed to be the `onComplete` callback.
 
 ```js
 // only set the useRules options
@@ -123,11 +123,11 @@ HTMLInspector.inspect(function(errors) {
 
 ## Built-in Rules ##
 
-HTML Inspector ships with a set of built-in rules which fall into one of three main categories: validation, best-practices, and convention.
+HTML Inspector ships with a set of built-in rules that fall into one of three main categories: validation, best-practices, and convention.
 
 Each rule is registered via a unique string identifier that can be used to include or exclude it at inspection time.
 
-Here is the full list of built in rules by their identifiers:
+Here is the full list of built-in rules by their identifiers:
 
 ```sh
 # validation rules
@@ -153,15 +153,15 @@ The following is a more in-depth explanation of each rule:
 
 HTML Inspector is different than a markup validator. Validators parse static markup, while HTML Inspector runs on a live DOM. This makes it a lot more powerful, but there are some drawbacks as well. Because HTML Inspector runs after the browser has parsed your HTML, any mistakes the browser has forgiven will not be seen by HTML Inspector.
 
-As a result HTML Inspector should not be seen as a replacement for validation. It's simply another tool in the toolbox. That being said, there is still a lot that it can do (and does) to validate your markup.
+As a result HTML Inspector should not be seen as a replacement for validation.; it's simply another tool in the toolbox. That being said, there is still a lot that it can do (and does) to validate your markup.
 
 Here are the validation rules that ship with HTML Inspector. (Expect this list to get more comprehensive in the future.)
 
-- **Validate Elements**: Inspect each element in the DOM and reports any elements that are invalid or obsolete. This will catch simple things like misspelled tags (`<il>` instead of `<li>`), and it will inform you of deprecated tags (like `<center>`, `<font>`, and more recently `<hgroup>`). Any element you don't want to be warned about can be whitelisted.
+- **Validate Elements**: Inspects each element in the DOM and reports any elements that are invalid or obsolete. This will catch simple things like misspelled tags (`<il>` instead of `<li>`), and it will inform you of deprecated tags (like `<center>`, `<font>`, and more recently `<hgroup>`). Any element you don't want to be warned about can be whitelisted.
 
-- **Validate Element Location**: Make sure that elements don't appear as children of parents they're not allowed to descend from. An example of this is a block element like `<div>` appearing as the child of an inline elements like `<span>`.
+- **Validate Element Location**: Make sure that elements don't appear as children of parents they're not allowed to descend from. An example of this is a block element like `<div>` appearing as the child of an inline element like `<span>`.
 
-- **Validate Attributes**: Like validating elements, this rule will let you know if you're using attributes that don't belong on a particular element or perhaps don't belong on any element. If your project uses custom attributes (like `ng-*` in AngularJS) they can be whitelisted.
+- **Validate Attributes**: Like validating elements, this rule will let you know if you're using attributes that don't belong on a particular element or perhaps don't belong on any element. If your project uses custom attributes (like `ng-*` in AngularJS), these can be whitelisted.
 
 - **Duplicate IDs**: Warn if non-unique IDs are found on the same page.
 
@@ -169,25 +169,25 @@ Here are the validation rules that ship with HTML Inspector. (Expect this list t
 
 ### Best Practices
 
-Some markup may be perfectly valid but use practices that are commonly considered to be poor or outdated. The following rules check for these types of things. (Note that everything in this list is subjective and optional.)
+Some markup may be perfectly valid but uses practices that are commonly considered to be poor or outdated. The following rules check for these types of things. (Note that everything in this list is subjective and optional.)
 
 - **Inline Event Handlers**: Warn if inline event handlers, like `onclick="return false"` are found in the document. Inline event handlers are hard to manage, hard to debug, and completely non-reusable.
 
-- **Script Placement**: Warn if script elements appear anywhere other than right before the closing `</body>` tag. Because JavaScript is blocking, adding `<script>` elements anywhere other than the end of the document may delay the loading of the page. If a script must appear somewhere other than the end of the document, it can be whitelisted.
+- **Script Placement**: Warn if `<script>` elements appear anywhere other than right before the closing `</body>` tag. Because JavaScript is a blocking resource, adding `<script>` elements anywhere other than the end of the document may delay the loading of the page. If a script must appear somewhere other than the end of the document, it can be whitelisted.
 
 - **Unused Classes**: Sometimes you'll remove a CSS rule from your stylesheet but forget to remove the class from the HTML. The "unused-classes" rule compares all the class selectors in the CSS to the classes in the HTML and reports any that aren't being used.
 
   Classes that are in the HTML as JavaScript hooks can be ignored via a whitelist. By default, any class prefixed with `js-`, `language-`, or `supports-` is whitelisted. More information on the rationale behind this rule can be found [here](http://philipwalton.com/articles/css-architecture/).
 
-- **Unnecessary Elements**: Anytime you have a plain `<div>` or `<span>` element in the HTML with no class, ID or any other attribute, it's probably unnecessary or a mark of poor design.
+- **Unnecessary Elements**: Anytime you have a plain `<div>` or `<span>` element in the HTML with no class, ID, or any other attribute, it's probably unnecessary or a mark of poor design.
 
-  Elements with no semantic meaning should only be used for presentation. If the element has no attributes but is used for styling, it must be done through a rule like `.some-class > div { }` which is just asking for trouble. Again, more information can be found [here](http://philipwalton.com/articles/css-architecture/).
+  Elements with no semantic meaning should only be used for presentation. If the element has no attributes but is used for styling, it must be done through a rule like `.some-class > div { }`, which is just asking for trouble. Again, more information can be found [here](http://philipwalton.com/articles/css-architecture/).
 
 ### Convention
 
-The real power of HTML Inspector lies in its ability to enforce your team's chosen conventions. If you've decided that all groups of links should be contained in a `<nav>` element, or all `<section>` elements must contain a heading, you can write those rules, and an error will be thrown when someone breaks them.
+The real power of HTML Inspector lies in its ability to enforce your team's chosen conventions. If you've decided that all groups of links should be contained in a `<nav>` element, or all `<section>` elements must contain a heading, you can write those rules and an error will be thrown when someone breaks them.
 
-Because convention is usually specific to individual teams, there's only one built-in rule in this category, but hopefully it'll get you thinking about rules your team could use.
+Because convention is usually specific to individual teams, there's only one built-in rule in this category &ndash; but hopefully it'll get you thinking about rules your team could use.
 
 - **BEM**: The increasingly popular [BEM](http://bem.info/) (block, element, modifier) methodology is a CSS naming convention that is very helpful for large projects. The problem is that using it correctly in the CSS is only half the battle. If it's not used correctly in the HTML it doesn't work either.
 
@@ -220,7 +220,7 @@ listener.on(event, callback)
 - **event**: (String) The name of the event. See below for a complete list of events.
 - **callback**: (Function) A function to be invoked when the event occurs. The function will be passed certain arguments depending on the event type. See the event list below for argument details.
 
-Here is a an example of binding a function to the "class" event:
+Here is an example of binding a function to the "class" event:
 
 ```js
 listener.on("class", function(className, domElement) {
