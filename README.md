@@ -187,7 +187,7 @@ Some markup may be perfectly valid but uses practices that are commonly consider
 
 The real power of HTML Inspector lies in its ability to enforce your team's chosen conventions. If you've decided that all groups of links should be contained in a `<nav>` element, or all `<section>` elements must contain a heading, you can write those rules and an error will be thrown when someone breaks them.
 
-Because convention is usually specific to individual teams, there's only one built-in rule in this category &ndash; but hopefully it'll get you thinking about rules your team could use.
+Because conventions are usually specific to individual teams, there's only one built-in rule in this category, but hopefully it'll get you thinking about rules your team could use.
 
 - **BEM**: The increasingly popular [BEM](http://bem.info/) (block, element, modifier) methodology is a CSS naming convention that is very helpful for large projects. The problem is that using it correctly in the CSS is only half the battle. If it's not used correctly in the HTML it doesn't work either.
 
