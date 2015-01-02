@@ -20,12 +20,15 @@
     "htmlinspector": "bin/html-inspector"
   },
   "dependencies": {
-    "commander": "*",
     "colors": "*",
-    "shelljs": "*"
+    "commander": "^2.6.0",
+    "shelljs": "^0.3.0"
   },
   "devDependencies": {
+    "chai": "*",
+    "dom-utils": "*",
     "grunt": "*",
+    "grunt-cli": "~0.1.13",
     "grunt-contrib-concat": "*",
     "grunt-contrib-uglify": "*",
     "grunt-contrib-watch": "*",
@@ -33,13 +36,10 @@
     "grunt-browserify": "*",
     "grunt-mocha-phantomjs": "*",
     "grunt-mocha-cli": "*",
-    "chai": "*",
     "mocha": "*",
-    "sinon": "1.7.3",
-    "mout": "*",
-    "dom-utils": "*",
-    "semver": "*",
     "moment": "*",
-    "grunt-cli": "~0.1.13"
+    "mout": "*",
+    "semver": "*",
+    "sinon": "1.7.3"
   }
 }
