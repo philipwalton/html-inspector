@@ -29,7 +29,7 @@ if(program.args.length !== 1) {
 }
 
 // warn is PhantomJS isn't install
-if (exec("which phantomjs").code !== 0) {
+if (!which("phantomjs")) {
   echo("PhantomJS must be installed to use the HTML Inspector CLI.".red)
   exit(1)
 }
