@@ -1,3 +1,7 @@
+### 0.8.2 (January 30, 2015)
+
+* Fix an issue where the CLI doesn't work on windows.
+
 ### 0.8.1 (May 30, 2014)
 
 * Update SUIT CSS URL.
