@@ -24,7 +24,7 @@ For a more formal introduction, please refer to [this blog post](http://philipwa
 The easiest way to try out HTML Inspector is to link to the source file hosted on [CDNJS](http://cdnjs.com/):
 
 ```html
-<script src="http://cdnjs.cloudflare.com/ajax/libs/html-inspector/0.8.1/html-inspector.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/html-inspector/0.8.2/html-inspector.js"></script>
 ```
 
 It can also be installed via [NPM](https://npmjs.org/) or [Bower](https://github.com/bower/bower):
