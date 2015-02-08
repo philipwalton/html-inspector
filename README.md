@@ -99,7 +99,7 @@ HTMLInspector.inspect({
   onComplete: function(errors) {
     errors.forEach(function(error) {
       // report errors to external service...
-    }
+    })
   }
 })
 ```
@@ -117,7 +117,7 @@ HTMLInspector.inspect("#content")
 HTMLInspector.inspect(function(errors) {
   errors.forEach(function(error) {
     // report errors to an external service...
-  }
+  })
 })
 ```
 
