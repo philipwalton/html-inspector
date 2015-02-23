@@ -63,7 +63,7 @@ To exclude Disqus comments you could simply not traverse any `<iframe>` elements
 ```js
 // exclude iframes with a `data-disqus-uid` attribute
 HTMLInspector.inspect({
-  exclude: "iframe[data-disqus-uid]"
+  excludeElements: "iframe[data-disqus-uid]"
 })
 ```
 
