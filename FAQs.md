@@ -48,7 +48,7 @@ If, for whatever reason, you are unable to change your build of Modernizr, the o
 
 ```js
 HTMLInspector.inspect({
-  exlude: 'html'
+  excludeElements: 'html'
 })
 ```
 
