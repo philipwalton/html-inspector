@@ -361,7 +361,7 @@ If Grunt and all the dependencies are installed, you can run the tests with the 
 grunt test
 ```
 
-HTML Inspector has two test suites, one that runs in pure Node and one that uses [Mocha](http://visionmedia.github.io/mocha/) and [PhantomJS](http://phantomjs.org/) because it needs a browser.
+HTML Inspector has two test suites, one that runs in pure Node and one that uses [Mocha](http://mochajs.org/) and [PhantomJS](http://phantomjs.org/) because it needs a browser.
 
 If you want to run the browser tests in a real browser (instead of via PhantomJS) simply fire up a local server and load the `tests/html-inspector-test.html` file. Make sure to run `grunt test` beforehand as it builds the tests.
 
