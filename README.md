@@ -1,6 +1,6 @@
 # HTML Inspector
 
-**NOTE:** I no longer have time to maintain this project, respond to issues, or address PRs. If anyone else would like to take over as a maintainer, please [contact me](https://philipwalton.com/about/#contact).
+:warning: **NOTE:** I no longer have time to maintain this project, respond to issues, or address PRs. If anyone else would like to take over as a maintainer, please [contact me](https://philipwalton.com/about/#contact).
 
 ***
 
