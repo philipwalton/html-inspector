@@ -1,6 +1,8 @@
 # HTML Inspector
 
-[![Build Status](https://secure.travis-ci.org/philipwalton/html-inspector.png)](http://travis-ci.org/philipwalton/html-inspector)
+**NOTE:** I no longer have time to maintain this project, respond to issues, or address PRs. If anyone else would like to take over as a maintainer, please [contact me](https://philipwalton.com/about/#contact).
+
+***
 
 1. [Getting Started](#getting-started)
 2. [Configuring HTML Inspector](#configuring-html-inspector)
